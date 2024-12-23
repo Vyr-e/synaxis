@@ -4,9 +4,7 @@
   "bin": {
     "next-forge": "scripts/init.mjs"
   },
-  "files": [
-    "scripts/init.mjs"
-  ],
+  "files": ["scripts/init.mjs"],
   "scripts": {
     "build": "turbo build",
     "dev": "turbo dev",
@@ -17,15 +15,22 @@
     "bump-deps": "npx npm-check-updates --deep -u -x react-day-picker && pnpm install",
     "bump-ui": "npx shadcn@latest add --all --overwrite -c packages/design-system",
     "migrate": "cd packages/database && npx prisma format && npx prisma generate && npx prisma db push",
-    "clean": "git clean -xdf node_modules"
+    "clean": "git clean -xdf node_modules",
+    "docker:dev": "docker compose -f docker-compose.yml -f docker-compose.dev.yml up",
+    "docker:build": "docker compose -f docker-compose.yml build",
+    "docker:down": "docker compose down",
+    "docker:clean": "docker compose down -v"
   },
   "devDependencies": {
     "@auto-it/all-contributors": "^11.3.0",
     "@auto-it/first-time-contributor": "^11.3.0",
     "@biomejs/biome": "1.9.4",
     "@repo/typescript-config": "workspace:*",
-    "turbo": "^2.3.3",
     "@turbo/gen": "^2.3.3",
+    "@types/pg": "^8.11.10",
+    "drizzle-kit": "^0.30.1",
+    "tsx": "^4.19.2",
+    "turbo": "^2.3.3",
     "typescript": "^5.7.2",
     "ultracite": "^4.1.12"
   },
@@ -34,18 +39,23 @@
   },
   "packageManager": "pnpm@9.15.0",
   "dependencies": {
-    "chalk": "^5.3.0",
-    "commander": "^12.1.0"
+    "commander": "^12.1.0",
+    "dotenv": "^16.4.7",
+    "drizzle-orm": "^0.38.2",
+    "kleur": "^4.1.5",
+    "pg": "^8.13.1",
+    "pino": "^9.5.0"
   },
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ],
+  "workspaces": ["apps/*", "packages/*"],
   "trustedDependencies": [
     "@biomejs/biome",
     "@clerk/shared",
+    "@prisma/client",
     "@sentry/cli",
     "core-js",
-    "core-js-pure"
+    "core-js-pure",
+    "es5-ext",
+    "esbuild",
+    "sharp"
   ]
 }

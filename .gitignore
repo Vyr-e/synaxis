@@ -42,3 +42,11 @@ yarn-error.log*
 
 # BaseHub
 .basehub
+
+# Environment
+.env
+.env*.local
+!.env.example
+
+# Keep app-specific examples
+!apps/*/.env.example
