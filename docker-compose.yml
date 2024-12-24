@@ -1,6 +1,6 @@
-version: '3.8'
 services:
   db:
+    container_name: synaxis-db
     image: postgres:latest
     environment:
       POSTGRES_USER: postgres
@@ -12,6 +12,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - synaxis-network
+    restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
@@ -19,7 +20,10 @@ services:
       retries: 5
 
   redis:
-    image: redis:alpine
+    image: redis:6.2-alpine
+    container_name: synaxis-redis
+    restart: unless-stopped
+    command: redis-server --save 60 1 --loglevel warning
     ports:
       - "6379:6379"
     volumes:
@@ -31,6 +35,18 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: synaxis-redis-commander
+    ports:
+      - "8081:8081"
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      - redis
+    restart: unless-stopped
 
 networks:
   synaxis-network:
