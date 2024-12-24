@@ -12,28 +12,35 @@ const transport = pino.transport({
   },
 });
 
-const logger = pino(
+const pino_logger = pino(
   {
     level: process.env.LOG_LEVEL || 'info',
   },
   transport
 );
 
-export { logger };
-
 // Utility functions
-export const success = (message: string, ...args: unknown[]) => {
+export const success = <T>(message: T, ...args: unknown[]) => {
   logger.info(kleur.green(`✓ ${message}`), ...args);
 };
 
-export const info = (message: string, ...args: unknown[]) => {
+export const info = <T>(message: T, ...args: unknown[]) => {
   logger.info(kleur.blue(`ℹ ${message}`), ...args);
 };
 
-export const warn = (message: string, ...args: unknown[]) => {
+export const warn = <T>(message: T, ...args: unknown[]) => {
   logger.warn(kleur.yellow(`⚠ ${message}`), ...args);
 };
 
-export const error = (message: string, ...args: unknown[]) => {
+export const error = <T>(message: T, ...args: unknown[]) => {
   logger.error(kleur.red(`✖ ${message}`), ...args);
 };
+
+const logger = {
+  success,
+  info,
+  warn,
+  error,
+};
+
+export { logger, pino_logger };
