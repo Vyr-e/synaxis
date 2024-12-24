@@ -1,6 +1,7 @@
+import 'dotenv/config';
+import { resolve } from 'node:path';
 import { env } from '@repo/env';
-import { logger } from '@repo/logger';
-import { drizzle } from 'drizzle-orm/node-postgres';
+import { drizzle as drizzle_orm } from 'drizzle-orm/node-postgres';
 import { migrate } from 'drizzle-orm/node-postgres/migrator';
 import { Pool } from 'pg';
 
@@ -8,23 +9,8 @@ const pool = new Pool({
   connectionString: env.DATABASE_URL,
 });
 
-const db = drizzle(pool);
+const db = drizzle_orm(pool);
 
-async function main() {
-  logger.info('Running migrations...');
-
-  try {
-    await migrate(db, { migrationsFolder: './drizzle' });
-    logger.success('Migrations completed successfully');
-  } catch (error) {
-    logger.error('Migration failed:', error);
-    throw error;
-  } finally {
-    await pool.end();
-  }
-}
-
-main().catch((err) => {
-  logger.error('Migration failed!', err);
-  process.exit(1);
-});
+(async () => {
+  await migrate(db, { migrationsFolder: resolve(__dirname, './drizzle') });
+})();

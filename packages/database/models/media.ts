@@ -20,7 +20,7 @@ export const eventMedia = pgTable('event_media', {
     .notNull()
     .references(() => users.id, { onDelete: 'cascade' }),
 
-  type: mediaType('type').notNull(),
+  type: mediaType('type').notNull().default('image'),
   url: varchar('url', { length: 500 }).notNull(),
   title: varchar('title', { length: 256 }),
   description: varchar('description', { length: 500 }),

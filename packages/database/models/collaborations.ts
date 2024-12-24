@@ -22,8 +22,8 @@ export const collaborations = pgTable('collaborations', {
     .notNull()
     .references(() => users.id, { onDelete: 'cascade' }),
 
-  type: collaborationType('type').notNull(),
-  role: collaborationRole('role').notNull(),
+  type: collaborationType('type').notNull().default('organizer'),
+  role: collaborationRole('role').notNull().default('owner'),
 
   // For sponsors/vendors
   companyName: varchar('company_name', { length: 256 }),

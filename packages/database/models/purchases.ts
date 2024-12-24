@@ -32,7 +32,7 @@ export const ticketPurchases = pgTable(
     // Purchase Info
     quantity: integer('quantity').notNull(),
     totalPrice: decimal('total_price', { precision: 10, scale: 2 }).notNull(),
-    status: purchaseStatus('status').notNull(),
+    status: purchaseStatus('status').notNull().default('pending'),
 
     // Attendee Info
     attendeeDetails: jsonb('attendee_details').$type<{

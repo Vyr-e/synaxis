@@ -26,5 +26,18 @@ export { default as eventMetrics } from '../models/analytics';
 export { default as referrals } from '../models/referrals';
 export { default as notifications } from '../models/notifications';
 
+// Enums
+export {
+  accountType,
+  collaborationType,
+  collaborationRole,
+  mediaType,
+  referralStatus,
+  userRole,
+  ticketDiscountType,
+  purchaseStatus,
+  notificationType,
+} from '../models/enums';
+
 // Relations
 export * as relations from '../relations';

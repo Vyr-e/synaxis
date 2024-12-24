@@ -71,7 +71,7 @@ export const ticketDiscounts = pgTable(
 
     // Discount Info
     code: varchar('code', { length: 50 }).notNull().unique(),
-    type: ticketDiscountType('type').notNull(),
+    type: ticketDiscountType('type').notNull().default('percentage'),
     value: decimal('value', { precision: 10, scale: 2 }).notNull(),
 
     // Limits

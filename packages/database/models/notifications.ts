@@ -17,7 +17,7 @@ export const notifications = pgTable('notifications', {
   eventId: uuid('event_id').references(() => events.id, {
     onDelete: 'cascade',
   }),
-  type: notificationType('type').notNull(),
+  type: notificationType('type').notNull().default('reminder'),
   message: varchar('message', { length: 1000 }).notNull(),
   isRead: boolean('is_read').default(false),
   sentAt: timestamp('sent_at').notNull().defaultNow(),

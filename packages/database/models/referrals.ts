@@ -22,7 +22,7 @@ export const referrals = pgTable('referrals', {
     .references(() => users.id, { onDelete: 'cascade' }),
 
   code: varchar('code', { length: 50 }).notNull().unique(),
-  status: referralStatus('status').notNull(),
+  status: referralStatus('status').notNull().default('pending'),
 
   // Rewards
   rewardAmount: decimal('reward_amount', { precision: 10, scale: 2 }),
