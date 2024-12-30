@@ -1,0 +1,23 @@
+{
+  "name": "@repo/ui-utils",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./index.ts",
+  "types": "./index.ts",
+  "scripts": {
+    "clean": "git clean -xdf .cache .turbo dist node_modules",
+    "typecheck": "tsc --noEmit --emitDeclarationOnly false"
+  },
+  "dependencies": {
+    "motion": "^11.15.0",
+    "gsap": "^3.12.5",
+	"use-sound":"^4.0.3",
+	"@studio-freight/lenis":"^1.0.42",
+    "react": "^19.0.0"
+  },
+  "devDependencies": {
+    "@repo/typescript-config": "workspace:*",
+    "@types/react": "^19.0.0",
+    "typescript": "^5.0.0"
+  }
+}
