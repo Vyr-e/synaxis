@@ -1,6 +1,5 @@
 import { sql } from 'drizzle-orm';
 import {
-  boolean,
   index,
   pgTable,
   text,
@@ -15,14 +14,12 @@ export const users = pgTable(
   {
     id: uuid('id').defaultRandom().primaryKey(),
     name: varchar('name', { length: 256 }),
-    email: varchar('email', { length: 256 }).notNull(),
-    password: varchar('password', { length: 256 }),
-    emailVerified: timestamp('emailVerified', { mode: 'string' }),
+    email: varchar('email', { length: 256 }).notNull().unique(),
+    emailVerified: timestamp('emailVerified', { mode: 'string' }).notNull(),
     image: text('image'),
-    twoFactorSecret: text('twoFactorSecret'),
-    twoFactorEnabled: boolean('twoFactorEnabled').default(false),
-    createdAt: timestamp('created_at').notNull().defaultNow(),
+    createdAt: timestamp('created_at').notNull().default(sql`now()`),
     updatedAt: timestamp('updated_at').notNull().default(sql`now()`),
+    deletedAt: timestamp('deleted_at'),
     role: userRole('role').default('user').notNull(),
   },
   (table) => ({
