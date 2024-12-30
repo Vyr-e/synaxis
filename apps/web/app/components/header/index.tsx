@@ -17,6 +17,7 @@ import { useState } from 'react';
 
 import Image from 'next/image';
 import Logo from './logo.svg';
+import { AnimatedLogo } from '../animated-logo';
 
 export const Header = () => {
   const navigationItems = [
@@ -119,13 +120,7 @@ export const Header = () => {
           </NavigationMenu>
         </div>
         <div className="flex items-center gap-2 lg:justify-center">
-          <Image
-            src={Logo}
-            alt="Logo"
-            width={24}
-            height={24}
-            className="dark:invert"
-          />
+          <AnimatedLogo />
           <p className="whitespace-nowrap font-semibold">next-forge</p>
         </div>
         <div className="flex w-full justify-end gap-4">
