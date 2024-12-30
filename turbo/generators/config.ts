@@ -1,7 +1,7 @@
 import type { PlopTypes } from '@turbo/gen';
 
 export default function generator(plop: PlopTypes.NodePlopAPI): void {
-  plop.setGenerator('init', {
+  plop.setGenerator('package', {
     description: 'Generate a new package for the Monorepo',
     prompts: [
       {
@@ -31,6 +31,16 @@ export default function generator(plop: PlopTypes.NodePlopAPI): void {
         type: 'add',
         path: 'packages/{{ name }}/tsconfig.json',
         templateFile: 'templates/tsconfig.json.hbs',
+      },
+      {
+        type: 'add',
+        path: 'packages/{{ name }}/index.ts',
+        template: "export * from './components';\n",
+      },
+      {
+        type: 'add',
+        path: 'packages/{{ name }}/components/index.ts',
+        template: "export * from './animated';\n",
       },
     ],
   });
