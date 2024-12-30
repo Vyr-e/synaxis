@@ -11,6 +11,7 @@ const server = {
   REDIS_URL: z.string().min(1),
   UPSTASH_REDIS_REST_URL: z.string().url().optional(),
   UPSTASH_REDIS_REST_TOKEN: z.string().optional(),
+  BETTER_AUTH_SECRET: z.string(),
 
   // Auth
   AUTH_SECRET: z.string().min(1),
@@ -52,6 +53,7 @@ const server = {
       z.string().min(1).startsWith('testsk_'),
     ])
     .optional(),
+  NODE_ENV: z.enum(['development', 'production', 'test']).optional(),
 };
 
 const client = {
@@ -71,7 +73,10 @@ const client = {
 export const env = createEnv({
   server,
   client,
+
   runtimeEnv: {
+    BETTER_AUTH_SECRET: process.env.BETTER_AUTH_SECRET,
+    NODE_ENV: process.env.NODE_ENV,
     AUTH_SECRET: process.env.AUTH_SECRET,
     GITHUB_ID: process.env.GITHUB_ID,
     GITHUB_SECRET: process.env.GITHUB_SECRET,
