@@ -6,6 +6,11 @@
   },
   "files": ["scripts/init.mjs"],
   "scripts": {
+    "web": "turbo dev --filter=web",
+    "app": "turbo dev --filter=app",
+    "email": "turbo dev --filter=email",
+    "studio": "turbo dev --filter=studio",
+    "storybook": "turbo dev --filter=storybook",
     "build": "turbo build",
     "dev": "turbo dev",
     "lint": "ultracite lint",
@@ -39,13 +44,18 @@
   },
   "packageManager": "pnpm@9.15.0",
   "dependencies": {
+    "@studio-freight/lenis": "^1.0.42",
     "commander": "^12.1.0",
     "dotenv": "^16.4.7",
     "drizzle-orm": "^0.38.2",
+    "gsap": "^3.12.5",
     "ioredis": "^5.4.2",
     "kleur": "^4.1.5",
+    "motion": "^11.15.0",
+    "next-auth": "^5.0.0-beta.25",
     "pg": "^8.13.1",
-    "pino": "^9.5.0"
+    "pino": "^9.5.0",
+    "use-sound": "^4.0.3"
   },
   "workspaces": ["apps/*", "packages/*"],
   "trustedDependencies": [
