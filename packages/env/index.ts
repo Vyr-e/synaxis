@@ -1,9 +1,9 @@
 import { createEnv } from '@t3-oss/env-nextjs';
-import { config } from 'dotenv';
+//import { config } from 'dotenv';
 import { z } from 'zod';
 
 // Load root .env first
-config({ path: '../../.env' });
+//config({ path: '../../.env' });
 
 const server = {
   // Database
