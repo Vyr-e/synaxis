@@ -2,7 +2,11 @@
   "$schema": "https://turbo.build/schema.json",
   "globalDependencies": ["**/.env.*local"],
   "ui": "tui",
+
   "tasks": {
+    "web": {
+      "cache": false
+    },
     "build": {
       "dependsOn": ["^build", "test"],
       "outputs": [".next/**", "!.next/cache/**"],
