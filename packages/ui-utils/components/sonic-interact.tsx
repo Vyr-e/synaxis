@@ -3,7 +3,7 @@
 import React, { useRef, useEffect, useCallback, useContext } from 'react';
 import useSound from 'use-sound';
 import { SoundContext } from '../context/sound-provider';
-import useKeyboardBindings from './useKeyboardBindings';
+import { useKeyboardBindings } from '../hooks/use-keyboard-bindings';
 
 const COMPONENT_TYPES = {
   div: 'div',
@@ -227,7 +227,7 @@ const SonicInteract: React.FC<SoundInteractionProps> = ({
 
   return (
     <Component
-      ref={ref as HTMLDivElement & HTMLButtonElement}
+      ref={ref}
       {...rest}
       role={as === COMPONENT_TYPES.button ? 'button' : role}
       tabIndex={tabIndex}

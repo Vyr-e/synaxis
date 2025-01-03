@@ -1,3 +1,4 @@
+'use client';
 import { useCallback, useEffect, useRef } from 'react';
 
 // Define valid keys with uppercase support and special keys
@@ -79,7 +80,7 @@ type Modifiers = {
 type Handler = (event: KeyboardEvent) => void;
 type Bindings = Partial<Record<KeyCombo, Handler>>;
 
-const useKeyboardBindings = (initialBindings: Bindings) => {
+export const useKeyboardBindings = (initialBindings: Bindings) => {
   const bindingsRef = useRef<Bindings>({});
 
   const setBindings = useCallback((bindings: Bindings) => {
