@@ -15,12 +15,11 @@ import { users } from './users';
 export const accounts = pgTable(
   'accounts',
   {
-    id: uuid('id').defaultRandom().primaryKey(),
     userId: uuid('userId')
       .notNull()
       .references(() => users.id, {
-        onDelete: 'cascade', // Delete accounts when user is deleted
-        onUpdate: 'cascade', // Update if user ID changes
+        onDelete: 'cascade',
+        onUpdate: 'cascade',
       }),
 
     // Auth info
@@ -49,11 +48,12 @@ export const accounts = pgTable(
     updatedAt: timestamp('updated_at').notNull().default(sql`now()`),
   },
   (account) => ({
-    // Allow multiple providers per user
-    providerUserIdx: primaryKey({
+    // Use composite primary key only
+
+    pk: primaryKey({
       columns: [account.provider, account.providerAccountId],
     }),
-    // Index for quick user lookups
+    // Keep index for performance
     userIdx: index('user_account_idx').on(account.userId),
   })
 );

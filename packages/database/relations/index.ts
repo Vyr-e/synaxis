@@ -1,4 +1,5 @@
 import { relations } from 'drizzle-orm';
+import { sessions } from 'models/sessions';
 import { accounts } from '../models/accounts';
 import { eventMetrics } from '../models/analytics';
 import { chatMessages, chatParticipants, chatRooms } from '../models/chat';
@@ -89,5 +90,33 @@ export const purchaseRelations = relations(ticketPurchases, ({ one }) => ({
   discount: one(ticketDiscounts, {
     fields: [ticketPurchases.discountId],
     references: [ticketDiscounts.id],
+  }),
+}));
+
+// Add auth relations
+export const usersRelations = relations(users, ({ many }) => ({
+  accounts: many(accounts),
+  sessions: many(sessions),
+  // Keep existing relations
+  events: many(events),
+  collaborations: many(collaborations),
+  chatParticipants: many(chatParticipants),
+  notifications: many(notifications),
+  ticketPurchases: many(ticketPurchases),
+  referralsAsReferrer: many(referrals, { relationName: 'referrer' }),
+  referralsAsReferred: many(referrals, { relationName: 'referred' }),
+}));
+
+export const accountsRelations = relations(accounts, ({ one }) => ({
+  user: one(users, {
+    fields: [accounts.userId],
+    references: [users.id],
+  }),
+}));
+
+export const sessionsRelations = relations(sessions, ({ one }) => ({
+  user: one(users, {
+    fields: [sessions.userId],
+    references: [users.id],
   }),
 }));
