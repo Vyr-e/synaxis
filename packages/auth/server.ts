@@ -11,7 +11,10 @@ const auth = betterAuth({
     provider: 'pg',
     schema: {
       ...schema,
-      user: schema.users,
+      users: schema.users,
+      accounts: schema.accounts,
+      sessions: schema.sessions,
+      verifications: schema.verifications,
     },
     usePlural: true,
   }),
