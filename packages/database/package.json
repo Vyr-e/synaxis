@@ -25,7 +25,7 @@
   },
   "dependencies": {
     "@neondatabase/serverless": "^0.10.4",
-    "drizzle-orm": "^0.29.3",
+    "drizzle-orm": "^0.38.3",
     "pg": "^8.11.3",
     "@repo/env": "workspace:*",
     "server-only": "^0.0.1",
