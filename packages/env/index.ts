@@ -12,6 +12,7 @@ const server = {
   UPSTASH_REDIS_REST_URL: z.string().url().optional(),
   UPSTASH_REDIS_REST_TOKEN: z.string().optional(),
   BETTER_AUTH_SECRET: z.string(),
+  TOOLBAR: z.string().optional(),
 
   // Auth
   AUTH_SECRET: z.string().min(1),
@@ -75,6 +76,7 @@ export const env = createEnv({
   client,
 
   runtimeEnv: {
+    TOOLBAR: process.env.TOOLBAR,
     BETTER_AUTH_SECRET: process.env.BETTER_AUTH_SECRET,
     NODE_ENV: process.env.NODE_ENV,
     AUTH_SECRET: process.env.AUTH_SECRET,
