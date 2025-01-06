@@ -1,0 +1,98 @@
+{
+  "hero": {
+    "title": "Connecting Voices, Building Communities",
+    "description": "Create vibrant spaces where conversations flow naturally and every voice matters. Host dynamic events that bring people together.",
+    "cta": {
+      "email": "Enter your email",
+      "button": "Join Beta",
+      "subtext": "Join thousands building meaningful communities"
+    }
+  },
+  "features": {
+    "title": "Features",
+    "community": {
+      "title": "Community Spaces",
+      "description": "Create and join virtual spaces where your community can gather, interact, and build lasting connections."
+    },
+    "events": {
+      "title": "Virtual Events",
+      "description": "Host immersive virtual events with real-time interaction, custom branding, analytics, and seamless attendee management."
+    },
+    "audio": {
+      "title": "Audio Calls",
+      "description": "Crystal-clear audio calls with spatial audio technology for natural conversations and group discussions."
+    }
+  },
+  "howItWorks": {
+    "title": "How It Works",
+    "subtitle": "Get your community up and running in three simple steps",
+    "steps": {
+      "discover": {
+        "title": "Find Your Space",
+        "description": "Join existing communities or create your own space. Whether you're hosting virtual, hybrid, or in-person events, tailor the experience to your audience.",
+        "features": {
+          "discovery": {
+            "title": "Smart Discovery",
+            "content": "Find events and communities that match your interests through our AI-powered recommendation system."
+          },
+          "types": {
+            "title": "Community Types",
+            "content": "Choose between free or premium communities. Create exclusive paid memberships or keep it open for everyone."
+          },
+          "formats": {
+            "title": "Flexible Formats",
+            "content": "Host virtual, hybrid, or in-person events. Perfect for workshops, meetups, conferences, or casual gatherings."
+          },
+          "profile": {
+            "title": "Profile Building",
+            "content": "Craft your personal or brand profile, highlight your social links, and build a following."
+          }
+        }
+      },
+      "engage": {
+        "title": "Engage & Connect",
+        "description": "Foster meaningful interactions through event-specific chat, media sharing, and collaborative features. Every voice contributes to the community.",
+        "features": {
+          "audio": {
+            "title": "Audio Spaces",
+            "content": "Host crystal-clear audio conversations with spatial audio technology. Perfect for panels, discussions, and community gatherings."
+          },
+          "interactive": {
+            "title": "Interactive Features",
+            "content": "Share photos from events, create polls, start discussions, and enable real-time chat. Built-in tools for Q&A sessions and breakout rooms."
+          },
+          "management": {
+            "title": "Community Management",
+            "content": "Add co-hosts and moderators, set custom roles, and manage permissions. Create event-specific chat rooms for focused discussions."
+          },
+          "engagement": {
+            "title": "Engagement Tools",
+            "content": "Use built-in features for networking, mentoring, and collaboration. Create ice-breakers and facilitate meaningful connections."
+          }
+        }
+      },
+      "manage": {
+        "title": "Manage Events",
+        "description": "Create ticketed or free events with powerful tools for guest lists, promo codes, and analytics.",
+        "features": {
+          "ticketing": {
+            "title": "Advanced Ticketing",
+            "content": "Create multiple ticket tiers, early bird specials, and VIP passes. Set up waitlists, approval processes, and custom registration forms."
+          },
+          "promotional": {
+            "title": "Promotional Tools",
+            "content": "Generate custom tracking links, create discount codes, and run referral programs. Import existing audiences and invite past attendees."
+          },
+          "guest": {
+            "title": "Guest Management",
+            "content": "Control attendance with approval systems, capacity limits, and waitlists. Set custom fields for registration and send automated reminders."
+          },
+          "analytics": {
+            "title": "Analytics & Insights",
+            "content": "Track page views, ticket sales, and engagement metrics. Get detailed insights on attendance patterns, revenue, and community growth."
+          }
+        }
+      }
+    }
+  }
+}

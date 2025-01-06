@@ -1,0 +1,98 @@
+{
+  "hero": {
+    "title": "Stimmen verbinden, Gemeinschaften aufbauen",
+    "description": "Schaffen Sie lebendige Räume, in denen Gespräche natürlich fließen und jede Stimme zählt. Veranstalten Sie dynamische Events, die Menschen zusammenbringen.",
+    "cta": {
+      "email": "E-Mail eingeben",
+      "button": "Beta beitreten",
+      "subtext": "Schließen Sie sich Tausenden beim Aufbau bedeutungsvoller Gemeinschaften an"
+    }
+  },
+  "features": {
+    "title": "Funktionen",
+    "community": {
+      "title": "Community-Räume",
+      "description": "Erstellen und betreten Sie virtuelle Räume, in denen sich Ihre Community treffen, interagieren und dauerhafte Verbindungen aufbauen kann."
+    },
+    "events": {
+      "title": "Virtuelle Events",
+      "description": "Hosten Sie immersive virtuelle Events mit Echtzeit-Interaktion, individuellem Branding, Analysen und nahtlosem Teilnehmermanagement."
+    },
+    "audio": {
+      "title": "Audio-Anrufe",
+      "description": "Kristallklare Audio-Anrufe mit räumlicher Audiotechnologie für natürliche Gespräche und Gruppendiskussionen."
+    }
+  },
+  "howItWorks": {
+    "title": "So funktioniert's",
+    "subtitle": "Starten Sie Ihre Community in drei einfachen Schritten",
+    "steps": {
+      "discover": {
+        "title": "Finden Sie Ihren Raum",
+        "description": "Treten Sie bestehenden Communities bei oder erstellen Sie Ihren eigenen Raum. Ob virtuell, hybrid oder persönlich - gestalten Sie das Erlebnis für Ihr Publikum.",
+        "features": {
+          "discovery": {
+            "title": "Intelligente Entdeckung",
+            "content": "Finden Sie Events und Communities, die zu Ihren Interessen passen, durch unser KI-gestütztes Empfehlungssystem."
+          },
+          "types": {
+            "title": "Community-Typen",
+            "content": "Wählen Sie zwischen kostenlosen oder Premium-Communities. Erstellen Sie exklusive kostenpflichtige Mitgliedschaften oder halten Sie sie für alle offen."
+          },
+          "formats": {
+            "title": "Flexible Formate",
+            "content": "Hosten Sie virtuelle, hybride oder persönliche Events. Perfekt für Workshops, Meetups, Konferenzen oder ungezwungene Treffen."
+          },
+          "profile": {
+            "title": "Profil-Erstellung",
+            "content": "Gestalten Sie Ihr persönliches oder Marken-Profil, präsentieren Sie Ihre sozialen Links und bauen Sie eine Followerschaft auf."
+          }
+        }
+      },
+      "engage": {
+        "title": "Interagieren & Verbinden",
+        "description": "Fördern Sie bedeutungsvolle Interaktionen durch event-spezifische Chats, Medienfreigabe und kollaborative Funktionen. Jede Stimme trägt zur Community bei.",
+        "features": {
+          "audio": {
+            "title": "Audio-Räume",
+            "content": "Hosten Sie kristallklare Audio-Gespräche mit räumlicher Audiotechnologie. Perfekt für Panels, Diskussionen und Community-Treffen."
+          },
+          "interactive": {
+            "title": "Interaktive Funktionen",
+            "content": "Teilen Sie Fotos von Events, erstellen Sie Umfragen, starten Sie Diskussionen und ermöglichen Sie Echtzeit-Chat. Integrierte Tools für Q&A-Sessions und Breakout-Räume."
+          },
+          "management": {
+            "title": "Community-Verwaltung",
+            "content": "Fügen Sie Co-Moderatoren hinzu, legen Sie benutzerdefinierte Rollen fest und verwalten Sie Berechtigungen. Erstellen Sie eventspezifische Chaträume für fokussierte Diskussionen."
+          },
+          "engagement": {
+            "title": "Engagement-Tools",
+            "content": "Nutzen Sie integrierte Funktionen für Networking, Mentoring und Zusammenarbeit. Erstellen Sie Eisbrecher und ermöglichen Sie bedeutungsvolle Verbindungen."
+          }
+        }
+      },
+      "manage": {
+        "title": "Events Verwalten",
+        "description": "Erstellen Sie kostenpflichtige oder kostenlose Events mit leistungsstarken Tools für Gästelisten, Promo-Codes und Analysen.",
+        "features": {
+          "ticketing": {
+            "title": "Erweiterte Ticketing",
+            "content": "Erstellen Sie mehrere Ticket-Stufen, Frühbucher-Angebote und VIP-Pässe. Richten Sie Wartelisten, Genehmigungsprozesse und benutzerdefinierte Anmeldeformulare ein."
+          },
+          "promotional": {
+            "title": "Promotion-Tools",
+            "content": "Generieren Sie benutzerdefinierte Tracking-Links, erstellen Sie Rabattcodes und führen Sie Empfehlungsprogramme durch. Importieren Sie bestehende Zielgruppen und laden Sie frühere Teilnehmer ein."
+          },
+          "guest": {
+            "title": "Gäste-Management",
+            "content": "Kontrollieren Sie die Teilnahme mit Genehmigungssystemen, Kapazitätsgrenzen und Wartelisten. Legen Sie benutzerdefinierte Felder für die Registrierung fest und senden Sie automatische Erinnerungen."
+          },
+          "analytics": {
+            "title": "Analysen & Einblicke",
+            "content": "Verfolgen Sie Seitenaufrufe, Ticketverkäufe und Engagement-Metriken. Erhalten Sie detaillierte Einblicke in Teilnahmemuster, Umsatz und Community-Wachstum."
+          }
+        }
+      }
+    }
+  }
+}

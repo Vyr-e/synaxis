@@ -1,0 +1,98 @@
+{
+  "hero": {
+    "title": "Connecter les Voix, Bâtir des Communautés",
+    "description": "Créez des espaces vivants où les conversations coulent naturellement et chaque voix compte. Organisez des événements dynamiques qui rassemblent les gens.",
+    "cta": {
+      "email": "Entrez votre email",
+      "button": "Rejoindre la Bêta",
+      "subtext": "Rejoignez des milliers de bâtisseurs de communautés"
+    }
+  },
+  "features": {
+    "title": "Fonctionnalités",
+    "community": {
+      "title": "Espaces Communautaires",
+      "description": "Créez et rejoignez des espaces virtuels où votre communauté peut se réunir, interagir et créer des liens durables."
+    },
+    "events": {
+      "title": "Événements Virtuels",
+      "description": "Organisez des événements virtuels immersifs avec interaction en temps réel, personnalisation de marque, analyses et gestion fluide des participants."
+    },
+    "audio": {
+      "title": "Appels Audio",
+      "description": "Appels audio cristallins avec technologie audio spatiale pour des conversations naturelles et des discussions de groupe."
+    }
+  },
+  "howItWorks": {
+    "title": "Comment ça marche",
+    "subtitle": "Lancez votre communauté en trois étapes simples",
+    "steps": {
+      "discover": {
+        "title": "Trouvez Votre Espace",
+        "description": "Rejoignez des communautés existantes ou créez votre propre espace. Que ce soit virtuel, hybride ou en personne, adaptez l'expérience à votre public.",
+        "features": {
+          "discovery": {
+            "title": "Découverte Intelligente",
+            "content": "Trouvez des événements et des communautés qui correspondent à vos intérêts grâce à notre système de recommandation alimenté par l'IA."
+          },
+          "types": {
+            "title": "Types de Communauté",
+            "content": "Choisissez entre des communautés gratuites ou premium. Créez des adhésions payantes exclusives ou gardez-les ouvertes à tous."
+          },
+          "formats": {
+            "title": "Formats Flexibles",
+            "content": "Organisez des événements virtuels, hybrides ou en personne. Parfait pour les ateliers, les rencontres, les conférences ou les réunions décontractées."
+          },
+          "profile": {
+            "title": "Création de Profil",
+            "content": "Créez votre profil personnel ou de marque, mettez en valeur vos liens sociaux et développez une audience."
+          }
+        }
+      },
+      "engage": {
+        "title": "Engagez & Connectez",
+        "description": "Favorisez des interactions significatives grâce aux chats d'événements, au partage de médias et aux fonctionnalités collaboratives. Chaque voix contribue à la communauté.",
+        "features": {
+          "audio": {
+            "title": "Espaces Audio",
+            "content": "Organisez des conversations audio cristallines avec la technologie audio spatiale. Parfait pour les panels, discussions et rassemblements communautaires."
+          },
+          "interactive": {
+            "title": "Fonctionnalités Interactives",
+            "content": "Partagez des photos d'événements, créez des sondages, lancez des discussions et activez le chat en temps réel. Outils intégrés pour les sessions Q&R et les salles de discussion."
+          },
+          "management": {
+            "title": "Gestion de Communauté",
+            "content": "Ajoutez des co-animateurs et modérateurs, définissez des rôles personnalisés et gérez les permissions. Créez des salles de chat spécifiques pour des discussions ciblées."
+          },
+          "engagement": {
+            "title": "Outils d'Engagement",
+            "content": "Utilisez des fonctionnalités intégrées pour le réseautage, le mentorat et la collaboration. Créez des brise-glace et facilitez des connexions significatives."
+          }
+        }
+      },
+      "manage": {
+        "title": "Gérez les Événements",
+        "description": "Créez des événements payants ou gratuits avec des outils puissants pour les listes d'invités, les codes promo et les analyses.",
+        "features": {
+          "ticketing": {
+            "title": "Billetterie Avancée",
+            "content": "Créez plusieurs niveaux de billets, offres early bird et pass VIP. Configurez des listes d'attente, processus d'approbation et formulaires d'inscription personnalisés."
+          },
+          "promotional": {
+            "title": "Outils Promotionnels",
+            "content": "Générez des liens de suivi personnalisés, créez des codes de réduction et gérez des programmes de parrainage. Importez des audiences existantes et invitez d'anciens participants."
+          },
+          "guest": {
+            "title": "Gestion des Invités",
+            "content": "Contrôlez la participation avec des systèmes d'approbation, limites de capacité et listes d'attente. Définissez des champs personnalisés pour l'inscription et envoyez des rappels automatisés."
+          },
+          "analytics": {
+            "title": "Analyses & Insights",
+            "content": "Suivez les vues de pages, ventes de billets et métriques d'engagement. Obtenez des insights détaillés sur les tendances de participation, revenus et croissance communautaire."
+          }
+        }
+      }
+    }
+  }
+} 
