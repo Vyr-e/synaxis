@@ -22,21 +22,21 @@ export function Features() {
       id: 1,
       title: t('features.community.title'),
       description: t('features.community.description'),
-      videoPath: "/features/features-1.mp4",
+      videoPath: "/features/features-1.mp4", // TODO: upload asssets to uploadthing or a cloud-storage and replace path, copy assets to the folder in public
       duration: 9
     },
     {
       id: 2,
       title: t('features.events.title'),
       description: t('features.events.description'),
-      videoPath: "/features/features-2.mp4",
+      videoPath: "/features/features-2.mp4",  // TODO: upload asssets to uploadthing or a cloud-storage and replace path, copy assets to the folder in public
       duration: 29
     },
     {
       id: 3,
       title: t('features.audio.title'),
       description: t('features.audio.description'),
-      videoPath: "/features/features-3.mp4",
+      videoPath: "/features/features-3.mp4", // TODO: upload asssets to uploadthing or a cloud-storage and replace path, copy assets to the folder in public
       duration: 19
     }
   ]
