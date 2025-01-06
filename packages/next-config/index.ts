@@ -4,8 +4,8 @@ import withBundleAnalyzer from '@next/bundle-analyzer';
 import { PrismaPlugin } from '@prisma/nextjs-monorepo-workaround-plugin';
 import { env } from '@repo/env';
 import { withSentryConfig } from '@sentry/nextjs';
-import withVercelToolbar from '@vercel/toolbar/plugins/next';
 import type { NextConfig } from 'next';
+import withNextIntl from "next-intl/plugin";
 
 const otelRegex = /@opentelemetry\/instrumentation/;
 
@@ -52,9 +52,32 @@ const baseConfig: NextConfig = {
   skipTrailingSlashRedirect: true,
 };
 
-export const config: NextConfig = env.FLAGS_SECRET
-  ? withVercelToolbar()(baseConfig)
-  : baseConfig;
+export const createConfig = async (config: NextConfig): Promise<NextConfig> => {
+  let finalConfig = config;
+
+  // Dynamically import Vercel toolbar
+  const withVercelToolbar = (await import('@vercel/toolbar/plugins/next')).default;
+
+
+  // Add Vercel toolbar if secret is present
+  if (env.FLAGS_SECRET) {
+    finalConfig = withVercelToolbar()(finalConfig);
+  }
+
+  // Add Sentry if needed
+  if (env.SENTRY_ORG && env.SENTRY_PROJECT) {
+    finalConfig = withSentry(finalConfig);
+  }
+
+  // Add analyzer if needed
+  if (env.ANALYZE === 'true') {
+    finalConfig = withAnalyzer(finalConfig);
+  }
+
+  return finalConfig;
+};
+
+export const config = async () => await createConfig(baseConfig);
 
 export const sentryConfig: Parameters<typeof withSentryConfig>[1] = {
   org: env.SENTRY_ORG,
