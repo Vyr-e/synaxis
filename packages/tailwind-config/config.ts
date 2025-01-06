@@ -84,6 +84,9 @@ export const config: Config = {
       fontFamily: {
         sans: ['var(--font-geist-sans)', ...defaultTheme.fontFamily.sans],
         mono: ['var(--font-geist-mono)', ...defaultTheme.fontFamily.mono],
+        inter: ['var(--font-inter)'],
+        "clash-display": ['var(--font-clash-display)'],
+        lora: ['var(--font-lora)'],
       },
       keyframes: {
         'accordion-down': {
