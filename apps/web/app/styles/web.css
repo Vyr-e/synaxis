@@ -34,3 +34,7 @@
   content: attr(title);
   @apply inline-block text-muted-foreground text-right mb-6 text-sm;
 }
+
+.debug  {
+  @apply border-2 border-red-500
+}
