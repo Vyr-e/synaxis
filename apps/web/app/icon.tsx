@@ -14,55 +14,25 @@ export default function Icon() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          backgroundColor: '#1A1A1A',
-          borderRadius: '8px',
         }}
       >
-        <div
-          style={{
-            width: '90%',
-            height: '90%',
-            border: '2px solid #5FFF2F',
-            borderRadius: '6px',
-            position: 'relative',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
+        <svg
+          width="32"
+          height="32"
+          viewBox="0 0 32 32"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
         >
-          {/* Center dot */}
-          <div
-            style={{
-              width: '4px',
-              height: '4px',
-              backgroundColor: '#5FFF2F',
-              borderRadius: '50%',
-              position: 'absolute',
-            }}
+          <circle
+            cx="16"
+            cy="16"
+            r="13.5"
+            stroke="#ffffff"
+            strokeWidth="6"
           />
+
           
-          {/* Static items in a circle */}
-          {Array.from({ length: 8 }).map((_, i) => {
-            const angle = (i * Math.PI * 2) / 8;
-            const x = Math.cos(angle) * 8;
-            const y = Math.sin(angle) * 8;
-            
-            return (
-              <div
-                key={i}
-                style={{
-                  position: 'absolute',
-                  width: '6px',
-                  height: '6px',
-                  backgroundColor: '#1E1E1E',
-                  border: '1px solid #5FFF2F',
-                  borderRadius: '50% 50% 0 0',
-                  transform: `translate(${x}px, ${y}px) rotate(${angle}rad)`,
-                }}
-              />
-            );
-          })}
-        </div>
+        </svg>
       </div>
     ),
     {

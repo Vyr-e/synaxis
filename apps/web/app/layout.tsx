@@ -1,40 +1,12 @@
-import '@repo/design-system/styles/globals.css';
-import './styles/web.css';
-import { DesignSystemProvider } from '@repo/design-system';
-import { fonts } from '@repo/design-system/lib/fonts';
-import { cn } from '@repo/design-system/lib/utils';
-import { LenisProvider } from '@repo/ui-utils';
-import type { Metadata } from 'next';
+import { Metadata } from 'next';
 import type { ReactNode } from 'react';
-import { Footer } from './components/footer';
-import { Header } from './components/header';
 
 export const metadata: Metadata = {
-  icons: {
-    icon: '/icon.png',
-  },
+	icons: {
+		icon: '/icon.png',
+	},
 };
 
-type RootLayoutProperties = {
-  readonly children: ReactNode;
-};
-
-const RootLayout = ({ children }: RootLayoutProperties) => (
-  <html
-    lang="en"
-    className={cn(fonts, 'scroll-smooth')}
-    suppressHydrationWarning
-  >
-    <body>
-      <DesignSystemProvider>
-        <LenisProvider>
-          <Header />
-          {children}
-          <Footer />
-        </LenisProvider>
-      </DesignSystemProvider>
-    </body>
-  </html>
-);
-
-export default RootLayout;
+export default function RootLayout({ children }: { children: ReactNode }) {
+  return children;
+}
