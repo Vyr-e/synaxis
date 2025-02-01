@@ -9,7 +9,7 @@
   "dependencies": {
     "@repo/auth": "workspace:*",
     "@repo/env": "workspace:*",
-    "svix": "^1.43.0"
+    "svix": "^1.45.1"
   },
   "devDependencies": {
     "typescript": "^5.7.2",

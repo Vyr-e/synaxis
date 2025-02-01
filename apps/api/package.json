@@ -24,7 +24,7 @@
     "next": "15.1.0",
     "react": "19.0.0",
     "react-dom": "19.0.0",
-    "svix": "^1.43.0"
+    "svix": "^1.45.1"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
