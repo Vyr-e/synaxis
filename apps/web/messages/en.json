@@ -10,6 +10,7 @@
   },
   "features": {
     "title": "Features",
+    "description": "Core Platform Capabilities",
     "community": {
       "title": "Community Spaces",
       "description": "Create and join virtual spaces where your community can gather, interact, and build lasting connections."

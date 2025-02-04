@@ -10,6 +10,7 @@
   },
   "features": {
     "title": "Fonctionnalités",
+    "description": "Capacités Fondamentales de la Plateforme",
     "community": {
       "title": "Espaces Communautaires",
       "description": "Créez et rejoignez des espaces virtuels où votre communauté peut se réunir, interagir et créer des liens durables."
@@ -95,4 +96,4 @@
       }
     }
   }
-} 
+}
