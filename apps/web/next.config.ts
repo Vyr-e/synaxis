@@ -1,30 +1,40 @@
 import { env } from '@repo/env';
-import { config, withAnalyzer, withSentry } from '@repo/next-config';
+import { config, withAnalyzer } from '@repo/next-config';
 import type { NextConfig } from 'next';
 import createNextIntlPlugin from 'next-intl/plugin';
 
-const withNextIntl = createNextIntlPlugin("./i18n/request.ts")
+const withNextIntl = createNextIntlPlugin('./i18n/request.ts');
 
-let nextConfig: NextConfig = async ()=> await config();
+let nextConfig: NextConfig = async () => await config();
 
 // Add other configurations
 nextConfig.experimental = {
   ...nextConfig.experimental,
   turbo: {
-    resolveAlias: {
-      '@repo/ui-utils': '@repo/ui-utils/src',
-      '@repo/design-system': '@repo/design-system/src',
-    },
-    resolveExtensions: ['.tsx', '.ts', '.jsx', '.js', '.json', '.css'],
-    moduleIdStrategy: 'named',
+    '@repo/ui-utils': '@repo/ui-utils/src',
+    '@repo/design-system': '@repo/design-system/src',
   },
-};
+  resolveExtensions: ['.tsx', '.ts', '.jsx', '.js', '.json', '.css'],
+  moduleIdStrategy: 'named',
+} as NextConfig['experimental'];
 
 // Add other configurations
-nextConfig.images?.remotePatterns?.push({
-  protocol: 'https',
-  hostname: 'assets.basehub.com',
-});
+nextConfig.images?.remotePatterns?.push(
+  {
+    protocol: 'https',
+    hostname: 'assets.basehub.com',
+  },
+  {
+    protocol: 'https',
+    hostname: 'utfs.io',
+    pathname: '/**',
+  },
+  {
+    protocol: 'https',
+    hostname: 'vsfl8k9xl7.ufs.sh',
+    pathname: '/**',
+  }
+);
 
 // Add production redirects
 if (env.NODE_ENV === 'production') {
@@ -43,8 +53,5 @@ if (env.NODE_ENV === 'production') {
 if (env.ANALYZE === 'true') {
   nextConfig = withAnalyzer(nextConfig);
 }
-
-// Add Sentry
-nextConfig = withSentry(nextConfig);
 
 export default withNextIntl(nextConfig);
