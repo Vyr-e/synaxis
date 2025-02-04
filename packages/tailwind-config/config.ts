@@ -25,6 +25,7 @@ export const config: Config = {
     },
     extend: {
       colors: {
+        'background-accent': 'var(--accent)',
         border: 'hsl(var(--border) / <alpha-value>)',
         input: 'hsl(var(--input) / <alpha-value>)',
         ring: 'hsl(var(--ring) / <alpha-value>)',
@@ -85,7 +86,7 @@ export const config: Config = {
         sans: ['var(--font-geist-sans)', ...defaultTheme.fontFamily.sans],
         mono: ['var(--font-geist-mono)', ...defaultTheme.fontFamily.mono],
         inter: ['var(--font-inter)'],
-        "clash-display": ['var(--font-clash-display)'],
+        'clash-display': ['var(--font-clash-display)'],
         lora: ['var(--font-lora)'],
       },
       keyframes: {
