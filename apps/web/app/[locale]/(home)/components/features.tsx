@@ -1,268 +1,247 @@
-'use client'
+'use client';
 
-import { useRef, useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { PlayIcon, PauseIcon } from 'lucide-react'
-import { useWindow } from '@repo/ui-utils'
-import { lora } from "@repo/design-system/fonts"
-import { useTranslations } from 'next-intl'
+import Progress from '@/components/slider/Test';
+import { lora } from '@repo/design-system/fonts';
+import { AnimatePresence, motion } from 'framer-motion';
+import { PauseIcon, PlayIcon } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import { useEffect, useRef, useState } from 'react';
 
 export function Features() {
-  const t = useTranslations()
-  const containerRef = useRef<HTMLDivElement>(null)
-  const [current, setCurrent] = useState(0)
-  const [isPlaying, setIsPlaying] = useState(true)
-  const videoRefs = useRef<Array<HTMLVideoElement | null>>([])
-  const [isHovered, setIsHovered] = useState(false)
-  const { isMobile } = useWindow()
-  const [progress, setProgress] = useState(0)
+  const t = useTranslations();
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [direction, setDirection] = useState(0);
+  const [progress, setProgress] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(true);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   const features = [
     {
       id: 1,
       title: t('features.community.title'),
       description: t('features.community.description'),
-      videoPath: "/features/features-1.mp4", // TODO: upload asssets to uploadthing or a cloud-storage and replace path, copy assets to the folder in public
-      duration: 9
+      videoPath:
+        'https://vsfl8k9xl7.ufs.sh/f/YmWCpnAsgDkwxJCyhvTBGMo2WERg4lOp0kvw9scFCm7TVSLQ',
+      duration: 9,
     },
     {
       id: 2,
       title: t('features.events.title'),
       description: t('features.events.description'),
-      videoPath: "/features/features-2.mp4",  // TODO: upload asssets to uploadthing or a cloud-storage and replace path, copy assets to the folder in public
-      duration: 29
+      videoPath:
+        'https://vsfl8k9xl7.ufs.sh/f/YmWCpnAsgDkwIgFcuPyYtXcng83oTNQzkvI6F2hKpysHL4md',
+      duration: 29,
     },
     {
       id: 3,
       title: t('features.audio.title'),
       description: t('features.audio.description'),
-      videoPath: "/features/features-3.mp4", // TODO: upload asssets to uploadthing or a cloud-storage and replace path, copy assets to the folder in public
-      duration: 19
-    }
-  ]
+      videoPath:
+        'https://vsfl8k9xl7.ufs.sh/f/YmWCpnAsgDkwQPkVx6llE4V5LSr9PRCmuNF8o6q7DWzAhgGd',
+      duration: 19,
+    },
+  ];
 
-  // GSAP Scale Animation with mobile optimization
-  useEffect(() => {
-    const container = containerRef.current
-    if (!container) return
+  const handleNext = () => {
+    setDirection(1);
+    setCurrentIndex((prev) => (prev + 1) % features.length);
+    setProgress(0);
+    setIsPlaying(true);
+  };
 
-    ScrollTrigger.getAll().forEach(t => t.kill())
+  const handlePrev = () => {
+    setDirection(-1);
+    setCurrentIndex((prev) => (prev - 1 + features.length) % features.length);
+    setProgress(0);
+    setIsPlaying(true);
+  };
 
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: ".hero-section",
-        start: "top center",
-        end: "bottom center",
-        scrub: 3,
-        markers: false,
-        ease: "none",
-        onEnter: () => {
-          if (videoRefs.current[0]) {
-            videoRefs.current[0].play()
-          }
+  const handlePlayPause = () => {
+    const video = videoRef.current;
+    if (video) {
+      if (isPlaying) {
+        video.pause();
+      } else {
+        const playPromise = video.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(() => {
+            // Ignore errors - video might be removed or not ready
+          });
         }
       }
-    })
-
-    gsap.set(container, {
-      scale: 0.6,
-      opacity: 0,
-      y: 50
-    })
-
-    tl.to(container, {
-      scale: 1,
-      opacity: 1,
-      y: 0,
-      duration: 2,
-      ease: "none"
-    })
-
-    return () => {
-      tl.kill()
+      setIsPlaying(!isPlaying);
     }
-  }, [isMobile])
+  };
 
-  const handleVideoSwitch = (index: number) => {
-    if (videoRefs.current[current]) {
-      videoRefs.current[current]!.pause()
-      videoRefs.current[current]!.currentTime = 0
-    }
-    
-    if (videoRefs.current[index]) {
-      videoRefs.current[index]!.play()
-      setIsPlaying(true)
-    }
-    
-    setCurrent(index)
-  }
-
-  const togglePlay = () => {
-    if (videoRefs.current[current]) {
-      if (isPlaying) {
-        videoRefs.current[current]!.pause()
-      } else {
-        videoRefs.current[current]!.play()
-      }
-      setIsPlaying(!isPlaying)
-    }
-  }
-
-  // Fixed video ref callback
-  const setVideoRef = (index: number) => (el: HTMLVideoElement | null) => {
-    videoRefs.current[index] = el
-  }
-
+  const currentFeature = features[currentIndex];
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
-    // Preload all videos
-    features.forEach((feature) => {
-      const video = new Audio(feature.videoPath)
-      video.preload = 'auto'
-    })
-  }, [])
+    const video = videoRef.current;
+    if (video) {
+      let playPromise: Promise<void> | undefined;
 
-  const handleTimeUpdate = () => {
-    if (videoRefs.current[current]) {
-      const video = videoRefs.current[current]!
-      const percentage = (video.currentTime / video.duration) * 100
-      setProgress(percentage)
+      const playVideo = () => {
+        if (isPlaying) {
+          playPromise = video.play();
+        }
+      };
+
+      video.load();
+      video.addEventListener('loadedmetadata', playVideo);
+
+      return () => {
+        if (playPromise !== undefined) {
+          playPromise.then(() => {
+            video.pause();
+          });
+        }
+        video.removeEventListener('loadedmetadata', playVideo);
+      };
     }
-  }
+  }, [currentIndex, isPlaying]);
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  useEffect(() => {
+    const video = videoRef.current;
+    if (video) {
+      const updateProgress = () => {
+        const currentTime = video.currentTime;
+        const duration = video.duration;
+        if (duration > 0) {
+          const calculatedProgress = (currentTime / duration) * 100;
+          setProgress(calculatedProgress);
+
+          if (calculatedProgress >= 99.5) {
+            handleNext();
+            setProgress(0);
+          }
+        }
+      };
+
+      video.addEventListener('timeupdate', updateProgress);
+      video.addEventListener('ended', handleNext);
+
+      return () => {
+        video.removeEventListener('timeupdate', updateProgress);
+        video.removeEventListener('ended', handleNext);
+      };
+    }
+  }, [currentFeature]);
 
   return (
-    <section className="min-h-[40vh] flex items-center justify-center flex-col overflow-hidden">
-      <h2 className={'font-clash-display font-bold text-3xl sm:text-4xl md:text-5xl mb-8 text-center'}>
+    <section
+      id="features"
+      className="mt-1.5 flex h-fit flex-col items-center justify-center overflow-hidden rounded-lg bg-white py-12 shadow-[inset_0_2px_4px_0_rgb(0,0,0,0.05)] md:h-[40em]"
+    >
+      <h2 className="mb-2 text-center font-bold font-clash-display text-2xl sm:text-3xl md:text-4xl lg:text-5xl">
         {t('features.title')}
       </h2>
-      <div 
-        ref={containerRef}
-        className="w-full max-w-[1000px] mx-auto px-4"
-        style={{ 
-          opacity: 0,
-        }}
+      <p
+        className={`mb-8 max-w-2xl px-4 text-center text-gray-600 text-sm sm:text-base ${lora.className}`}
       >
-        {/* Video container */}
-        <div 
-          className="relative aspect-video rounded-xl overflow-hidden bg-black"
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
-        >
-          {/* Stacked videos */}
-          {features.map((feature, index) => (
-            <div
-              key={feature.id}
-              className={`absolute inset-0 transition-opacity duration-500
-                ${index === current ? 'opacity-100 z-10' : 'opacity-0 z-0'}`}
-            >
-              <video
-                ref={setVideoRef(index)}
-                src={feature.videoPath}
-                className="w-full h-full object-cover"
-                loop={false}
+        {t('features.description')}
+      </p>
+
+      <div className="relative w-full max-w-[1000px] px-4">
+        <div className="flex flex-col gap-4">
+          {/* Video */}
+          <div className="relative aspect-video w-full overflow-hidden rounded-xl">
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.video
+                key={currentFeature.id}
+                ref={videoRef}
+                src={currentFeature.videoPath}
+                className="h-full w-full object-cover"
+                initial={{ x: direction > 0 ? '100%' : '-100%', opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                exit={{ x: direction > 0 ? '-100%' : '100%', opacity: 0 }}
+                transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                autoPlay={isPlaying}
                 muted
+                loop={false}
                 playsInline
-                autoPlay={index === 0}
-                onTimeUpdate={handleTimeUpdate}
-                onEnded={() => handleVideoSwitch((index + 1) % features.length)}
-                onError={(e) => {
-                  console.error(`Error loading video ${feature.title}:`, e)
-                  handleVideoSwitch((index + 1) % features.length)
-                }}
               />
-            </div>
-          ))}
+            </AnimatePresence>
+          </div>
 
-          {/* Dark overlay */}
-          <div 
-            className={`absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent
-              transition-opacity duration-300 ${isHovered ? 'opacity-100' : 'opacity-60'}`}
-            style={{ zIndex: 20 }}
-          />
-
-          {/* Controls container */}
-          <div className="absolute inset-0 z-30">
-            {/* Progress bars and descriptions container */}
-            <div className="absolute bottom-0 left-0 right-0 p-4 md:p-6">
-              <div className="flex flex-col gap-4">
-                {/* Descriptions */}
-                <div className="relative h-[60px] md:h-[80px]">
-                  {features.map((feature, index) => (
-                    <motion.div
-                      key={feature.id}
-                      className={`absolute inset-0 transition-all duration-500`}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ 
-                        opacity: index === current ? 1 : 0,
-                        y: index === current ? 0 : 20,
-                      }}
-                      transition={{ duration: 0.5 }}
-                    >
-                      <p className={`text-sm md:text-lg text-white/90 font-light max-w-[80%] 
-                        ${lora.className}`}
-                      >
-                        {feature.description}
-                      </p>
-                    </motion.div>
-                  ))}
-                </div>
-
-                {/* Progress bars */}
-                <div className="flex gap-2">
-                  {features.map((feature, index) => (
-                    <button
-                      key={feature.id}
-                      onClick={() => handleVideoSwitch(index)}
-                      className="flex-1 group"
-                      aria-label={`Switch to ${feature.title} video`}
-                      aria-pressed={index === current}
-                    >
-                      <h3 className={`text-[10px] md:text-sm font-medium mb-1.5 md:mb-2 
-                        transition-colors duration-300 text-left font-clash-display
-                        ${index === current ? 'text-white' : 'text-white/60'}`}
-                      >
-                        {feature.title}
-                      </h3>
-                      <div className="h-1 bg-white/20 rounded-full overflow-hidden">
-                        <AnimatePresence mode="wait">
-                          {current === index && (
-                            <motion.div
-                              className="h-full bg-white"
-                              initial={{ width: isPlaying ? '0%' : `${progress}%` }}
-                              animate={{ width: isPlaying ? '100%' : `${progress}%` }}
-                              transition={{
-                                duration: isPlaying ? feature.duration * (1 - progress / 100) : 0,
-                                ease: 'linear',
-                              }}
-                            />
-                          )}
-                        </AnimatePresence>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Play/Pause Button */}
-            <motion.button 
-              onClick={togglePlay}
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2
-                w-10 h-10 md:w-16 md:h-16 rounded-full bg-white/20 backdrop-blur-md 
-                border border-white/30 flex items-center justify-center 
-                opacity-0 scale-95 hover:scale-105 transition-transform duration-200"
-              animate={{ opacity: isHovered ? 1 : 0, scale: isHovered ? 1 : 0.95 }}
-              transition={{ duration: 0.2 }}
-              aria-label={isPlaying ? 'Pause video' : 'Play video'}
+          {/* Description */}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentFeature.id}
+              className="px-4 text-center"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
             >
-              {isPlaying ? (
-                <PauseIcon className="w-5 h-5 md:w-8 md:h-8 text-white" />
-              ) : (
-                <PlayIcon className="w-5 h-5 md:w-8 md:h-8 text-white ml-1" />
-              )}
-            </motion.button>
+              <h3
+                className={`text-lg sm:text-xl ${lora.className} font-semibold`}
+              >
+                {currentFeature.title}
+              </h3>
+              <p
+                className={`mt-1 text-gray-600 text-xs sm:text-sm ${lora.className}`}
+              >
+                {currentFeature.description}
+              </p>
+            </motion.div>
+          </AnimatePresence>
+
+          {/* Controls */}
+          <div className="flex items-center justify-center gap-2 sm:gap-4">
+            <button
+              type="button"
+              className="flex aspect-square w-8 items-center justify-center rounded-full border border-white/20 bg-white/10 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] backdrop-blur-md transition-all duration-300 ease-in-out hover:bg-white/20 sm:w-10"
+              onClick={handlePrev}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-4 w-4 sm:h-6 sm:w-6"
+                fill="#000000"
+                viewBox="0 0 256 256"
+              >
+                <title>Left arrow</title>
+                <path d="M165.66,202.34a8,8,0,0,1-11.32,11.32l-80-80a8,8,0,0,1,0-11.32l80-80a8,8,0,0,1,11.32,11.32L91.31,128Z" />
+              </svg>
+            </button>
+
+            <div className="relative aspect-square w-12 rounded-full sm:w-14">
+              <Progress
+                activeIndex={currentIndex}
+                totalSlides={features.length}
+                progress={progress}
+                size={56}
+              />
+              <button
+                type="button"
+                className="-translate-x-1/2 -translate-y-1/2 absolute top-1/2 left-1/2 flex aspect-square w-6 items-center justify-center rounded-full border border-white/20 bg-white/10 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] backdrop-blur-md transition-all duration-300 ease-in-out hover:bg-white/20 sm:w-8"
+                onClick={handlePlayPause}
+              >
+                {isPlaying ? (
+                  <PauseIcon className="h-4 w-4 sm:h-5 sm:w-5" />
+                ) : (
+                  <PlayIcon className="ml-0.5 h-4 w-4 sm:h-5 sm:w-5" />
+                )}
+              </button>
+            </div>
+
+            <button
+              type="button"
+              className="flex aspect-square w-10 items-center justify-center rounded-full border border-white/20 bg-white/10 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] backdrop-blur-md transition-all duration-300 ease-in-out hover:bg-white/20"
+              onClick={handleNext}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-6 w-6"
+                fill="#000000"
+                viewBox="0 0 256 256"
+              >
+                <title>Right arrow</title>
+                <path d="M181.66,133.66l-80,80a8,8,0,0,1-11.32-11.32L164.69,128,90.34,53.66a8,8,0,0,1,11.32-11.32l80,80A8,8,0,0,1,181.66,133.66Z" />
+              </svg>
+            </button>
           </div>
         </div>
       </div>
     </section>
-  )
+  );
 }

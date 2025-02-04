@@ -1,10 +1,11 @@
-import { Metadata } from 'next';
+import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 
 export const metadata: Metadata = {
-	icons: {
-		icon: '/icon.png',
-	},
+  icons: {
+    icon: '/logo.svg',
+    apple: '/logo.svg',
+  },
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

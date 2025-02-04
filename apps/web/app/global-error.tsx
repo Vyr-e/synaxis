@@ -18,9 +18,14 @@ const GlobalError = ({ error, reset }: GlobalErrorProperties) => {
 
   return (
     <html lang="en" className={clashDisplay.className}>
-      <body>
+      <body className="mx-auto flex w-full items-center justify-center">
         <h1>Oops, something went wrong</h1>
-        <Button onClick={() => reset()}>Try again</Button>
+        <Button
+          onClick={() => reset()}
+          className="rounded-full bg-black px-4 py-2"
+        >
+          Try again
+        </Button>
       </body>
     </html>
   );

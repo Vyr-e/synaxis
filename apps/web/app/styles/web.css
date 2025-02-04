@@ -1,40 +1,83 @@
-.shiki {
-  background-color: var(--shiki-light-bg);
-  color: var(--shiki-light);
-  @apply border-border;
+/* Only include what you need */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Group related styles */
+@layer components {
+  .shiki {
+    background-color: var(--shiki-light-bg);
+    color: var(--shiki-light);
+    /* @apply border-border; */
+  }
+
+  .shiki span {
+    color: var(--shiki-light);
+  }
+
+  .dark .shiki {
+    background-color: var(--shiki-dark-bg);
+    color: var(--shiki-dark);
+  }
+
+  .dark .shiki span {
+    color: var(--shiki-dark);
+  }
+
+  .shiki code {
+    display: grid;
+    font-size: 13px;
+    counter-reset: line;
+  }
+
+  .shiki .line:before {
+    content: counter(line);
+    counter-increment: line;
+
+    @apply inline-block w-4 mr-8 text-muted-foreground text-right;
+  }
+
+  .shiki[title]:before {
+    content: attr(title);
+    @apply inline-block text-muted-foreground text-right mb-6 text-sm;
+  }
+
+  .debug {
+    @apply border-2 border-red-500;
+  }
 }
 
-.shiki span {
-  color: var(--shiki-light);
+@layer utilities {
+  .custom-scrollbar {
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+    
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    
+    &::-webkit-scrollbar-thumb {
+      background-color: rgba(0, 0, 0, 0.2);
+      border-radius: 3px;
+    }
+    
+    &:hover::-webkit-scrollbar-thumb {
+      background-color: rgba(0, 0, 0, 0.3);
+    }
+
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+  }
 }
 
-.dark .shiki {
-  background-color: var(--shiki-dark-bg);
-  color: var(--shiki-dark);
+/* Critical styles */
+@layer base {
+  :root {
+    --accent-color: #6c5ce7;
+  }
 }
 
-.dark .shiki span {
-  color: var(--shiki-dark);
-}
-
-.shiki code {
-  display: grid;
-  font-size: 13px;
-  counter-reset: line;
-}
-
-.shiki .line:before {
-  content: counter(line);
-  counter-increment: line;
-
-  @apply inline-block w-4 mr-8 text-muted-foreground text-right;
-}
-
-.shiki[title]:before {
-  content: attr(title);
-  @apply inline-block text-muted-foreground text-right mb-6 text-sm;
-}
-
-.debug  {
-  @apply border-2 border-red-500
+.accent {
+  background-color: #6c5ce7;
 }
