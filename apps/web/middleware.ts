@@ -1,35 +1,33 @@
+import { locales } from '@/config/languages';
 import { env } from '@repo/env';
 import { parseError } from '@repo/observability/error';
 import { secure } from '@repo/security';
 import { noseconeConfig, noseconeMiddleware } from '@repo/security/middleware';
-import { NextRequest, NextResponse } from 'next/server';
 import createIntlMiddleware from 'next-intl/middleware';
-import { locales } from './config/languages';
-import {routing} from "./i18n/routing"
+import { type NextRequest, NextResponse } from 'next/server';
 
 export const runtime = 'nodejs';
 
 export const config = {
   matcher: [
-    // Match all paths except those starting with:
-    // - _next/static (static files)
-    // - _next/image (image optimization files)
-    // - favicon.ico (favicon file)
-    // - public files (public folder)
-    // - images (your image folder)
-    // - api routes
-    '/((?!api|_next/static|_next/image|favicon.ico|images|headshots|features|public).*)',
-    
-    // i18n routes
-    "/(es|fr|de|jp|en)/:path*",
-    
-    // Match root path
-    "/"
-  ]
+    // Skip all internal paths (_next, api, etc)
+    // '/((?!_next|favicon.ico|icon.ico|icon.png|robots.txt|sitemap.xml|headshots|public|icon.ico|ingest/e|ingest/array|ingest/decide).*)',
+    // '/((?!api|_next|.*\\.|icon|ingest).*)',
+    // '/(de|en|es|jp|fr)/:path*',
+    '/((?!api|_next|.*\\..*).*)',
+  ],
 };
 
 // Create the next-intl middleware
-const intlMiddleware = createIntlMiddleware(routing);
+const intlMiddleware = createIntlMiddleware({
+  locales,
+  defaultLocale: 'en',
+  localePrefix: 'as-needed',
+  pathnames: {
+    '/': '/',
+    '/blog': '/blog',
+  },
+});
 
 // Main middleware function
 export default async function middleware(request: NextRequest) {
@@ -44,14 +42,14 @@ export default async function middleware(request: NextRequest) {
 
     // Apply security headers
     const response = await intlMiddleware(request);
-    
+
     // Apply nosecone security headers
     const securityResponse = await noseconeMiddleware(noseconeConfig)();
-    
+
     // Merge the headers
-    Object.entries(securityResponse.headers).forEach(([key, value]) => {
+    for (const [key, value] of securityResponse.headers.entries()) {
       response.headers.set(key, value);
-    });
+    }
 
     return response;
   } catch (error) {
