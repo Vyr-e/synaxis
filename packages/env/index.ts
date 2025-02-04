@@ -9,10 +9,10 @@ const server = {
   // Database
   DATABASE_URL: z.string().min(1).url(),
   REDIS_URL: z.string().min(1),
-  UPSTASH_REDIS_REST_URL: z.string().url().optional(),
-  UPSTASH_REDIS_REST_TOKEN: z.string().optional(),
+  UPSTASH_REDIS_REST_URL: z.string().url(),
+  UPSTASH_REDIS_REST_TOKEN: z.string(),
   BETTER_AUTH_SECRET: z.string(),
-  TOOLBAR: z.string().optional(),
+  TOOLBAR: z.string(),
 
   // Auth
   AUTH_SECRET: z.string().min(1),
@@ -27,45 +27,44 @@ const server = {
 
   // Payments
   STRIPE_SECRET_KEY: z.string().min(1).startsWith('sk_'),
-  STRIPE_WEBHOOK_SECRET: z.string().min(1).startsWith('whsec_').optional(),
-  BETTERSTACK_API_KEY: z.string().min(1).optional(),
-  BETTERSTACK_URL: z.string().min(1).url().optional(),
-  ARCJET_KEY: z.string().min(1).startsWith('ajkey_').optional(),
-  ANALYZE: z.string().optional(),
+  STRIPE_WEBHOOK_SECRET: z.string().min(1).startsWith('whsec_'),
+  BETTERSTACK_API_KEY: z.string().min(1),
+  BETTERSTACK_URL: z.string().min(1).url(),
+  ARCJET_KEY: z.string().min(1).startsWith('ajkey_'),
+  ANALYZE: z.string(),
   // Added by Sentry Integration, Vercel Marketplace
-  SENTRY_ORG: z.string().min(1).optional(),
-  SENTRY_PROJECT: z.string().min(1).optional(),
+  SENTRY_ORG: z.string().min(1),
+  SENTRY_PROJECT: z.string().min(1),
 
   // Added by Vercel
-  VERCEL: z.string().optional(),
-  NEXT_RUNTIME: z.enum(['nodejs', 'edge']).optional(),
-  FLAGS_SECRET: z.string().min(1).optional(),
-  BLOB_READ_WRITE_TOKEN: z.string().min(1).optional(),
+  VERCEL: z.string(),
+  NEXT_RUNTIME: z.enum(['nodejs', 'edge']),
+  FLAGS_SECRET: z.string().min(1),
+  BLOB_READ_WRITE_TOKEN: z.string().min(1),
 
   // AI & Integrations
-  GITHUB_AI_KEY: z.string().min(1).optional(),
-  AZURE_AI_ENDPOINT: z.string().min(1).url().optional(),
-  AI_MODEL_NAME: z.string().min(1).optional(),
-  OPENAI_API_KEY: z.string().min(1).startsWith('sk-').optional(),
-  LIVEBLOCKS_SECRET: z.string().min(1).startsWith('sk_').optional(),
-  SVIX_TOKEN: z
-    .union([
-      z.string().min(1).startsWith('sk_'),
-      z.string().min(1).startsWith('testsk_'),
-    ])
-    .optional(),
-  NODE_ENV: z.enum(['development', 'production', 'test']).optional(),
+  GITHUB_AI_KEY: z.string().min(1),
+  AZURE_AI_ENDPOINT: z.string().min(1).url(),
+  AI_MODEL_NAME: z.string().min(1),
+  OPENAI_API_KEY: z.string().min(1).startsWith('sk-'),
+  LIVEBLOCKS_SECRET: z.string().min(1).startsWith('sk_'),
+  SVIX_TOKEN: z.union([
+    z.string().min(1).startsWith('sk_'),
+    z.string().min(1).startsWith('testsk_'),
+  ]),
+  NODE_ENV: z.enum(['development', 'production', 'test']),
 };
 
 const client = {
   // URLs
   NEXT_PUBLIC_APP_URL: z.string().min(1).url(),
   NEXT_PUBLIC_WEB_URL: z.string().min(1).url(),
-  NEXT_PUBLIC_API_URL: z.string().min(1).url().optional(),
-  NEXT_PUBLIC_DOCS_URL: z.string().min(1).url().optional(),
-  NEXT_PUBLIC_GA_MEASUREMENT_ID: z.string().min(1).startsWith('G-').optional(),
+  NEXT_PUBLIC_API_URL: z.string().min(1).url(),
+  NEXT_PUBLIC_DOCS_URL: z.string().min(1).url(),
+  NEXT_PUBLIC_GA_MEASUREMENT_ID: z.string().min(1).startsWith('G-'),
   NEXT_PUBLIC_POSTHOG_KEY: z.string().min(1).startsWith('phc_'),
   NEXT_PUBLIC_POSTHOG_HOST: z.string().min(1).url(),
+  NEXT_PUBLIC_SENTRY_DSN: z.string().min(1),
 
   // Added by Vercel
   NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL: z.string().min(1),
@@ -106,6 +105,7 @@ export const env = createEnv({
     NEXT_PUBLIC_POSTHOG_HOST: process.env.NEXT_PUBLIC_POSTHOG_HOST,
     NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL:
       process.env.NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL,
+    NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN,
     REDIS_URL: process.env.REDIS_URL,
     UPSTASH_REDIS_REST_URL: process.env.UPSTASH_REDIS_REST_URL,
     UPSTASH_REDIS_REST_TOKEN: process.env.UPSTASH_REDIS_REST_TOKEN,
