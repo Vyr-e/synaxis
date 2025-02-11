@@ -52,8 +52,16 @@ const auth = betterAuth({
   },
   plugins: [
     nextCookies(),
-    magicLink({
-      sendMagicLink: async ({ email, url }) => {
+    admin({
+      defaultRole: 'user',
+      adminRole: ['admin', 'brand'],
+      defaultBanReason: 'You are not authorized to access this resource',
+      defaultBanExpiresIn: 30 * 60, //30 min default
+    }),
+    organization({
+      creatorRole: 'brand',
+      memberRole: ['user', 'brand', 'admin'],
+      sendInvitationEmail: async (data) => {
         await resend.emails.send({
           from: env.RESEND_FROM,
           to: email,
