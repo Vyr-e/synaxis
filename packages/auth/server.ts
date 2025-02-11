@@ -15,6 +15,8 @@ const auth = betterAuth({
       accounts: schema.accounts,
       sessions: schema.sessions,
       verifications: schema.verifications,
+      organization: schema.organizations,
+      invitation: schema.invitations,
     },
     usePlural: true,
   }),
