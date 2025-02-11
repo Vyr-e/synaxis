@@ -69,6 +69,16 @@ const auth = betterAuth({
           text: `Click here to login: ${url}`,
         });
       },
+      allowUserToCreateOrganization: async (user) => {
+        const typedUser = (await user) as unknown as User;
+        const isAllowed =
+          typedUser.role === 'brand' || typedUser.role === 'admin';
+        return isAllowed;
+      },
+      // biome-ignore lint/suspicious/useAwait: <explanation>
+      allowUserToJoinOrganization: async () => {
+        return true;
+      },
     }),
   ],
 });
