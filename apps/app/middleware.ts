@@ -7,6 +7,8 @@ const isPublicRoute = (request: NextRequest) => {
   return PUBLIC_ROUTES.some((route) => request.url.includes(route));
 };
 
+export const runtime = "nodejs"
+
 export async function middleware(request: NextRequest) {
   
   try {
