@@ -106,10 +106,12 @@ export default function SignUpPage() {
       </div>
 
       {/* Form Section - Overlays on mobile, side-by-side on desktop */}
-      <div className="relative z-20 flex min-h-screen w-full flex-col md:h-dvh md:min-h-0 md:w-[45%]">
-        {/*   'relative z-20 flex min-h-screen w-full items-center justify-center',
-          'bg-gradient-to-t from-50% from-black via-black/90 to-transparent',
-          'md:static md:h-dvh md:min-h-0 md:w-[45%] md:bg-none' */}
+      <div
+        className={cn(
+          'relative z-20 flex min-h-screen w-full flex-col md:h-dvh md:min-h-0 md:w-[45%]',
+          'bg-gradient-to-t from-50% from-black via-black/90 to-transparent'
+        )}
+      >
         <div className="flex flex-1 items-center justify-center px-4 py-8">
           <AuthForm type="sign-up" />
         </div>
