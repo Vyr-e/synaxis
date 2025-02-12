@@ -5,15 +5,13 @@ import { AuthForm } from '@/app/(auth)/_components/auth-form';
 import { AnimatedIcon } from '@/components/animated-logo';
 import { cn } from '@repo/design-system';
 import { clashDisplay } from '@repo/design-system/fonts';
-import { useMediaQuery } from '@repo/ui-utils';
 import { motion } from 'motion/react';
 
 export default function SignInPage() {
-  const isDesktop = useMediaQuery('(min-width: 768px)');
   return (
     <div className="relative flex min-h-screen flex-col md:flex-row">
       {/* Background Section - Always full width/height on mobile */}
-      <div className="absolute inset-0 md:relative md:w-2/3">
+      <div className="absolute inset-0 md:relative md:w-[55%]">
         <AuthBackground
           className="h-full w-full"
           colors1={'#545454'}
@@ -21,7 +19,7 @@ export default function SignInPage() {
           colors3={'#010104'}
           colors4={'#f4f4f6'}
           speed={0.5}
-          edge={ '0%'}
+          edge={'0%'}
         >
           <div
             className="absolute inset-0 bg-gradient-to-b from-black/60 to-black/20 md:to-black/40"
@@ -109,21 +107,15 @@ export default function SignInPage() {
       </div>
 
       {/* Form Section - Overlays on mobile, side-by-side on desktop */}
-      <div
-        className={cn(
-          'relative z-20 flex min-h-screen w-full items-center justify-center',
-          'bg-gradient-to-t from-50% from-black via-black/90 to-transparent',
-          'md:static md:h-dvh md:min-h-0 md:w-1/3 md:bg-none'
-        )}
-      >
-        <div className="relative w-full max-w-md px-4 py-8">
+      <div className="relative z-20 flex min-h-screen w-full flex-col md:h-dvh md:min-h-0 md:w-[45%]">
+        <div className="flex flex-1 items-center justify-center px-4 py-8">
           <AuthForm type="sign-in" />
-
-          {/* Footer */}
-          <div className="fixed inset-x-4 bottom-4 text-center text-muted-foreground text-sm">
-            © {new Date().getFullYear()} Synaxis. All rights reserved.
-          </div>
         </div>
+
+        {/* Footer - Now properly positioned */}
+        <footer className="w-full border-t p-4 text-center text-muted-foreground text-sm">
+          © {new Date().getFullYear()} Synaxis. All rights reserved.
+        </footer>
       </div>
     </div>
   );
