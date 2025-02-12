@@ -1,25 +1,23 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "globalDependencies": ["**/.env.*local"],
-  "ui": "tui",
-
   "tasks": {
-    "app": {
+    "//#clean": {
       "cache": false
     },
-    "web": {
+    "analyze": {
+      "dependsOn": ["^analyze"]
+    },
+    "app": {
       "cache": false
     },
     "build": {
       "dependsOn": ["^build", "test"],
-      "outputs": [".next/**", "!.next/cache/**"],
       "env": [
         "ARCJET_KEY",
         "BASEHUB_TOKEN",
         "BETTERSTACK_API_KEY",
         "BETTERSTACK_URL",
-        "CLERK_SECRET_KEY",
-        "CLERK_WEBHOOK_SECRET",
         "DATABASE_URL",
         "FLAGS_SECRET",
         "STRIPE_SECRET_KEY",
@@ -29,24 +27,35 @@
         "SENTRY_ORG",
         "SENTRY_PROJECT",
         "STRIPE_WEBHOOK_SECRET",
-        "SVIX_TOKEN"
-      ]
+        "SVIX_TOKEN",
+        "REDIS_URL",
+        "UPSTASH_REDIS_REST_URL",
+        "UPSTASH_REDIS_REST_TOKEN",
+        "AUTH_SECRET",
+        "GOOGLE_ID",
+        "GOOGLE_SECRET",
+        "FACEBOOK_ID",
+        "FACEBOOK_SECRET",
+        "X_ID",
+        "X_SECRET",
+        "BETTER_AUTH_SECRET",
+        "RESEND_FROM"
+      ],
+      "outputs": [".next/**", "!.next/cache/**"]
     },
-    "test": {
-      "dependsOn": ["^test"]
-    },
-    "analyze": {
-      "dependsOn": ["^analyze"]
+    "clean": {
+      "cache": false
     },
     "dev": {
       "cache": false,
       "persistent": true
     },
-    "clean": {
-      "cache": false
+    "test": {
+      "dependsOn": ["^test"]
     },
-    "//#clean": {
+    "web": {
       "cache": false
     }
-  }
+  },
+  "ui": "tui"
 }
