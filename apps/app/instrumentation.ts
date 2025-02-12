@@ -1,3 +1,5 @@
-import { initializeSentry } from '@repo/next-config/instrumentation';
+import { initializeSentry } from '@/sentry';
 
-export const register = initializeSentry();
+export function register() {
+  initializeSentry();
+}
