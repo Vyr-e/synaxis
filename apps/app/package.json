@@ -51,7 +51,7 @@
     "analyze": "ANALYZE=true pnpm build",
     "build": "next build",
     "clean": "git clean -xdf .cache .turbo dist node_modules",
-    "dev": "next dev -p 3000 --turbopack",
+    "dev": "next dev",
     "start": "next start",
     "test": "vitest run",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
