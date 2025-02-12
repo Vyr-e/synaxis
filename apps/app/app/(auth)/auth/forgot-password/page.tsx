@@ -94,7 +94,7 @@ export default function page() {
                 clashDisplay.className
               )}
             >
-              Reset Password
+              Forgot Password
             </h1>
             <p className="text-muted-foreground">
               Enter your email address and we'll send you a reset link
