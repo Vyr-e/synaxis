@@ -18,7 +18,10 @@ const isPublicRoute = (request: NextRequest) => {
 };
 
 const debug = <T>(...args: T[]) => {
-  if (process.env.NODE_ENV !== 'production') return;
+  if (process.env.NODE_ENV !== 'production') {
+    return;
+  }
+  // biome-ignore lint/suspicious/noConsoleLog: Redundant lint
   console.log('[Auth Route]', ...args);
 };
 
