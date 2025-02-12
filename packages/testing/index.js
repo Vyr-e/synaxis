@@ -6,11 +6,15 @@ const config = defineConfig({
   plugins: [react()],
   test: {
     environment: 'jsdom',
+    globals: true,
+    setupFiles: [path.resolve(__dirname, './setup.ts')],
   },
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './'),
-      '@repo': path.resolve(__dirname, '../../packages'),
+      '@': path.resolve(process.cwd(), './'),
+      '@repo': path.resolve(process.cwd(), '../../packages'),
+      '@/app': path.resolve(process.cwd(), './app'),
+      '@/components': path.resolve(process.cwd(), './components'),
     },
   },
 });
