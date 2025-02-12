@@ -1,0 +1,48 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1738991067298,
+      "tag": "0000_fearless_killmonger",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1739021220777,
+      "tag": "0001_wise_beyonder",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1739021420913,
+      "tag": "0002_medical_iron_lad",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1739291585787,
+      "tag": "0003_melodic_wolfpack",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1739292234768,
+      "tag": "0004_harsh_molecule_man",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1739323214403,
+      "tag": "0005_dusty_switch",
+      "breakpoints": true
+    }
+  ]
+}
