@@ -28,6 +28,7 @@ export async function middleware(request: NextRequest) {
 
     return NextResponse.next();
   } catch (error) {
+    // biome-ignore lint/suspicious/noConsole: Redundant lint
     console.error('Error in Middleware:', error);
     return NextResponse.redirect(new URL('/error', request.url));
   }
