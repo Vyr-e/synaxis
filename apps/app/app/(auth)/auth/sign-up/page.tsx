@@ -5,15 +5,13 @@ import { AuthForm } from '@/app/(auth)/_components/auth-form';
 import { AnimatedIcon } from '@/components/animated-logo';
 import { cn } from '@repo/design-system';
 import { clashDisplay } from '@repo/design-system/fonts';
-import { useMediaQuery } from '@repo/ui-utils';
 import { motion } from 'motion/react';
 
 export default function SignUpPage() {
-  const isDesktop = useMediaQuery('(min-width: 768px)');
   return (
     <div className="relative flex min-h-screen flex-col md:flex-row">
       {/* Background Section - Always full width/height on mobile */}
-      <div className="absolute inset-0 md:relative md:w-2/3">
+      <div className="absolute inset-0 md:relative md:w-[55%]">
         <AuthBackground
           className="h-full w-full"
           colors1={'#545454'}
@@ -25,10 +23,10 @@ export default function SignUpPage() {
         >
           <div
             className="absolute inset-0 bg-gradient-to-b from-black/60 to-black/20 md:to-black/40"
-            style={{ borderRadius:'0%' }}
+            style={{ borderRadius: '0%' }}
           />
 
-          {/* Branding Content - Visible on desktop or as overlay on mobile */}
+          {/* Branding Content */}
           <div className="relative z-10 flex h-full flex-col items-center p-8">
             {/* Logo Section */}
             <motion.div
@@ -51,7 +49,7 @@ export default function SignUpPage() {
             </motion.div>
 
             {/* Center Content */}
-            <div className=" hidden flex-1 items-center justify-center md:flex">
+            <div className="hidden flex-1 items-center justify-center md:flex">
               <motion.div
                 className="relative max-w-lg text-center"
                 initial={{ opacity: 0, scale: 0.95 }}
@@ -66,28 +64,25 @@ export default function SignUpPage() {
                       clashDisplay.className
                     )}
                   >
-                    Build Your Digital Legacy
+                    Join Your Digital Space
                   </h2>
                   <p className="text-lg text-zinc-400 leading-relaxed">
-                    Join a thriving ecosystem where ideas flourish, connections
-                    deepen, and every voice has the power to inspire
+                    Start building your community and engage with your audience
                   </p>
 
                   {/* Floating Badges */}
                   <div className="flex justify-center gap-4 py-4">
-                    {['Create Communities', 'Share Stories', 'Make Impact'].map(
-                      (badge, i) => (
-                        <motion.span
-                          key={badge}
-                          className="rounded-full border-2 border-white/10 bg-white/5 px-4 py-1 text-sm text-white/80 shadow-sm backdrop-blur-sm"
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: 0.4 + i * 0.1 }}
-                        >
-                          {badge}
-                        </motion.span>
-                      )
-                    )}
+                    {['Real-time', 'Secure', 'Scalable'].map((badge, i) => (
+                      <motion.span
+                        key={badge}
+                        className="rounded-full border-2 border-white/10 bg-white/5 px-4 py-1 text-sm text-white/80 shadow-sm backdrop-blur-sm"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.4 + i * 0.1 }}
+                      >
+                        {badge}
+                      </motion.span>
+                    ))}
                   </div>
                 </div>
               </motion.div>
@@ -102,7 +97,7 @@ export default function SignUpPage() {
             >
               <div className="h-[1px] w-12 bg-gradient-to-r from-transparent via-zinc-500 to-transparent" />
               <span className="text-sm text-zinc-500">
-                Join thousands of creators and innovators
+                Trusted by industry leaders
               </span>
               <div className="h-[1px] w-12 bg-gradient-to-r from-transparent via-zinc-500 to-transparent" />
             </motion.div>
@@ -111,21 +106,18 @@ export default function SignUpPage() {
       </div>
 
       {/* Form Section - Overlays on mobile, side-by-side on desktop */}
-      <div
-        className={cn(
-          'relative z-20 flex min-h-screen w-full items-center justify-center',
+      <div className="relative z-20 flex min-h-screen w-full flex-col md:h-dvh md:min-h-0 md:w-[45%]">
+        {/*   'relative z-20 flex min-h-screen w-full items-center justify-center',
           'bg-gradient-to-t from-50% from-black via-black/90 to-transparent',
-          'md:static md:h-dvh md:min-h-0 md:w-1/3 md:bg-none'
-        )}
-      >
-        <div className="relative w-full max-w-md px-4 py-8">
+          'md:static md:h-dvh md:min-h-0 md:w-[45%] md:bg-none' */}
+        <div className="flex flex-1 items-center justify-center px-4 py-8">
           <AuthForm type="sign-up" />
-
-          {/* Footer */}
-          <div className="fixed inset-x-4 bottom-4 text-center text-muted-foreground text-sm">
-            © {new Date().getFullYear()} Synaxis. All rights reserved.
-          </div>
         </div>
+
+        {/* Footer - Now properly positioned */}
+        <footer className="w-full border-t p-4 text-center text-muted-foreground text-sm">
+          © {new Date().getFullYear()} Synaxis. All rights reserved.
+        </footer>
       </div>
     </div>
   );
