@@ -9,8 +9,6 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "devDependencies": {
-    "@testing-library/jest-dom": "^6.6.3",
-    "@types/testing-library__jest-dom": "^6.0.0",
     "@vitejs/plugin-react": "^4.3.4",
     "vitest": "^2.1.8"
   }
