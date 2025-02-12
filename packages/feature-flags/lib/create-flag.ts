@@ -14,7 +14,6 @@ export const createFlag = (key: string) =>
       }
 
       const isEnabled = await analytics.isFeatureEnabled(key, data.user.id);
-
       return isEnabled ?? (this.defaultValue as boolean);
     },
   });
