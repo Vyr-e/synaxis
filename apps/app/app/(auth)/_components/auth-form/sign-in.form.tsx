@@ -177,14 +177,7 @@ export function SignInForm() {
           </div>
 
           <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(onSubmit)}
-              className={cn(
-                'space-y-6 transition-all duration-200',
-                formStatus === 'success' && 'ring-2 ring-green-500/50',
-                formStatus === 'error' && 'ring-2 ring-red-500/50'
-              )}
-            >
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               <div className="flex flex-col space-y-4">
                 <div className="space-y-2">
                   <h2 className="font-medium text-sm text-white">Email</h2>
@@ -296,16 +289,62 @@ export function SignInForm() {
                 <Label className="text-sm text-zinc-400">Remember me</Label>
               </div>
 
-              <Button
-                type="submit"
-                className={cn(
-                  'relative h-12 w-full overflow-hidden rounded-xl px-4 py-2 font-medium text-sm transition-all hover:scale-[1.02]',
-                  'bg-white text-black'
+              <div className="relative">
+                <Button
+                  type="submit"
+                  className={cn(
+                    'relative h-12 w-full overflow-hidden rounded-xl px-4 py-2 font-medium text-sm transition-all hover:scale-[1.02]',
+                    'bg-white text-black'
+                  )}
+                >
+                  <div className="absolute inset-0 animate-shimmer bg-gradient-to-r from-white/0 via-white/5 to-white/0" />
+                  <div className="relative flex items-center justify-center gap-2">
+                    <span>Sign In</span>
+                    {formStatus !== 'idle' && (
+                      <motion.div
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        className="relative h-2 w-2"
+                      >
+                        <div
+                          className={cn(
+                            'absolute h-2 w-2 rounded-full',
+                            formStatus === 'success' && 'bg-emerald-500',
+                            formStatus === 'error' && 'bg-red-500'
+                          )}
+                        />
+                        <div
+                          className={cn(
+                            'absolute h-2 w-2 animate-ping rounded-full',
+                            formStatus === 'success' && 'bg-emerald-500',
+                            formStatus === 'error' && 'bg-red-500'
+                          )}
+                        />
+                      </motion.div>
+                    )}
+                  </div>
+                </Button>
+
+                {/* Form Status Indicator */}
+                {formStatus !== 'idle' && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="-bottom-6 absolute right-0 left-0 text-center"
+                  >
+                    <span
+                      className={cn(
+                        'font-medium text-xs',
+                        formStatus === 'success' && 'text-emerald-500',
+                        formStatus === 'error' && 'text-red-500'
+                      )}
+                    >
+                      {formStatus === 'success' && '✓ Signed in successfully'}
+                      {formStatus === 'error' && '× Invalid email or password'}
+                    </span>
+                  </motion.div>
                 )}
-              >
-                <div className="absolute inset-0 animate-shimmer bg-gradient-to-r from-white/0 via-white/5 to-white/0" />
-                <span className="relative">Sign In</span>
-              </Button>
+              </div>
 
               {/* Add privacy message and sign up link */}
               <div className="space-y-4 text-center text-muted-foreground text-sm">

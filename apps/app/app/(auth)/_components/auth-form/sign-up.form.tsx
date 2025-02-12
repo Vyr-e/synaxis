@@ -1,5 +1,6 @@
 'use client';
 
+import { PasswordStrengthChecker } from '@/app/(auth)/_components/password-strength-checker';
 import { captureException } from '@/sentry/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { signIn, signUp } from '@repo/auth/client';
@@ -13,10 +14,12 @@ import {
   FormMessage,
 } from '@repo/design-system/components/ui/form';
 import { Input } from '@repo/design-system/components/ui/input';
+import { useToast } from '@repo/design-system/components/ui/use-toast';
 import { companies } from '@repo/design-system/icons';
-import { Eye, EyeOff, Mail } from 'lucide-react';
+import { Loader2, Mail } from 'lucide-react';
 import { motion } from 'motion/react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
@@ -25,10 +28,7 @@ const signUpSchema = z.object({
   firstName: z.string().min(2, 'First name must be at least 2 characters'),
   lastName: z.string().min(2, 'Last name must be at least 2 characters'),
   email: z.string().email('Invalid email address'),
-  password: z
-    .string()
-    .min(8, 'Password must be at least 8 characters')
-    .max(18, 'Password must be no more than 18 characters'),
+  password: z.string().min(1, 'Password is required'),
 });
 
 type SignUpFormValues = z.infer<typeof signUpSchema>;
@@ -73,7 +73,9 @@ export function SignUpForm() {
   const [formStatus, setFormStatus] = useState<'idle' | 'success' | 'error'>(
     'idle'
   );
-  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
+  const { toast } = useToast();
 
   const form = useForm<SignUpFormValues>({
     resolver: zodResolver(signUpSchema),
@@ -87,6 +89,7 @@ export function SignUpForm() {
 
   async function onSubmit(values: SignUpFormValues) {
     try {
+      setIsLoading(true);
       setFormStatus('success');
       const name = `${values.firstName.trim()} ${values.lastName.trim()}`;
 
@@ -97,7 +100,7 @@ export function SignUpForm() {
         callbackURL: '/auth/verify-email',
       });
 
-      setTimeout(() => setFormStatus('idle'), 1000);
+      router.push('/auth/verify-email');
     } catch (error) {
       setFormStatus('error');
 
@@ -115,7 +118,13 @@ export function SignUpForm() {
         });
       }
 
-      setTimeout(() => setFormStatus('idle'), 1000);
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'Something went wrong. Please try again.',
+      });
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -179,11 +188,7 @@ export function SignUpForm() {
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(onSubmit)}
-              className={cn(
-                'space-y-6 transition-all duration-200',
-                formStatus === 'success' && 'ring-2 ring-green-500/50',
-                formStatus === 'error' && 'ring-2 ring-red-500/50'
-              )}
+              className={cn('space-y-6 transition-all duration-200')}
             >
               <div className="flex flex-col space-y-4">
                 {/* Name Fields Row */}
@@ -273,33 +278,13 @@ export function SignUpForm() {
                     render={({ field }) => (
                       <FormItem>
                         <FormControl>
-                          <div className="relative">
-                            <Input
-                              placeholder="Create a password"
-                              type={showPassword ? 'text' : 'password'}
-                              className="h-12 rounded-xl border-none bg-zinc-900 px-4 text-base text-white transition-all ease-in-out placeholder:text-zinc-500 focus-visible:ring-2 focus-visible:ring-white"
-                              {...field}
-                            />
-                            <button
-                              type="button"
-                              onClick={() => setShowPassword(!showPassword)}
-                              className="absolute inset-y-0 end-0 flex items-center justify-center pe-3 text-zinc-500 hover:text-zinc-300"
-                            >
-                              {showPassword ? (
-                                <Eye
-                                  size={20}
-                                  strokeWidth={1.5}
-                                  aria-hidden="true"
-                                />
-                              ) : (
-                                <EyeOff
-                                  size={20}
-                                  strokeWidth={1.5}
-                                  aria-hidden="true"
-                                />
-                              )}
-                            </button>
-                          </div>
+                          <PasswordStrengthChecker
+                            placeholder="Create a password"
+                            className="h-12 w-full rounded-xl border-none bg-zinc-900 px-4 text-base text-white transition-all ease-in-out placeholder:text-zinc-500 focus-visible:ring-2 focus-visible:ring-white"
+                            autoComplete="new-password"
+                            error={!!form.formState.errors.password}
+                            {...field}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -308,17 +293,68 @@ export function SignUpForm() {
                 </div>
               </div>
 
-              <Button
-                type="submit"
-                className={cn(
-                  'relative h-12 w-full overflow-hidden rounded-xl px-4 py-2 font-medium text-sm transition-all hover:scale-[1.02]',
+              <div className="relative">
+                <Button
+                  type="submit"
+                  className={cn(
+                    'relative h-12 w-full overflow-hidden rounded-xl px-4 py-2 font-medium text-sm transition-all hover:scale-[1.02]',
+                    isLoading && 'bg-gray-500 text-white',
+                    'bg-white text-black'
+                  )}
+                  disabled={isLoading}
+                >
+                  {isLoading && (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  )}
+                  <div className="absolute inset-0 animate-shimmer bg-gradient-to-r from-white/0 via-white/5 to-white/0" />
+                  <div className="relative flex items-center justify-center gap-2">
+                    <span>Create Account</span>
+                    {formStatus !== 'idle' && (
+                      <motion.div
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        className="relative h-2 w-2"
+                      >
+                        <div
+                          className={cn(
+                            'absolute h-2 w-2 rounded-full',
+                            formStatus === 'success' && 'bg-emerald-500',
+                            formStatus === 'error' && 'bg-red-500'
+                          )}
+                        />
+                        <div
+                          className={cn(
+                            'absolute h-2 w-2 animate-ping rounded-full',
+                            formStatus === 'success' && 'bg-emerald-500',
+                            formStatus === 'error' && 'bg-red-500'
+                          )}
+                        />
+                      </motion.div>
+                    )}
+                  </div>
+                </Button>
 
-                  'bg-white text-black'
+                {/* Form Status Indicator */}
+                {formStatus !== 'idle' && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="-bottom-6 absolute right-0 left-0 text-center"
+                  >
+                    <span
+                      className={cn(
+                        'font-medium text-xs',
+                        formStatus === 'success' && 'text-emerald-500',
+                        formStatus === 'error' && 'text-red-500'
+                      )}
+                    >
+                      {formStatus === 'success' &&
+                        '✓ Account created successfully'}
+                      {formStatus === 'error' && '× Something went wrong'}
+                    </span>
+                  </motion.div>
                 )}
-              >
-                <div className="absolute inset-0 animate-shimmer bg-gradient-to-r from-white/0 via-white/5 to-white/0" />
-                <span className="relative">Create Account</span>
-              </Button>
+              </div>
 
               {/* Privacy and Sign In Link */}
               <div className="space-y-4 text-center text-muted-foreground text-sm">
