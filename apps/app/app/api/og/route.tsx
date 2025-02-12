@@ -5,8 +5,6 @@ export const runtime = 'edge';
 
 export async function GET(req: NextRequest) {
   try {
-    const { searchParams } = new URL(req.url);
-
     // Default values
     const defaultValues = {
       type: 'community',
@@ -17,14 +15,17 @@ export async function GET(req: NextRequest) {
       brandName: 'Synaxis',
     };
 
-    // Get params with fallbacks
-    const type = searchParams.get('type') || defaultValues.type;
-    const title = searchParams.get('title') || defaultValues.title;
+    // Get search params, handle case when URL has no params
+    const searchParams = new URL(req.url).searchParams;
+
+    // Get params with nullish coalescing to handle empty strings
+    const type = searchParams.get('type') ?? defaultValues.type;
+    const title = searchParams.get('title') ?? defaultValues.title;
     const description =
-      searchParams.get('description') || defaultValues.description;
-    const image = searchParams.get('image') || defaultValues.image;
-    const date = searchParams.get('date') || defaultValues.date;
-    const brandName = searchParams.get('brand') || defaultValues.brandName;
+      searchParams.get('description') ?? defaultValues.description;
+    const image = searchParams.get('image') ?? defaultValues.image;
+    const date = searchParams.get('date') ?? defaultValues.date;
+    const brandName = searchParams.get('brand') ?? defaultValues.brandName;
 
     // Different layouts based on content type
     const layout = {
