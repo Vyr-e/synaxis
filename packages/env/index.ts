@@ -1,13 +1,9 @@
 import { createEnv } from '@t3-oss/env-nextjs';
-//import { config } from 'dotenv';
 import { z } from 'zod';
-
-// Load root .env first
-//config({ path: '../../.env' });
 
 const server = {
   // Database
-  DATABASE_URL: z.string().min(1).url(),
+  DATABASE_URL: z.string().url(),
   REDIS_URL: z.string().min(1),
   UPSTASH_REDIS_REST_URL: z.string().url(),
   UPSTASH_REDIS_REST_TOKEN: z.string(),
@@ -16,10 +12,12 @@ const server = {
 
   // Auth
   AUTH_SECRET: z.string().min(1),
-  GITHUB_ID: z.string().min(1),
-  GITHUB_SECRET: z.string().min(1),
   GOOGLE_ID: z.string().min(1),
   GOOGLE_SECRET: z.string().min(1),
+  FACEBOOK_ID: z.string().min(1),
+  FACEBOOK_SECRET: z.string().min(1),
+  X_ID: z.string().min(1),
+  X_SECRET: z.string().min(1),
 
   // Email
   RESEND_FROM: z.string().min(1).email(),
@@ -57,7 +55,7 @@ const server = {
 
 const client = {
   // URLs
-  NEXT_PUBLIC_APP_URL: z.string().min(1).url(),
+  NEXT_PUBLIC_APP_URL: z.string().url(),
   NEXT_PUBLIC_WEB_URL: z.string().min(1).url(),
   NEXT_PUBLIC_API_URL: z.string().min(1).url(),
   NEXT_PUBLIC_DOCS_URL: z.string().min(1).url(),
@@ -79,10 +77,12 @@ export const env = createEnv({
     BETTER_AUTH_SECRET: process.env.BETTER_AUTH_SECRET,
     NODE_ENV: process.env.NODE_ENV,
     AUTH_SECRET: process.env.AUTH_SECRET,
-    GITHUB_ID: process.env.GITHUB_ID,
-    GITHUB_SECRET: process.env.GITHUB_SECRET,
     GOOGLE_ID: process.env.GOOGLE_ID,
     GOOGLE_SECRET: process.env.GOOGLE_SECRET,
+    FACEBOOK_ID: process.env.FACEBOOK_ID,
+    FACEBOOK_SECRET: process.env.FACEBOOK_SECRET,
+    X_ID: process.env.X_ID,
+    X_SECRET: process.env.X_SECRET,
     RESEND_FROM: process.env.RESEND_FROM,
     DATABASE_URL: process.env.DATABASE_URL,
     RESEND_TOKEN: process.env.RESEND_TOKEN,
