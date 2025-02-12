@@ -29,7 +29,7 @@ const server = {
   STRIPE_WEBHOOK_SECRET: z.string().startsWith('whsec_').optional(),
   BETTERSTACK_API_KEY: z.string().optional(),
   BETTERSTACK_URL: z.string().url().optional(),
-  ARCJET_KEY: z.string().startsWith('ajkey_').optional(),
+  ARCJET_KEY: z.string().startsWith('ajkey_'),
   ANALYZE: z.string().optional(),
   SENTRY_ORG: z.string().optional(),
   SENTRY_PROJECT: z.string().optional(),
