@@ -10,8 +10,25 @@ import { motion } from 'motion/react';
 export default function SignUpPage() {
   return (
     <div className="relative flex min-h-screen flex-col md:flex-row">
-      {/* Background Section - Always full width/height on mobile */}
-      <div className="absolute inset-0 md:relative md:w-[55%]">
+      {/* Form Section - Always on top on mobile, left side on desktop */}
+      <div
+        className={cn(
+          'relative z-20 flex min-h-screen w-full flex-col md:h-dvh md:min-h-0 md:w-[45%]',
+          'bg-gradient-to-t from-50% from-black via-black/90 to-transparent'
+        )}
+      >
+        <div className="flex flex-1 items-center justify-center px-4 py-8">
+          <AuthForm type="sign-up" />
+        </div>
+
+        {/* Footer - Now properly positioned */}
+        <footer className="w-full border-t p-4 text-center text-muted-foreground text-sm">
+          © {new Date().getFullYear()} Synaxis. All rights reserved.
+        </footer>
+      </div>
+      
+      {/* Background Section - Behind on mobile, right side on desktop */}
+      <div className="absolute inset-0 z-10 md:relative md:z-20 md:w-[55%]">
         <AuthBackground
           className="h-full w-full"
           colors1={'#545454'}
@@ -105,22 +122,7 @@ export default function SignUpPage() {
         </AuthBackground>
       </div>
 
-      {/* Form Section - Overlays on mobile, side-by-side on desktop */}
-      <div
-        className={cn(
-          'relative z-20 flex min-h-screen w-full flex-col md:h-dvh md:min-h-0 md:w-[45%]',
-          'bg-gradient-to-t from-50% from-black via-black/90 to-transparent'
-        )}
-      >
-        <div className="flex flex-1 items-center justify-center px-4 py-8">
-          <AuthForm type="sign-up" />
-        </div>
-
-        {/* Footer - Now properly positioned */}
-        <footer className="w-full border-t p-4 text-center text-muted-foreground text-sm">
-          © {new Date().getFullYear()} Synaxis. All rights reserved.
-        </footer>
-      </div>
+    
     </div>
   );
 }
