@@ -21,7 +21,9 @@ const debug = <T>(...args: T[]) => {
   if (process.env.NODE_ENV !== 'production') {
     return;
   }
-  // biome-ignore lint/suspicious/noConsoleLog: Redundant lint
+
+  // biome-ignore lint/suspicious/noConsole: Redundant lint
+  // biome-ignore lint/suspicious/noConsoleLog:  Redundant lint
   console.log('[Auth Route]', ...args);
 };
 

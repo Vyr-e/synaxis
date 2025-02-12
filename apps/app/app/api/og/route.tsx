@@ -438,6 +438,8 @@ export async function GET(req: NextRequest) {
       }
     );
   } catch (e) {
+    // biome-ignore lint/suspicious/noConsole: Redundant lint
+    // biome-ignore lint/suspicious/noConsoleLog:  Redundant lint
     console.error(e);
     return new ImageResponse(defaultLayout(), {
       width: 1200,
