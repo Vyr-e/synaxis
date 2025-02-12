@@ -6,16 +6,25 @@ export const runtime = 'edge';
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
-    const type = searchParams.get('type'); // 'community' | 'event' | 'ticket'
-    const title = searchParams.get('title');
-    const description = searchParams.get('description');
-    const image = searchParams.get('image');
-    const date = searchParams.get('date');
-    const brandName = searchParams.get('brand');
 
-    if (!type || !title) {
-      return new Response('Missing required parameters', { status: 400 });
-    }
+    // Default values
+    const defaultValues = {
+      type: 'community',
+      title: 'Synaxis',
+      description: 'Create vibrant spaces where conversations flow naturally',
+      image: 'https://synaxis.to/og-image.png',
+      date: new Date().toISOString(),
+      brandName: 'Synaxis',
+    };
+
+    // Get params with fallbacks
+    const type = searchParams.get('type') || defaultValues.type;
+    const title = searchParams.get('title') || defaultValues.title;
+    const description =
+      searchParams.get('description') || defaultValues.description;
+    const image = searchParams.get('image') || defaultValues.image;
+    const date = searchParams.get('date') || defaultValues.date;
+    const brandName = searchParams.get('brand') || defaultValues.brandName;
 
     // Different layouts based on content type
     const layout = {
@@ -139,16 +148,38 @@ export async function GET(req: NextRequest) {
       ),
     };
 
-    return await new ImageResponse(layout[type as keyof typeof layout], {
-      width: 1200,
-      height: 630,
-      headers: {
-        'Cache-Control': 'public, max-age=31536000, immutable',
-      },
-    });
+    return await new ImageResponse(
+      layout[type as keyof typeof layout] || layout.community,
+      {
+        width: 1200,
+        height: 630,
+        headers: {
+          'Cache-Control': 'public, max-age=31536000, immutable',
+        },
+      }
+    );
   } catch (e) {
-    // biome-ignore lint/suspicious/noConsole: <explanation>
     console.error(e);
-    return new Response('Failed to generate image', { status: 500 });
+
+    // Return a default error image
+    return new ImageResponse(
+      <div
+        style={{
+          width: '100%',
+          height: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: '#f3f4f6',
+          color: '#374151',
+        }}
+      >
+        <h1 style={{ fontSize: '48px' }}>Synaxis</h1>
+      </div>,
+      {
+        width: 1200,
+        height: 630,
+      }
+    );
   }
 }
