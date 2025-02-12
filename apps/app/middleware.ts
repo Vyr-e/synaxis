@@ -7,11 +7,10 @@ const isPublicRoute = (request: NextRequest) => {
   return PUBLIC_ROUTES.some((route) => request.url.includes(route));
 };
 
-//@ts-ignore
-export default async function middleware(request: NextRequest) {
-  const url = new URL('/api/auth/get-session', request.nextUrl.origin);
-
+export async function middleware(request: NextRequest) {
+  
   try {
+    const url = new URL('/api/auth/get-session', request.nextUrl.origin);
     await noseconeMiddleware(noseconeConfig)();
 
     const response = await fetch(url, {
