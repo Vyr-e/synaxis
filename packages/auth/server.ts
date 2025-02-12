@@ -81,6 +81,22 @@ const auth = betterAuth({
       },
     }),
   ],
+  databaseHooks: {
+    user: {
+      create: {
+        before: async (user) => {
+          const nameParts = (await user.name?.split(' ')) || ['', ''];
+          return {
+            data: {
+              ...user,
+              firstName: nameParts[0] || '',
+              lastName: nameParts.slice(1).join(' ') || '',
+            },
+          };
+        },
+      },
+    },
+  },
 });
 
 export { auth };
