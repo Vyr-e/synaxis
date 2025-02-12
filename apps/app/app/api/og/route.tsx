@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
       type: 'community',
       title: 'Synaxis',
       description: 'Create vibrant spaces where conversations flow naturally',
-      image: 'https://synaxis.to/og-image.png',
+      image: '',
       date: new Date().toISOString(),
       brandName: 'Synaxis',
     };
