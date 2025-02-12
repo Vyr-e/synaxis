@@ -17,6 +17,11 @@ const isPublicRoute = (request: NextRequest) => {
   return PUBLIC_ROUTES.some((route) => request.url.includes(route));
 };
 
+const debug = <T>(...args: T[]) => {
+  if (process.env.NODE_ENV !== 'production') return;
+  console.log('[Auth Route]', ...args);
+};
+
 // Configure Arcjet protection
 const aj = arcjet({
   key: env.ARCJET_KEY,
@@ -73,33 +78,41 @@ const authHandlers = toNextJsHandler(auth.handler);
 
 // Protected POST handler
 export const POST = async (req: NextRequest) => {
-  const decision = await protect(req);
+  try {
+    const decision = await protect(req);
+    debug('POST request received', req.url);
 
-  if (decision.isDenied()) {
-    if (decision.reason.isRateLimit()) {
+    if (decision.isDenied()) {
+      if (decision.reason.isRateLimit()) {
+        return NextResponse.json(
+          {
+            message:
+              'Too many requests, you have been rate limited. Please retry in 5 minutes.',
+          },
+          { status: 429 }
+        );
+      }
+
+      if (decision.reason.isEmail()) {
+        const message = decision.reason.emailTypes.map(
+          (type) => EMAIL_ERRORS[type] ?? 'Invalid email.'
+        )[0];
+        return NextResponse.json({ message }, { status: 400 });
+      }
+
       return NextResponse.json(
-        {
-          message:
-            'Too many requests, you have been rate limited. Please retry in 5 minutes.',
-        },
-        { status: 429 }
+        'You are not authorized to access this resource.',
+        { status: 403 }
       );
     }
-
-    if (decision.reason.isEmail()) {
-      const message = decision.reason.emailTypes.map(
-        (type) => EMAIL_ERRORS[type] ?? 'Invalid email.'
-      )[0];
-      return NextResponse.json({ message }, { status: 400 });
-    }
-
+    return authHandlers.POST(req);
+  } catch (error) {
+    debug('Error in POST', error);
     return NextResponse.json(
-      'You are not authorized to access this resource.',
-      { status: 403 }
+      { message: 'Internal server error' },
+      { status: 500 }
     );
   }
-
-  return authHandlers.POST(req);
 };
 
 export const { GET } = authHandlers;
