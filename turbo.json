@@ -4,6 +4,9 @@
   "ui": "tui",
 
   "tasks": {
+    "app": {
+      "cache": false
+    },
     "web": {
       "cache": false
     },
