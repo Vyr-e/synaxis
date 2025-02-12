@@ -2,7 +2,7 @@
 
 import { captureException } from '@/sentry/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { authClient } from '@repo/auth/client';
+import { signIn, signUp } from '@repo/auth/client';
 import { cn } from '@repo/design-system';
 import { Button } from '@repo/design-system/components/ui/button';
 import {
@@ -39,7 +39,7 @@ const socialProviders = [
     icon: companies.google,
     label: 'Google',
     signUp: () =>
-      authClient.signIn.social({
+      signIn.social({
         provider: 'google',
         callbackURL: '/',
         newUserCallbackURL: '/auth/setup-profile',
@@ -50,7 +50,7 @@ const socialProviders = [
     icon: companies.x,
     label: 'Twitter',
     signUp: () =>
-      authClient.signIn.social({
+      signIn.social({
         provider: 'twitter',
         callbackURL: '/',
         newUserCallbackURL: '/auth/verify-email',
@@ -61,7 +61,7 @@ const socialProviders = [
     icon: companies.facebook,
     label: 'Facebook',
     signUp: () =>
-      authClient.signIn.social({
+      signIn.social({
         provider: 'facebook',
         callbackURL: '/',
         newUserCallbackURL: '/auth/verify-email',
@@ -90,7 +90,7 @@ export function SignUpForm() {
       setFormStatus('success');
       const name = `${values.firstName.trim()} ${values.lastName.trim()}`;
 
-      await authClient.signUp.email({
+      await signUp.email({
         name,
         email: values.email,
         password: values.password,

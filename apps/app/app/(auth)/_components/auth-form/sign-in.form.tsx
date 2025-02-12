@@ -2,7 +2,7 @@
 
 import { captureException } from '@/sentry/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { authClient } from '@repo/auth/client';
+import { signIn } from '@repo/auth/client';
 import { cn } from '@repo/design-system';
 import { Button } from '@repo/design-system/components/ui/button';
 import { Checkbox } from '@repo/design-system/components/ui/checkbox';
@@ -39,7 +39,7 @@ const socialProviders = [
     icon: companies.google,
     label: 'Google',
     signIn: () =>
-      authClient.signIn.social({
+      signIn.social({
         provider: 'google',
         callbackURL: '/',
         newUserCallbackURL: '/auth/verify-email',
@@ -50,7 +50,7 @@ const socialProviders = [
     icon: companies.x,
     label: 'Twitter',
     signIn: () =>
-      authClient.signIn.social({
+      signIn.social({
         provider: 'twitter',
         callbackURL: '/',
         newUserCallbackURL: '/auth/verify-email',
@@ -61,7 +61,7 @@ const socialProviders = [
     icon: companies.facebook,
     label: 'Facebook',
     signIn: () =>
-      authClient.signIn.social({
+      signIn.social({
         provider: 'facebook',
         callbackURL: '/',
         newUserCallbackURL: '/auth/verify-email',
@@ -87,7 +87,7 @@ export function SignInForm() {
   async function onSubmit(values: SignInFormValues) {
     try {
       setFormStatus('success');
-      await authClient.signIn.email({
+      await signIn.email({
         email: values.email,
         password: values.password,
         callbackURL: '/',
