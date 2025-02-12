@@ -1,25 +1,19 @@
-# next-forge
+# Synaxis  
 
-**Production-grade Turborepo template for Next.js apps.**
+**Bringing Communities Together with Real-Time Events and Seamless Management**  
 
-<div>
-  <img src="https://img.shields.io/npm/dy/next-forge" alt="" />
-  <img src="https://img.shields.io/npm/v/next-forge" alt="" />
-  <img src="https://img.shields.io/github/license/haydenbleasel/next-forge" alt="" />
-</div>
+Synaxis is a dynamic platform designed to empower communities and creators by streamlining event planning, hosting, and engagement. Whether it's virtual meetups, community discussions, or group sessions, Synaxis provides the tools needed for a truly connected experience.  
 
-[next-forge](https://github.com/haydenbleasel/next-forge) is a [Next.js](https://nextjs.org/) project boilerplate for modern web application. It is designed to be a comprehensive starting point for new apps, providing a solid, opinionated foundation with a minimal amount of configuration.
+### Key Features  
 
-Clone the repo using:
+- **Community-Centric Events**: Plan and host events tailored to your community's needs.  
+- **Real-Time Engagement**: Interactive live sessions with seamless participant involvement.  
+- **Audio Communication**: Integrated voice chat for immersive discussions.  
+- **Hybrid Payments**: Accept payments via crypto (Solana) or bring in your own payment gateway.  
+- **Organizer Tools**: Manage events with ease, including direct fund transfers and webhook-based notifications.  
 
-```sh
-npx next-forge@latest init [my-app]
-```
+Synaxis is designed to unify communities and foster meaningful connections through modern technology.
 
-Then read the [docs](https://docs.next-forge.com) for more information.
+---
 
-<a href="https://github.com/haydenbleasel/next-forge/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=haydenbleasel/next-forge" />
-</a>
-
-Made with [contrib.rocks](https://contrib.rocks).
+This is likely to change...
