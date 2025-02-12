@@ -21,11 +21,11 @@ export default function SignInPage() {
           colors3={'#010104'}
           colors4={'#f4f4f6'}
           speed={0.5}
-          edge={isDesktop ? '2%' : '0%'}
+          edge={ '0%'}
         >
           <div
             className="absolute inset-0 bg-gradient-to-b from-black/60 to-black/20 md:to-black/40"
-            style={{ borderRadius: isDesktop ? '2%' : '0%' }}
+            style={{ borderRadius: '0%' }}
           />
 
           {/* Branding Content - Visible on desktop or as overlay on mobile */}
