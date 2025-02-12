@@ -1,5 +1,4 @@
 import { relations } from 'drizzle-orm';
-import { sessions } from 'models/sessions';
 import { accounts } from '../models/accounts';
 import { eventMetrics } from '../models/analytics';
 import { chatMessages, chatParticipants, chatRooms } from '../models/chat';
@@ -9,6 +8,7 @@ import { eventMedia } from '../models/media';
 import { notifications } from '../models/notifications';
 import { ticketPurchases } from '../models/purchases';
 import { referrals } from '../models/referrals';
+import { sessions } from '../models/sessions';
 import { ticketDiscounts, tickets } from '../models/tickets';
 import { users } from '../models/users';
 

@@ -24,10 +24,16 @@ export const ticketPurchases = pgTable(
       .references(() => tickets.id),
     userId: uuid('user_id')
       .notNull()
-      .references(() => users.id),
+      .references(() => users.id, {
+        onDelete: 'cascade',
+        onUpdate: 'no action',
+      }),
     eventId: uuid('event_id')
       .notNull()
-      .references(() => events.id),
+      .references(() => events.id, {
+        onDelete: 'no action',
+        onUpdate: 'no action',
+      }),
 
     // Purchase Info
     quantity: integer('quantity').notNull(),
@@ -44,6 +50,8 @@ export const ticketPurchases = pgTable(
     // QR Code/Ticket Access
     accessCode: varchar('access_code', { length: 100 }).notNull().unique(),
     isUsed: boolean('is_used').default(false),
+
+    expiresAt: timestamp('expires_at'),
 
     // Timestamps
     purchasedAt: timestamp('purchased_at').notNull().defaultNow(),

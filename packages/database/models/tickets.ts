@@ -10,8 +10,9 @@ import {
   uuid,
   varchar,
 } from 'drizzle-orm/pg-core';
-import { ticketDiscountType } from './enums';
+import { purchaseStatus, ticketDiscountType } from './enums';
 import { events } from './events';
+import { users } from './users';
 
 export const tickets = pgTable(
   'tickets',
@@ -41,9 +42,10 @@ export const tickets = pgTable(
 
     // Design
     template: jsonb('template').$type<{
-      design: string;
-      color: string;
+      design?: string;
+      color?: string;
       logo?: string;
+      image?: string;
     }>(),
 
     // Timestamps
@@ -51,10 +53,10 @@ export const tickets = pgTable(
     updatedAt: timestamp('updated_at').notNull().default(sql`now()`),
   },
   (table) => ({
-    eventIdx: index('ticket_event_idx').on(table.eventId),
-    typeIdx: index('ticket_type_idx').on(table.type),
-    activeIdx: index('ticket_active_idx').on(table.isActive),
-    dateIdx: index('ticket_date_idx').on(
+    tktEventIdx: index('tkt_event_idx').on(table.eventId),
+    tktTypeIdx: index('tkt_type_idx').on(table.type),
+    tktActiveIdx: index('tkt_active_idx').on(table.isActive),
+    tktDateIdx: index('tkt_date_idx').on(
       table.saleStartDate,
       table.saleEndDate
     ),
@@ -91,9 +93,52 @@ export const ticketDiscounts = pgTable(
     updatedAt: timestamp('updated_at').notNull().default(sql`now()`),
   },
   (table) => ({
-    codeIdx: index('discount_code_idx').on(table.code),
-    ticketIdx: index('discount_ticket_idx').on(table.ticketId),
-    dateIdx: index('discount_date_idx').on(table.startDate, table.endDate),
+    discCodeIdx: index('disc_code_idx').on(table.code),
+    discTicketIdx: index('disc_ticket_idx').on(table.ticketId),
+    discDateIdx: index('disc_date_idx').on(table.startDate, table.endDate),
+  })
+);
+
+export const ticketPurchases = pgTable(
+  'ticket_purchases',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    ticketId: uuid('ticket_id')
+      .notNull()
+      .references(() => tickets.id),
+    userId: uuid('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    eventId: uuid('event_id')
+      .notNull()
+      .references(() => events.id),
+    quantity: integer('quantity').notNull(),
+    totalPrice: decimal('total_price', { precision: 10, scale: 2 }).notNull(),
+    status: purchaseStatus('status').notNull().default('pending'),
+    attendeeDetails: jsonb('attendee_details').$type<{
+      name: string;
+      email: string;
+      phone?: string;
+    }>(),
+    accessCode: varchar('access_code', { length: 100 }).notNull().unique(),
+    isUsed: boolean('is_used').default(false),
+    expiresAt: timestamp('expires_at'),
+    purchasedAt: timestamp('purchased_at').notNull().defaultNow(),
+    updatedAt: timestamp('updated_at').notNull().default(sql`now()`),
+    discountId: uuid('discount_id').references(() => ticketDiscounts.id),
+    discountAmount: decimal('discount_amount', { precision: 10, scale: 2 }),
+    originalPrice: decimal('original_price', {
+      precision: 10,
+      scale: 2,
+    }).notNull(),
+    finalPrice: decimal('final_price', { precision: 10, scale: 2 }).notNull(),
+  },
+  (table) => ({
+    purchTicketIdx: index('purch_ticket_idx').on(table.ticketId),
+    purchUserIdx: index('purch_user_idx').on(table.userId),
+    purchEventIdx: index('purch_event_idx').on(table.eventId),
+    purchStatusIdx: index('purch_status_idx').on(table.status),
+    purchAccessCodeIdx: index('purch_access_code_idx').on(table.accessCode),
   })
 );
 

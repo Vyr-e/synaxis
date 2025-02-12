@@ -8,10 +8,10 @@ const redis = new Redis(env.REDIS_URL, {
 });
 
 redis.on('connect', () => {
-  logger.success('Redis connected');
+  logger('nodejs').success('Redis connected');
 });
 
 redis.on('error', (error) => {
-  logger.error('Redis Error:', error);
+  logger('nodejs').error('Redis Error:', error);
 });
 export { redis };

@@ -53,7 +53,7 @@ export const referralStatus = pgEnum('referral_status', [
 
 export const userRole = pgEnum('user_role', [
   'admin',
-  'organizer',
+  'brand',
   'user',
   'guest',
 ]);

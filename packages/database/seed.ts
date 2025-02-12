@@ -1,17 +1,15 @@
+import { neon } from '@neondatabase/serverless';
 import { env } from '@repo/env';
 import { logger } from '@repo/logger';
-import { drizzle } from 'drizzle-orm/node-postgres';
-import { Pool } from 'pg';
+import { drizzle } from 'drizzle-orm/neon-http';
 import * as schema from './schema';
 
-const pool = new Pool({
-  connectionString: env.DATABASE_URL,
-});
+const pool = neon(env.DATABASE_URL);
 
 const db = drizzle(pool, { schema });
 
 async function seed() {
-  logger.info('Seeding database...');
+  logger('nodejs').info('Seeding database...');
 
   try {
     // Create test users
@@ -19,9 +17,10 @@ async function seed() {
       .insert(schema.users)
       .values([
         {
-          name: 'Test User',
           email: 'test@example.com',
+          emailVerified: new Date().toISOString(),
           role: 'user',
+          image: 'https://example.com/image.jpg',
         },
         // Add more seed data
       ])
@@ -39,16 +38,16 @@ async function seed() {
       },
     ]);
 
-    logger.success('Seeding completed successfully');
+    logger('nodejs').success('Seeding completed successfully');
   } catch (error) {
-    logger.error('Seeding failed:', error);
+    logger('nodejs').error('Seeding failed:', error);
     throw error;
   } finally {
-    await pool.end();
+    logger('nodejs').info('Seeding completed successfully');
   }
 }
 
 seed().catch((err) => {
-  logger.error('Seeding failed!', err);
+  logger('nodejs').error('Seeding failed!', err);
   process.exit(1);
 });

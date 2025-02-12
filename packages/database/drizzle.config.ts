@@ -2,11 +2,11 @@ import { env } from '@repo/env';
 import { defineConfig } from 'drizzle-kit';
 
 export default defineConfig({
-  schema: './schema/*',
+  schema: './schema/index.ts',
   out: './drizzle',
-  driver: 'pg',
+  dialect: 'postgresql',
   dbCredentials: {
-    connectionString: env.DATABASE_URL,
+    url: env.DATABASE_URL,
   },
   verbose: true,
   strict: true,
