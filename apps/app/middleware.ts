@@ -7,10 +7,9 @@ const isPublicRoute = (request: NextRequest) => {
   return PUBLIC_ROUTES.some((route) => request.url.includes(route));
 };
 
-export const runtime = "nodejs"
+export const runtime = 'nodejs';
 
 export async function middleware(request: NextRequest) {
-  
   try {
     const url = new URL('/api/auth/get-session', request.nextUrl.origin);
     await noseconeMiddleware(noseconeConfig)();
@@ -21,9 +20,6 @@ export async function middleware(request: NextRequest) {
       },
     });
 
-    if (!response.ok) {
-      throw new Error(`Failed to fetch session: ${response.statusText}`);
-    }
     const session = await response.json();
 
     if (!isPublicRoute(request) && !session) {
