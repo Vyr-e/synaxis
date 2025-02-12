@@ -1,6 +1,27 @@
 import kleur from 'kleur';
 import pino from 'pino';
 
+/*
+ * Edge logger with basic console
+ * @param message - The message to log
+ * @param args - The arguments to log
+ */
+const edgeLogger = {
+  info: <T, K>(message: T, ...args: K[]) => {
+    console.log(kleur.blue(`ℹ ${message}`), ...args);
+  },
+  success: <T, K>(message: T, ...args: K[]) => {
+    console.log(kleur.green(`✓ ${message}`), ...args);
+  },
+  warn: <T, K>(message: T, ...args: K[]) => {
+    console.warn(kleur.yellow(`⚠ ${message}`), ...args);
+  },
+  error: <T, K>(message: T, ...args: K[]) => {
+    console.error(kleur.red(`✖ ${message}`), ...args);
+  },
+};
+
+// Structured logger with pino
 const transport = pino.transport({
   target: 'pino-pretty',
   options: {
@@ -19,28 +40,23 @@ const pino_logger = pino(
   transport
 );
 
-// Utility functions
-export const success = <T>(message: T, ...args: unknown[]) => {
-  logger.info(kleur.green(`✓ ${message}`), ...args);
+const structuredLogger = {
+  info: <T, K>(message: T, ...args: K[]) => {
+    pino_logger.info(kleur.blue(`ℹ ${message}`), ...args);
+  },
+  success: <T, K>(message: T, ...args: K[]) => {
+    pino_logger.info(kleur.green(`✓ ${message}`), ...args);
+  },
+  warn: <T, K>(message: T, ...args: K[]) => {
+    pino_logger.warn(kleur.yellow(`⚠ ${message}`), ...args);
+  },
+  error: <T, K>(message: T, ...args: K[]) => {
+    pino_logger.error(kleur.red(`✖ ${message}`), ...args);
+  },
 };
 
-export const info = <T>(message: T, ...args: unknown[]) => {
-  logger.info(kleur.blue(`ℹ ${message}`), ...args);
-};
-
-export const warn = <T>(message: T, ...args: unknown[]) => {
-  logger.warn(kleur.yellow(`⚠ ${message}`), ...args);
-};
-
-export const error = <T>(message: T, ...args: unknown[]) => {
-  logger.error(kleur.red(`✖ ${message}`), ...args);
-};
-
-const logger = {
-  success,
-  info,
-  warn,
-  error,
-};
+// Export logger factory function
+const logger = (runtime: 'edge' | 'nodejs') =>
+  runtime === 'edge' ? edgeLogger : structuredLogger;
 
 export { logger, pino_logger };
