@@ -53,7 +53,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={inter.className} suppressHydrationWarning>
       <body>
-        <DesignSystemProvider defaultTheme="light">
+        <DesignSystemProvider defaultTheme="dark">
           {children}
           <CookieConsent />
         </DesignSystemProvider>
