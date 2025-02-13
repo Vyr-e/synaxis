@@ -138,6 +138,7 @@ export default function VerifyEmailPage() {
   // Calculate circle properties
   const CIRCLE_RADIUS = 48;
   const CIRCLE_CIRCUMFERENCE = 2 * Math.PI * CIRCLE_RADIUS;
+  const SEGMENT_LENGTH = CIRCLE_CIRCUMFERENCE / 3;
 
   const progress =
     countdown > 0
@@ -163,25 +164,22 @@ export default function VerifyEmailPage() {
                   <div className="absolute inset-0">
                     <svg className="h-full w-full" viewBox="0 0 100 100">
                       <title>Countdown</title>
-                      {[0, 120, 240].map((startAngle, index) => (
-                        <circle
-                          key={index}
-                          className="text-primary transition-all duration-300 ease-in-out"
-                          strokeWidth="4"
-                          strokeDasharray={`${CIRCLE_CIRCUMFERENCE / 3} ${CIRCLE_CIRCUMFERENCE}`}
-                          strokeDashoffset={(index + 1) * (CIRCLE_CIRCUMFERENCE / 3) - progress}
-                          strokeLinecap="round"
-                          stroke="currentColor"
-                          fill="transparent"
-                          r={CIRCLE_RADIUS}
-                          cx="50"
-                          cy="50"
-                          style={{
-                            transform: `rotate(${startAngle - 90}deg)`,
-                            transformOrigin: '50% 50%',
-                          }}
-                        />
-                      ))}
+                      <circle
+                        className="text-primary transition-all duration-300 ease-in-out"
+                        strokeWidth="4"
+                        strokeDasharray={`${SEGMENT_LENGTH} ${SEGMENT_LENGTH/6}`}
+                        strokeDashoffset={progress}
+                        strokeLinecap="round"
+                        stroke="currentColor"
+                        fill="transparent"
+                        r={CIRCLE_RADIUS}
+                        cx="50"
+                        cy="50"
+                        style={{
+                          transform: 'rotate(-90deg)',
+                          transformOrigin: '50% 50%',
+                        }}
+                      />
                     </svg>
                     <span className="absolute inset-0 flex items-center justify-center font-medium text-xs">
                       {countdown}s
