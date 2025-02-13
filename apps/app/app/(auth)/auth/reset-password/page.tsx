@@ -1,5 +1,8 @@
 'use client';
 
+
+export const dynamic = 'force-dynamic';
+
 import { PasswordStrengthChecker } from '@/app/(auth)/_components/password-strength-checker';
 import { captureException } from '@/sentry';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -23,8 +26,6 @@ import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-export const dynamic = "force-dynamic"
-
 const resetPasswordSchema = z
   .object({
     password: z.string().min(1, 'Password is required'),
@@ -37,7 +38,7 @@ const resetPasswordSchema = z
 
 type ResetPasswordForm = z.infer<typeof resetPasswordSchema>;
 
-export default function page() {
+export default function ResetPasswordPage() {
   const router = useRouter();
   const { toast } = useToast();
   const searchParams = useSearchParams();
@@ -123,7 +124,7 @@ export default function page() {
             </div>
             <h1
               className={cn(
-                'font-bold text-4xl text-zinc-950 tracking-tight dark:text-zinc-50',
+                'text-4xl font-bold tracking-tight text-zinc-950 dark:text-zinc-50',
                 clashDisplay.className
               )}
             >
@@ -185,7 +186,7 @@ export default function page() {
             </form>
           </Form>
 
-          <div className="text-center text-muted-foreground text-sm">
+          <div className="text-center text-sm text-muted-foreground">
             <p>
               Remember your password?{' '}
               <Button
