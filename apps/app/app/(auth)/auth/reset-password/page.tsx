@@ -35,7 +35,7 @@ const resetPasswordSchema = z
 
 type ResetPasswordForm = z.infer<typeof resetPasswordSchema>;
 
-export default function ResetPasswordPage() {
+export default function page() {
   const router = useRouter();
   const { toast } = useToast();
   const searchParams = useSearchParams();
