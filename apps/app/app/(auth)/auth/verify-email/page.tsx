@@ -22,9 +22,9 @@ const verifyEmailSchema = z.object({
 
 type VerifyEmailForm = z.infer<typeof verifyEmailSchema>;
 
-const INITIAL_DELAY = 30; // 30 seconds
+const COOLDOWN_DELAY = 30; // 30 seconds between attempts
 const MAX_ATTEMPTS = 5;
-const RATE_LIMIT_DELAY = 300; // 5 minutes in seconds
+const RATE_LIMIT_DELAY = 120; // 2 minutes rate limit after max attempts
 
 // Mock function for testing UI
 const mockSendVerification = () =>
@@ -35,10 +35,6 @@ const mockSendVerification = () =>
       setTimeout(() => reject(new Error('Failed to send email')), 1000);
     }
   });
-
-const getDelayForAttempt = (attempts: number) => {
-  return 1000 * (attempts + 1);
-};
 
 export default function VerifyEmailPage() {
   const router = useRouter();
@@ -80,6 +76,26 @@ export default function VerifyEmailPage() {
     }
   }, [countdown, isRateLimited]);
 
+  // Calculate circle properties
+  const CIRCLE_RADIUS = 48;
+  const SEGMENT_COUNT = 3;
+  const GAP_SIZE = 4;
+
+  const getSegmentProperties = () => {
+    if (countdown === 0) {
+      return { length: 0, scale: 1 };
+    }
+
+    const progress =
+      countdown / (isRateLimited ? RATE_LIMIT_DELAY : COOLDOWN_DELAY);
+    const maxLength = (360 - GAP_SIZE * SEGMENT_COUNT) / SEGMENT_COUNT;
+
+    return {
+      length: maxLength * progress,
+      scale: 0.8 + 0.2 * progress, // Scale from 0.8 to 1.0
+    };
+  };
+
   const handleResendVerification = async () => {
     try {
       setIsResending(true);
@@ -91,12 +107,16 @@ export default function VerifyEmailPage() {
         setCountdown(RATE_LIMIT_DELAY);
         toast({
           variant: 'destructive',
-          title: 'Rate limited',
-          description: 'Too many attempts. Please try again later.',
+          title: 'Too Many Attempts',
+          description: 'Please try again in 2 minutes.',
         });
         return;
       }
-
+      // TODO: Comment out real implementation
+      // await sendVerificationEmail({
+      //   email: user?.email || form.getValues('email'),
+      //   callbackURL: '/auth/setup-profile',
+      // })
       await mockSendVerification();
 
       toast({
@@ -104,7 +124,7 @@ export default function VerifyEmailPage() {
         description: 'Please check your inbox and spam folder.',
       });
 
-      setCountdown(getDelayForAttempt(newAttemptCount));
+      setCountdown(COOLDOWN_DELAY);
     } catch (error: unknown) {
       captureException(error as Error, {
         level: 'error',
@@ -123,20 +143,6 @@ export default function VerifyEmailPage() {
     }
   };
 
-  // Calculate circle properties
-  const CIRCLE_RADIUS = 48;
-  const CIRCLE_CIRCUMFERENCE = 2 * Math.PI * CIRCLE_RADIUS;
-  const SEGMENT_COUNT = 3;
-  const GAP_SIZE = CIRCLE_CIRCUMFERENCE / 36; // Small gap between segments
-
-  // Calculate the current segment length based on countdown
-  const getSegmentLength = () => {
-    if (countdown === 0) return 0;
-    const maxSegmentLength = (CIRCLE_CIRCUMFERENCE / SEGMENT_COUNT) - GAP_SIZE;
-    const progress = countdown / getDelayForAttempt(attempts);
-    return maxSegmentLength * progress;
-  };
-
   return (
     <div className="flex min-h-screen flex-col">
       <main className="flex flex-1 flex-col items-center justify-center p-4">
@@ -149,35 +155,40 @@ export default function VerifyEmailPage() {
           <div className="space-y-2 text-center">
             <div className="mb-6 flex justify-center">
               <div className="relative rounded-full bg-primary/10 p-3">
-                <Mail className={cn("h-8 w-8 text-primary", countdown > 0 && "opacity-0")} />
-                {countdown > 0 && (
+                <Mail
+                  className={cn(
+                    'h-8 w-8 text-primary transition-opacity duration-300',
+                    countdown > 0 && 'opacity-0'
+                  )}
+                />
+                {countdown > 0 && !isRateLimited && (
                   <div className="absolute inset-0">
-                    <svg 
-                      className="h-full w-full" 
+                    <svg
+                      className="h-full w-full text-muted-foreground/20"
                       viewBox="0 0 100 100"
-                      style={{
-                        transform: 'rotate(-90deg)',
-                      }}
+                      fill="transparent"
                     >
                       <title>Countdown</title>
-                      {[0, 1, 2].map((index) => (
-                        <circle
-                          key={index}
-                          className="text-primary transition-all duration-300 ease-in-out"
-                          strokeWidth="4"
-                          strokeDasharray={`${getSegmentLength()} ${CIRCLE_CIRCUMFERENCE}`}
-                          strokeLinecap="round"
-                          stroke="currentColor"
-                          fill="transparent"
-                          r={CIRCLE_RADIUS}
-                          cx="50"
-                          cy="50"
-                          style={{
-                            transform: `rotate(${(360 / SEGMENT_COUNT) * index}deg)`,
-                            transformOrigin: "50% 50%",
-                          }}
-                        />
-                      ))}
+                      {[0, 1, 2].map((index) => {
+                        const { length, scale } = getSegmentProperties();
+                        return (
+                          <circle
+                            key={index}
+                            className="origin-center text-primary transition-all duration-300 ease-in-out"
+                            strokeWidth="4"
+                            strokeDasharray={`${length} ${360}`}
+                            strokeLinecap="round"
+                            stroke="currentColor"
+                            r={CIRCLE_RADIUS * scale}
+                            cx="50"
+                            cy="50"
+                            style={{
+                              transform: `rotate(${(360 / SEGMENT_COUNT) * index}deg)`,
+                              transformOrigin: '50% 50%',
+                            }}
+                          />
+                        );
+                      })}
                     </svg>
                     <span className="absolute inset-0 flex items-center justify-center font-medium text-xs">
                       {countdown}s
@@ -217,7 +228,8 @@ export default function VerifyEmailPage() {
                   'w-full',
                   'relative h-12 overflow-hidden rounded-xl px-4 py-2 font-medium text-sm transition-all hover:scale-[1.02]',
                   isResending && 'bg-gray-500 text-white',
-                  'bg-white text-black'
+                  isRateLimited && 'bg-red-500/10 text-red-500',
+                  !isResending && !isRateLimited && 'bg-white text-black'
                 )}
                 onClick={handleResendVerification}
                 disabled={isResending || countdown > 0}
@@ -225,7 +237,9 @@ export default function VerifyEmailPage() {
                 {isResending && (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 )}
-                Resend verification email
+                {isRateLimited
+                  ? `Rate limited - Try again in ${countdown}s`
+                  : 'Resend verification email'}
               </Button>
             </form>
           </Form>
