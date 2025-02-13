@@ -1,4 +1,5 @@
 'use client';
+
 import { captureException } from '@/sentry';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { /*sendVerificationEmail,*/ useSession } from '@repo/auth/client';
@@ -28,13 +29,16 @@ const RATE_LIMIT_DELAY = 300; // 5 minutes in seconds
 // Mock function for testing UI
 const mockSendVerification = () =>
   new Promise<void>((resolve, reject) => {
-    // Randomly succeed or fail to test both paths
     if (Math.random() > 0.3) {
       setTimeout(resolve, 1000);
     } else {
       setTimeout(() => reject(new Error('Failed to send email')), 1000);
     }
   });
+
+const getDelayForAttempt = (attempts: number) => {
+  return 1000 * (attempts + 1);
+};
 
 export default function VerifyEmailPage() {
   const router = useRouter();
@@ -54,7 +58,6 @@ export default function VerifyEmailPage() {
   });
 
   useEffect(() => {
-    // Check if user is already verified
     const checkVerification = async () => {
       if (await user?.emailVerified) {
         router.push('/auth/setup-profile');
@@ -77,13 +80,6 @@ export default function VerifyEmailPage() {
     }
   }, [countdown, isRateLimited]);
 
-  const getDelayForAttempt = (attemptCount: number) => {
-    if (attemptCount >= MAX_ATTEMPTS) {
-      return RATE_LIMIT_DELAY;
-    }
-    return INITIAL_DELAY * 2 ** (attemptCount - 1); // Progressive delay
-  };
-
   const handleResendVerification = async () => {
     try {
       setIsResending(true);
@@ -101,13 +97,6 @@ export default function VerifyEmailPage() {
         return;
       }
 
-      // Comment out the real implementation
-      // await sendVerificationEmail({
-      //   email: user?.email || form.getValues('email'),
-      //   callbackURL: '/auth/setup-profile',
-      // });
-
-      // Use mock instead
       await mockSendVerification();
 
       toast({
@@ -115,8 +104,7 @@ export default function VerifyEmailPage() {
         description: 'Please check your inbox and spam folder.',
       });
 
-      const delay = getDelayForAttempt(newAttemptCount);
-      setCountdown(delay);
+      setCountdown(getDelayForAttempt(newAttemptCount));
     } catch (error: unknown) {
       captureException(error as Error, {
         level: 'error',
@@ -138,14 +126,16 @@ export default function VerifyEmailPage() {
   // Calculate circle properties
   const CIRCLE_RADIUS = 48;
   const CIRCLE_CIRCUMFERENCE = 2 * Math.PI * CIRCLE_RADIUS;
-  const SEGMENT_LENGTH = CIRCLE_CIRCUMFERENCE / 3;
+  const SEGMENT_COUNT = 3;
+  const GAP_SIZE = CIRCLE_CIRCUMFERENCE / 36; // Small gap between segments
 
-  const progress =
-    countdown > 0
-      ? ((getDelayForAttempt(attempts) - countdown) /
-          getDelayForAttempt(attempts)) *
-        CIRCLE_CIRCUMFERENCE
-      : 0;
+  // Calculate the current segment length based on countdown
+  const getSegmentLength = () => {
+    if (countdown === 0) return 0;
+    const maxSegmentLength = (CIRCLE_CIRCUMFERENCE / SEGMENT_COUNT) - GAP_SIZE;
+    const progress = countdown / getDelayForAttempt(attempts);
+    return maxSegmentLength * progress;
+  };
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -162,24 +152,32 @@ export default function VerifyEmailPage() {
                 <Mail className={cn("h-8 w-8 text-primary", countdown > 0 && "opacity-0")} />
                 {countdown > 0 && (
                   <div className="absolute inset-0">
-                    <svg className="h-full w-full" viewBox="0 0 100 100">
+                    <svg 
+                      className="h-full w-full" 
+                      viewBox="0 0 100 100"
+                      style={{
+                        transform: 'rotate(-90deg)',
+                      }}
+                    >
                       <title>Countdown</title>
-                      <circle
-                        className="text-primary transition-all duration-300 ease-in-out"
-                        strokeWidth="4"
-                        strokeDasharray={`${SEGMENT_LENGTH} ${SEGMENT_LENGTH/6}`}
-                        strokeDashoffset={progress}
-                        strokeLinecap="round"
-                        stroke="currentColor"
-                        fill="transparent"
-                        r={CIRCLE_RADIUS}
-                        cx="50"
-                        cy="50"
-                        style={{
-                          transform: 'rotate(-90deg)',
-                          transformOrigin: '50% 50%',
-                        }}
-                      />
+                      {[0, 1, 2].map((index) => (
+                        <circle
+                          key={index}
+                          className="text-primary transition-all duration-300 ease-in-out"
+                          strokeWidth="4"
+                          strokeDasharray={`${getSegmentLength()} ${CIRCLE_CIRCUMFERENCE}`}
+                          strokeLinecap="round"
+                          stroke="currentColor"
+                          fill="transparent"
+                          r={CIRCLE_RADIUS}
+                          cx="50"
+                          cy="50"
+                          style={{
+                            transform: `rotate(${(360 / SEGMENT_COUNT) * index}deg)`,
+                            transformOrigin: "50% 50%",
+                          }}
+                        />
+                      ))}
                     </svg>
                     <span className="absolute inset-0 flex items-center justify-center font-medium text-xs">
                       {countdown}s
@@ -222,7 +220,7 @@ export default function VerifyEmailPage() {
                   'bg-white text-black'
                 )}
                 onClick={handleResendVerification}
-                disabled={isResending}
+                disabled={isResending || countdown > 0}
               >
                 {isResending && (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
