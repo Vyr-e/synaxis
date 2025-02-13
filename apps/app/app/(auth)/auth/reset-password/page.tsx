@@ -23,6 +23,8 @@ import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
+export const dynamic = "force-dynamic"
+
 const resetPasswordSchema = z
   .object({
     password: z.string().min(1, 'Password is required'),
