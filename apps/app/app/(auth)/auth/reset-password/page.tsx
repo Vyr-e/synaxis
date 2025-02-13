@@ -1,6 +1,5 @@
 'use client';
 
-
 export const dynamic = 'force-dynamic';
 
 import { PasswordStrengthChecker } from '@/app/(auth)/_components/password-strength-checker';
@@ -21,7 +20,7 @@ import { useToast } from '@repo/design-system/components/ui/use-toast';
 import { clashDisplay } from '@repo/design-system/fonts';
 import { KeyRound, Loader2 } from 'lucide-react';
 import { motion } from 'motion/react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -41,7 +40,6 @@ type ResetPasswordForm = z.infer<typeof resetPasswordSchema>;
 export default function ResetPasswordPage() {
   const router = useRouter();
   const { toast } = useToast();
-  const searchParams = useSearchParams();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [token, setToken] = useState<string | null>(null);
 
@@ -54,8 +52,9 @@ export default function ResetPasswordPage() {
   });
 
   useEffect(() => {
-    const resetToken = searchParams.get('token');
-    if (!resetToken) {
+    // Only run on client side
+    const token = new URLSearchParams(window.location.search).get("token");
+    if (!token) {
       toast({
         variant: 'destructive',
         title: 'Invalid or Missing Token',
@@ -64,8 +63,8 @@ export default function ResetPasswordPage() {
       router.push('/auth/forgot-password');
       return;
     }
-    setToken(resetToken);
-  }, [searchParams, router, toast]);
+    setToken(token);
+  }, [router, toast]);
 
   async function onSubmit(data: ResetPasswordForm) {
     if (!token) {
