@@ -158,42 +158,35 @@ export default function VerifyEmailPage() {
           <div className="space-y-2 text-center">
             <div className="mb-6 flex justify-center">
               <div className="relative rounded-full bg-primary/10 p-3">
-                {countdown > 0 ? (
+                <Mail className={cn("h-8 w-8 text-primary", countdown > 0 && "opacity-0")} />
+                {countdown > 0 && (
                   <div className="absolute inset-0">
                     <svg className="h-full w-full" viewBox="0 0 100 100">
                       <title>Countdown</title>
-                      <circle
-                        className="text-muted-foreground/20"
-                        strokeWidth="4"
-                        stroke="currentColor"
-                        fill="transparent"
-                        r={CIRCLE_RADIUS}
-                        cx="50"
-                        cy="50"
-                      />
-                      <circle
-                        className="text-primary transition-all duration-300 ease-in-out"
-                        strokeWidth="4"
-                        strokeDasharray={`${CIRCLE_CIRCUMFERENCE} ${CIRCLE_CIRCUMFERENCE}`}
-                        strokeDashoffset={CIRCLE_CIRCUMFERENCE - progress}
-                        strokeLinecap="round"
-                        stroke="currentColor"
-                        fill="transparent"
-                        r={CIRCLE_RADIUS}
-                        cx="50"
-                        cy="50"
-                        style={{
-                          transform: 'rotate(-90deg)',
-                          transformOrigin: '50% 50%',
-                        }}
-                      />
+                      {[0, 120, 240].map((startAngle, index) => (
+                        <circle
+                          key={index}
+                          className="text-primary transition-all duration-300 ease-in-out"
+                          strokeWidth="4"
+                          strokeDasharray={`${CIRCLE_CIRCUMFERENCE / 3} ${CIRCLE_CIRCUMFERENCE}`}
+                          strokeDashoffset={(index + 1) * (CIRCLE_CIRCUMFERENCE / 3) - progress}
+                          strokeLinecap="round"
+                          stroke="currentColor"
+                          fill="transparent"
+                          r={CIRCLE_RADIUS}
+                          cx="50"
+                          cy="50"
+                          style={{
+                            transform: `rotate(${startAngle - 90}deg)`,
+                            transformOrigin: '50% 50%',
+                          }}
+                        />
+                      ))}
                     </svg>
                     <span className="absolute inset-0 flex items-center justify-center font-medium text-xs">
                       {countdown}s
                     </span>
                   </div>
-                ) : (
-                  <Mail className="h-8 w-8 text-primary" />
                 )}
               </div>
             </div>
