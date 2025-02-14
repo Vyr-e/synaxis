@@ -1,5 +1,6 @@
 'use client';
 
+import { handleBackendError } from '@/app/(auth)/auth.util';
 import { captureException } from '@/sentry/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { signIn } from '@repo/auth/client';
@@ -15,13 +16,12 @@ import {
 } from '@repo/design-system/components/ui/form';
 import { Input } from '@repo/design-system/components/ui/input';
 import { Label } from '@repo/design-system/components/ui/label';
-import { toast } from '@repo/design-system/components/ui/use-toast';
 import { Eye, EyeOff, Mail, companies } from '@repo/design-system/icons';
 import { motion } from 'motion/react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { type UseFormReturn, useForm } from 'react-hook-form';
 import * as z from 'zod';
 
 const signInSchema = z.object({
@@ -70,11 +70,6 @@ const socialProviders = [
   },
 ] as const;
 
-type BackendError = {
-  message: string;
-  status?: number;
-};
-
 export function SignInForm() {
   const [formStatus, setFormStatus] = useState<'idle' | 'success' | 'error'>(
     'idle'
@@ -96,52 +91,25 @@ export function SignInForm() {
     });
   };
 
-  const handleBackendError = (error: Error & BackendError) => {
-    switch (error.status) {
-      case 429:
-        toast({
-          variant: 'destructive',
-          title: 'Rate Limited',
-          description:
-            error.message || 'Too many attempts. Please try again later.',
-        });
-        break;
-
-      case 403:
-        toast({
-          variant: 'destructive',
-          title: 'Not Authorized',
-          description: error.message || 'Invalid credentials.',
-        });
-        break;
-
-      default: {
-        captureException(error, {
-          context: 'sign-in-form',
-          email: form.getValues('email'),
-        });
-        toast({
-          variant: 'destructive',
-          title: 'Error',
-          description: 'Something went wrong. Please try again.',
-        });
-      }
-    }
-  };
-
   async function onSubmit(_values: SignInFormValues) {
     try {
       setFormStatus('success');
-      // await signIn.email({
-      //   email: values.email,
-      //   password: values.password,
-      //   callbackURL: '/',
-      //   rememberMe,
-      // });
-      // biome-ignore lint/correctness/noUndeclaredVariables: ?
-      // biome-ignore lint/suspicious/noConsoleLog: <explanation>
-      // biome-ignore lint/suspicious/noConsole: <explanation>
-      console.log(_values);
+      await signIn.email(
+        {
+          email: _values.email,
+          password: _values.password,
+          rememberMe,
+        },
+        {
+          onSuccess: (ctx) => {
+            if (ctx.data.emailVerified) {
+              router.push('/auth/setup-profile');
+            } else {
+              router.push('/auth/verify-email');
+            }
+          },
+        }
+      );
 
       setTimeout(() => setFormStatus('idle'), 1000);
     } catch (error) {
@@ -150,7 +118,11 @@ export function SignInForm() {
       if (error instanceof z.ZodError) {
         handleValidationError(error);
       } else if (error instanceof Error) {
-        handleBackendError(error as Error & BackendError);
+        handleBackendError(
+          'sign-in',
+          form as unknown as UseFormReturn<{ email: string }>,
+          error as Error & { status?: number }
+        );
       }
 
       setTimeout(() => setFormStatus('idle'), 1000);

@@ -1,9 +1,10 @@
 'use client';
 
 import { PasswordStrengthChecker } from '@/app/(auth)/_components/password-strength-checker';
+import { handleBackendError } from '@/app/(auth)/auth.util';
 import { captureException } from '@/sentry/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { signIn } from '@repo/auth/client';
+import { signIn, signUp } from '@repo/auth/client';
 import { cn } from '@repo/design-system';
 import { Button } from '@repo/design-system/components/ui/button';
 import {
@@ -14,14 +15,13 @@ import {
   FormMessage,
 } from '@repo/design-system/components/ui/form';
 import { Input } from '@repo/design-system/components/ui/input';
-import { useToast } from '@repo/design-system/components/ui/use-toast';
 import { companies } from '@repo/design-system/icons';
 import { Loader2, Mail } from 'lucide-react';
 import { motion } from 'motion/react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { type UseFormReturn, useForm } from 'react-hook-form';
 import * as z from 'zod';
 
 const signUpSchema = z.object({
@@ -69,18 +69,12 @@ const socialProviders = [
   },
 ] as const;
 
-type BackendError = {
-  message: string;
-  status?: number;
-};
-
 export function SignUpForm() {
   const [formStatus, setFormStatus] = useState<'idle' | 'success' | 'error'>(
     'idle'
   );
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-  const { toast } = useToast();
 
   const form = useForm<SignUpFormValues>({
     resolver: zodResolver(signUpSchema),
@@ -98,62 +92,30 @@ export function SignUpForm() {
     });
   };
 
-  const handleBackendError = (error: Error & BackendError) => {
-    switch (error.status) {
-      case 429:
-        toast({
-          variant: 'destructive',
-          title: 'Rate Limited',
-          description:
-            error.message || 'Too many attempts. Please try again later.',
-        });
-        break;
-
-      case 400:
-        form.setError('email', {
-          message: error.message,
-        });
-        break;
-
-      case 403:
-        toast({
-          variant: 'destructive',
-          title: 'Not Authorized',
-          description:
-            error.message || 'You are not authorized to perform this action.',
-        });
-        break;
-
-      default: {
-        captureException(error, {
-          context: 'sign-up-form',
-          email: form.getValues('email'),
-        });
-        toast({
-          variant: 'destructive',
-          title: 'Error',
-          description: 'Something went wrong. Please try again.',
-        });
-      }
-    }
-  };
-
   async function onSubmit(_values: SignUpFormValues) {
     try {
       setIsLoading(true);
       setFormStatus('success');
 
-      // TODO: Comment out real implementation
-      // await signUp.email({
-      //   email: values.email,
-      //   password: values.password,
-      //   callbackURL: '/auth/verify-email',
-      // });
+      const name = `${_values.firstName} ${_values.lastName}`;
 
-      // biome-ignore lint/correctness/noUndeclaredVariables: ?
-      // biome-ignore lint/suspicious/noConsoleLog: <explanation>
-      // biome-ignore lint/suspicious/noConsole: <explanation>
-      console.log(_values);
+      await signUp.email(
+        {
+          email: _values.email,
+          password: _values.password,
+          name,
+          callbackURL: '/auth/setup-profile',
+        },
+        {
+          onSuccess: (ctx) => {
+            if (ctx.data.emailVerified) {
+              router.push('/auth/setup-profile');
+            } else {
+              router.push('/auth/verify-email');
+            }
+          },
+        }
+      );
 
       setTimeout(() => router.push('/auth/verify-email'), 1000);
     } catch (error) {
@@ -162,7 +124,11 @@ export function SignUpForm() {
       if (error instanceof z.ZodError) {
         handleValidationError(error);
       } else if (error instanceof Error) {
-        handleBackendError(error as Error & BackendError);
+        handleBackendError(
+          'sign-up',
+          form as unknown as UseFormReturn<{ email: string }>,
+          error as Error & { status?: number }
+        );
       }
     } finally {
       setIsLoading(false);
