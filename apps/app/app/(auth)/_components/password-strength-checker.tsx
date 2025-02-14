@@ -58,6 +58,30 @@ const PasswordStrengthChecker = forwardRef<
     return strength.filter((req) => req.met && !req.optional).length;
   }, [strength]);
 
+  const getColor = (index: number, strengthScore: number) => {
+    if (index < strengthScore) {
+      if (index === 4) {
+        return 'bg-green-500';
+      }
+      if (index > 4) {
+        return 'bg-violet-500';
+      }
+      if (index < 4) {
+        switch (index) {
+          case 1:
+            return 'bg-orange-300';
+          case 2:
+            return 'bg-orange-400';
+          case 3:
+            return 'bg-orange-500';
+          default:
+            return 'bg-gray-300';
+        }
+      }
+    }
+    return 'bg-gray-300';
+  };
+
   return (
     <div className="space-y-2">
       {showLabel && label && <Label htmlFor={id}>{label}</Label>}
@@ -109,23 +133,15 @@ const PasswordStrengthChecker = forwardRef<
             transition={{ duration: 0.2 }}
             className="overflow-hidden"
           >
-            {/* Password strength pills */}
             <div className="mt-2 mb-3 flex gap-1.5">
               {requirements.slice(0, 5).map((_, index) => {
                 const isActive = index < strengthScore;
-                const isLast = index === 4;
-
                 return (
                   <motion.div
                     key={index}
                     className={cn(
                       'h-2 flex-1 rounded-full transition-colors duration-300',
-                      isActive
-                        ? // biome-ignore lint/nursery/noNestedTernary: ?
-                          isLast
-                          ? 'bg-violet-500'
-                          : 'bg-emerald-500'
-                        : 'bg-border'
+                      getColor(index, strengthScore)
                     )}
                     initial={{ scale: 0.8, opacity: 0 }}
                     animate={{
@@ -137,7 +153,6 @@ const PasswordStrengthChecker = forwardRef<
                 );
               })}
             </div>
-
             {/* Show only current requirement text */}
             <AnimatePresence mode="wait">
               {strengthScore < 5 && (
