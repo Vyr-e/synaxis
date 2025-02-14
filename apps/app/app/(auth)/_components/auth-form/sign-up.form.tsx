@@ -69,6 +69,11 @@ const socialProviders = [
   },
 ] as const;
 
+type BackendError = {
+  message: string;
+  status?: number;
+};
+
 export function SignUpForm() {
   const [formStatus, setFormStatus] = useState<'idle' | 'success' | 'error'>(
     'idle'
@@ -87,47 +92,78 @@ export function SignUpForm() {
     },
   });
 
-  async function onSubmit(values: SignUpFormValues) {
+  const handleValidationError = (error: z.ZodError) => {
+    form.setError('root', {
+      message: error.message,
+    });
+  };
+
+  const handleBackendError = (error: Error & BackendError) => {
+    switch (error.status) {
+      case 429:
+        toast({
+          variant: 'destructive',
+          title: 'Rate Limited',
+          description:
+            error.message || 'Too many attempts. Please try again later.',
+        });
+        break;
+
+      case 400:
+        form.setError('email', {
+          message: error.message,
+        });
+        break;
+
+      case 403:
+        toast({
+          variant: 'destructive',
+          title: 'Not Authorized',
+          description:
+            error.message || 'You are not authorized to perform this action.',
+        });
+        break;
+
+      default: {
+        captureException(error, {
+          context: 'sign-up-form',
+          email: form.getValues('email'),
+        });
+        toast({
+          variant: 'destructive',
+          title: 'Error',
+          description: 'Something went wrong. Please try again.',
+        });
+      }
+    }
+  };
+
+  async function onSubmit(_values: SignUpFormValues) {
     try {
       setIsLoading(true);
       setFormStatus('success');
-      const name = `${values.firstName.trim()} ${values.lastName.trim()}`;
 
       // TODO: Comment out real implementation
       // await signUp.email({
-      //   name,
       //   email: values.email,
       //   password: values.password,
       //   callbackURL: '/auth/verify-email',
       // });
-      // biome-ignore lint/suspicious/noConsoleLog: ?
-      // biome-ignore lint/suspicious/noConsole: ?
-      console.log(name, values.email, values.password);
+
+      // biome-ignore lint/correctness/noUndeclaredVariables: ?
+      // biome-ignore lint/suspicious/noConsoleLog: <explanation>
+      // biome-ignore lint/suspicious/noConsole: <explanation>
+      console.log(_values);
 
       setTimeout(() => router.push('/auth/verify-email'), 1000);
-      // router.push('/auth/verify-email');
     } catch (error) {
       setFormStatus('error');
 
-      // Handle validation errors
       if (error instanceof z.ZodError) {
-        form.setError('root', {
-          message: error.message,
-        });
+        handleValidationError(error);
+      } else if (error instanceof Error) {
+        handleBackendError(error as Error & BackendError);
       }
-      // Handle auth/network errors
-      else if (error instanceof Error) {
-        captureException(error, {
-          context: 'sign-up-form',
-          email: values.email,
-        });
-      }
-
-      toast({
-        variant: 'destructive',
-        title: 'Error',
-        description: 'Something went wrong. Please try again.',
-      });
     } finally {
       setIsLoading(false);
     }

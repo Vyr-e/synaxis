@@ -15,6 +15,7 @@ import {
 } from '@repo/design-system/components/ui/form';
 import { Input } from '@repo/design-system/components/ui/input';
 import { Label } from '@repo/design-system/components/ui/label';
+import { toast } from '@repo/design-system/components/ui/use-toast';
 import { Eye, EyeOff, Mail, companies } from '@repo/design-system/icons';
 import { motion } from 'motion/react';
 import Link from 'next/link';
@@ -69,6 +70,11 @@ const socialProviders = [
   },
 ] as const;
 
+type BackendError = {
+  message: string;
+  status?: number;
+};
+
 export function SignInForm() {
   const [formStatus, setFormStatus] = useState<'idle' | 'success' | 'error'>(
     'idle'
@@ -84,7 +90,46 @@ export function SignInForm() {
     },
   });
 
-  async function onSubmit(values: SignInFormValues) {
+  const handleValidationError = (error: z.ZodError) => {
+    form.setError('root', {
+      message: error.message,
+    });
+  };
+
+  const handleBackendError = (error: Error & BackendError) => {
+    switch (error.status) {
+      case 429:
+        toast({
+          variant: 'destructive',
+          title: 'Rate Limited',
+          description:
+            error.message || 'Too many attempts. Please try again later.',
+        });
+        break;
+
+      case 403:
+        toast({
+          variant: 'destructive',
+          title: 'Not Authorized',
+          description: error.message || 'Invalid credentials.',
+        });
+        break;
+
+      default: {
+        captureException(error, {
+          context: 'sign-in-form',
+          email: form.getValues('email'),
+        });
+        toast({
+          variant: 'destructive',
+          title: 'Error',
+          description: 'Something went wrong. Please try again.',
+        });
+      }
+    }
+  };
+
+  async function onSubmit(_values: SignInFormValues) {
     try {
       setFormStatus('success');
       // await signIn.email({
@@ -93,23 +138,19 @@ export function SignInForm() {
       //   callbackURL: '/',
       //   rememberMe,
       // });
+      // biome-ignore lint/correctness/noUndeclaredVariables: ?
+      // biome-ignore lint/suspicious/noConsoleLog: <explanation>
+      // biome-ignore lint/suspicious/noConsole: <explanation>
+      console.log(_values);
+
       setTimeout(() => setFormStatus('idle'), 1000);
-      return true; // TODO: Comment out real implementation
     } catch (error) {
       setFormStatus('error');
 
-      // Handle validation errors
       if (error instanceof z.ZodError) {
-        form.setError('root', {
-          message: error.message,
-        });
-      }
-      // Handle auth/network errors
-      else if (error instanceof Error) {
-        captureException(error, {
-          context: 'sign-in-form',
-          email: values.email,
-        });
+        handleValidationError(error);
+      } else if (error instanceof Error) {
+        handleBackendError(error as Error & BackendError);
       }
 
       setTimeout(() => setFormStatus('idle'), 1000);
