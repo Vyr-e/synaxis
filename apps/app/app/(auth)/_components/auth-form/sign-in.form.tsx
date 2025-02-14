@@ -87,13 +87,14 @@ export function SignInForm() {
   async function onSubmit(values: SignInFormValues) {
     try {
       setFormStatus('success');
-      await signIn.email({
-        email: values.email,
-        password: values.password,
-        callbackURL: '/',
-        rememberMe,
-      });
+      // await signIn.email({
+      //   email: values.email,
+      //   password: values.password,
+      //   callbackURL: '/',
+      //   rememberMe,
+      // });
       setTimeout(() => setFormStatus('idle'), 1000);
+      return true; // TODO: Comment out real implementation
     } catch (error) {
       setFormStatus('error');
 

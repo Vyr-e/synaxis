@@ -3,7 +3,7 @@
 import { PasswordStrengthChecker } from '@/app/(auth)/_components/password-strength-checker';
 import { captureException } from '@/sentry/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { signIn, signUp } from '@repo/auth/client';
+import { signIn } from '@repo/auth/client';
 import { cn } from '@repo/design-system';
 import { Button } from '@repo/design-system/components/ui/button';
 import {
@@ -93,14 +93,19 @@ export function SignUpForm() {
       setFormStatus('success');
       const name = `${values.firstName.trim()} ${values.lastName.trim()}`;
 
-      await signUp.email({
-        name,
-        email: values.email,
-        password: values.password,
-        callbackURL: '/auth/verify-email',
-      });
+      // TODO: Comment out real implementation
+      // await signUp.email({
+      //   name,
+      //   email: values.email,
+      //   password: values.password,
+      //   callbackURL: '/auth/verify-email',
+      // });
+      // biome-ignore lint/suspicious/noConsoleLog: ?
+      // biome-ignore lint/suspicious/noConsole: ?
+      console.log(name, values.email, values.password);
 
-      router.push('/auth/verify-email');
+      setTimeout(() => router.push('/auth/verify-email'), 1000);
+      // router.push('/auth/verify-email');
     } catch (error) {
       setFormStatus('error');
 
