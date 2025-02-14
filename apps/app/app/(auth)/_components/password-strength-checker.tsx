@@ -20,15 +20,15 @@ interface PasswordStrengthCheckerProps
   error?: boolean;
 }
 const requirements = [
-  { regex: /.{8,}/, text: 'At least 8 characters' },
   { regex: /[0-9]/, text: 'At least 1 number' },
+  { regex: /.{8,}/, text: 'At least 8 characters' },
   { regex: /[a-z]/, text: 'At least 1 lowercase letter' },
   { regex: /[A-Z]/, text: 'At least 1 uppercase letter' },
   { regex: /[!@#$%^&*(),.?":{}|<>]/, text: 'At least 1 special character' },
   {
     regex:
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>])[A-Za-z\d!@#$%^&*(),.?":{}|<>]{12,}$/,
-    text: 'High complexity (optional)',
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>])[A-Za-z\d!@#$%^&*(),.?":{}|<>]{16,}$/,
+    text: 'High complexity (optional) max of 16 characters',
     optional: true,
   },
 ];
@@ -54,46 +54,8 @@ const PasswordStrengthChecker = forwardRef<
 
   const strength = checkStrength(password);
 
-  const getStrengthColor = (score: number) => {
-    if (score === 0) {
-      return 'bg-border';
-    }
-    if (score <= 2) {
-      return 'bg-red-500';
-    }
-    if (score <= 3) {
-      return 'bg-orange-500';
-    }
-    if (score === 4) {
-      return 'bg-amber-500';
-    }
-    return 'bg-emerald-500';
-  };
-
-  const getStrengthText = (score: number) => {
-    if (score === 0) {
-      return 'Enter a password';
-    }
-    if (score <= 2) {
-      return 'Weak password';
-    }
-    if (score <= 3) {
-      return 'Medium password';
-    }
-    if (score === 4) {
-      return 'Strong password';
-    }
-    return 'Very strong password';
-  };
-
-  // Calculate actual score excluding optional requirements
   const strengthScore = useMemo(() => {
     return strength.filter((req) => req.met && !req.optional).length;
-  }, [strength]);
-
-  // Calculate bonus score for optional requirements
-  const bonusScore = useMemo(() => {
-    return strength.filter((req) => req.met && req.optional).length;
   }, [strength]);
 
   return (
@@ -139,7 +101,7 @@ const PasswordStrengthChecker = forwardRef<
       </div>
 
       <AnimatePresence>
-        {(isFocused || password) && (
+        {isFocused && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
@@ -147,81 +109,105 @@ const PasswordStrengthChecker = forwardRef<
             transition={{ duration: 0.2 }}
             className="overflow-hidden"
           >
-            {/* biome-ignore lint/nursery/useAriaPropsSupportedByRole: <explanation> */}
-            <div
-              tabIndex={0}
-              className="relative mt-3 mb-4 h-2 w-full overflow-hidden rounded-full bg-border"
-              role="progressbar"
-              aria-valuenow={strengthScore}
-              aria-valuemin={0}
-              aria-valuemax={5}
-              aria-label="Password strength"
-            >
-              <div
-                className={cn(
-                  'absolute inset-y-0 left-0 flex transition-all duration-500 ease-out',
-                  getStrengthColor(strengthScore)
-                )}
-                style={{
-                  width: `${((strengthScore + bonusScore * 0.5) / 5) * 100}%`,
-                  borderRadius: '9999px',
-                }}
-              >
-                {bonusScore > 0 && (
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent to-white/20" />
-                )}
-              </div>
+            {/* Password strength pills */}
+            <div className="mt-2 mb-3 flex gap-1.5">
+              {requirements.slice(0, 5).map((_, index) => {
+                const isActive = index < strengthScore;
+                const isLast = index === 4;
+
+                return (
+                  <motion.div
+                    key={index}
+                    className={cn(
+                      'h-2 flex-1 rounded-full transition-colors duration-300',
+                      isActive
+                        ? // biome-ignore lint/nursery/noNestedTernary: ?
+                          isLast
+                          ? 'bg-violet-500'
+                          : 'bg-emerald-500'
+                        : 'bg-border'
+                    )}
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    animate={{
+                      scale: isActive ? 1 : 0.8,
+                      opacity: isActive ? 1 : 0.5,
+                    }}
+                    transition={{ delay: index * 0.1 }}
+                  />
+                );
+              })}
             </div>
 
-            {/* Password strength description */}
-            <p
-              id={`${id}-description`}
-              className="mb-2 font-medium text-foreground text-sm"
-            >
-              {getStrengthText(strengthScore)}. Must contain:
-            </p>
+            {/* Show only current requirement text */}
+            <AnimatePresence mode="wait">
+              {strengthScore < 5 && (
+                <motion.div
+                  key={strengthScore}
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 10 }}
+                  className="flex h-5 items-center gap-2"
+                >
+                  {strengthScore < requirements.length - 1 && (
+                    <>
+                      <X
+                        size={16}
+                        className="text-muted-foreground/80"
+                        aria-hidden="true"
+                      />
+                      <span className="text-muted-foreground text-xs">
+                        {requirements[strengthScore].text}
+                      </span>
+                    </>
+                  )}
+                </motion.div>
+              )}
 
-            {/* Password requirements list */}
-            <ul className="space-y-1.5" aria-label="Password requirements">
-              {strength.map((req, index) => (
-                <li key={index} className="flex items-center gap-2">
-                  {req.met ? (
+              {/* Show both final requirement and optional one when we reach strength 4 */}
+              {strengthScore >= 4 && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="space-y-2"
+                >
+                  <div className="flex items-center gap-2">
                     <Check
                       size={16}
                       className="text-emerald-500"
                       aria-hidden="true"
                     />
-                  ) : (
-                    <X
-                      size={16}
-                      className={cn(
-                        'text-muted-foreground/80',
-                        req.optional && 'opacity-50'
-                      )}
-                      aria-hidden="true"
-                    />
-                  )}
-                  <span
-                    className={cn(
-                      'text-xs',
-                      req.met
-                        ? 'text-emerald-600 dark:text-emerald-400'
-                        : 'text-muted-foreground',
-                      req.optional && !req.met && 'opacity-50'
-                    )}
-                  >
-                    {req.text}
-                    {req.optional && ' (optional)'}
-                    <span className="sr-only">
-                      {req.met
-                        ? ' - Requirement met'
-                        : ' - Requirement not met'}
-                      {req.optional ? ' (optional)' : ''}
+                    <span className="text-emerald-600 text-xs dark:text-emerald-400">
+                      {requirements[4].text}
                     </span>
-                  </span>
-                </li>
-              ))}
-            </ul>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {strength[5].met ? (
+                      <Check
+                        size={16}
+                        className="text-violet-500"
+                        aria-hidden="true"
+                      />
+                    ) : (
+                      <X
+                        size={16}
+                        className="text-muted-foreground/50"
+                        aria-hidden="true"
+                      />
+                    )}
+                    <span
+                      className={cn(
+                        'text-xs',
+                        strength[5].met
+                          ? 'text-violet-500'
+                          : 'text-muted-foreground/50'
+                      )}
+                    >
+                      {requirements[5].text}
+                    </span>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </motion.div>
         )}
       </AnimatePresence>
