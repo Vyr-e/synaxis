@@ -7,9 +7,7 @@ import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { createAuthMiddleware } from 'better-auth/api';
 import { nextCookies } from 'better-auth/next-js';
 
-import { admin } from 'better-auth/plugins';
-
-import { organization } from 'better-auth/plugins';
+import { admin, organization, username } from 'better-auth/plugins';
 
 const auth = betterAuth({
   database: drizzleAdapter(drizzle, {
@@ -36,6 +34,7 @@ const auth = betterAuth({
         given_name: string;
         family_name: string;
         picture: string;
+        username: string;
       }) {
         return {
           id: profile.sub,
@@ -43,6 +42,7 @@ const auth = betterAuth({
           firstName: profile.given_name,
           lastName: profile.family_name,
           image: profile.picture,
+          username: profile.username || profile.email.split('@')[0],
         };
       },
     },
@@ -55,6 +55,7 @@ const auth = betterAuth({
         first_name: string;
         last_name: string;
         picture: { data: { url: string } };
+        username: string;
       }) {
         return {
           id: profile.id,
@@ -62,6 +63,7 @@ const auth = betterAuth({
           firstName: profile.first_name,
           lastName: profile.last_name,
           image: profile.picture?.data?.url,
+          username: profile.username || profile.email.split('@')[0],
         };
       },
     },
@@ -73,6 +75,7 @@ const auth = betterAuth({
         email: string;
         name: string;
         profile_image_url: string;
+        username: string;
       }) {
         const nameParts = profile.name?.split(' ') || ['', ''];
         return {
@@ -81,6 +84,7 @@ const auth = betterAuth({
           firstName: nameParts[0] || '',
           lastName: nameParts.slice(1).join(' ') || '',
           image: profile.profile_image_url,
+          username: profile.username || profile.email.split('@')[0],
         };
       },
     },
@@ -136,6 +140,7 @@ const auth = betterAuth({
     fields: {
       email: 'email',
       firstName: 'firstName',
+      username: 'username',
       lastName: 'lastName',
       role: 'role',
       image: 'image',
@@ -147,6 +152,10 @@ const auth = betterAuth({
       updatedAt: 'updatedAt',
     },
     additionalFields: {
+      username: {
+        type: 'string',
+        required: true,
+      },
       firstName: {
         type: 'string',
         required: true,
@@ -187,6 +196,7 @@ const auth = betterAuth({
   },
   plugins: [
     nextCookies(),
+    username(),
     admin({
       defaultRole: 'user',
       adminRole: ['admin', 'brand'],
