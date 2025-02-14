@@ -6,6 +6,7 @@ import {
   pgTable,
   text,
   timestamp,
+  unique,
   uuid,
   varchar,
 } from 'drizzle-orm/pg-core';
@@ -37,6 +38,7 @@ export const users = pgTable(
     id: uuid('id').defaultRandom().primaryKey(),
     firstName: varchar('first_name', { length: 256 }),
     lastName: varchar('last_name', { length: 256 }),
+    username: varchar('username', { length: 256 }).unique(),
     email: varchar('email', { length: 256 }).notNull().unique(),
     emailVerified: boolean('email_verified')
       .notNull()
@@ -59,5 +61,7 @@ export const users = pgTable(
   },
   (table) => ({
     emailIdx: index('email_idx').on(table.email),
+    usernameIdx: index('username_idx').on(table.username),
+    usernameUnique: unique('username_unique').on(table.username),
   })
 );
