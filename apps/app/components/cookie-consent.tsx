@@ -46,11 +46,11 @@ export function CookieConsent() {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 20 }}
           transition={{ duration: 0.2 }}
-          className="fixed inset-x-0 bottom-4 z-[100] mx-auto w-[400px] max-w-3xl rounded-lg border border-border md:right-4 md:w-full"
+          className="fixed inset-x-0 bottom-4 z-[100] mx-auto w-[400px] max-w-3xl md:right-4 md:left-auto md:mx-0 md:w-full"
         >
-          <div className=" rounded-lg border border-border bg-background bg-background p-4 shadow-black/5 shadow-lg">
-            <div className="flex w-full flex-col items-center justify-between gap-4 md:flex-row">
-              <div className="space-y-1">
+          <div className="rounded-lg border border-border bg-background p-4 shadow-black/5 shadow-lg">
+            <div className="flex w-full flex-col items-center justify-between gap-4 md:flex-row md:items-start">
+              <div className="space-y-1 text-center md:text-left">
                 <p className="font-medium text-sm">We Value Your Privacy 🍪</p>
                 <p className="text-muted-foreground text-sm">
                   We use cookies to improve your experience, analyze site usage,
