@@ -210,19 +210,20 @@ const auth = betterAuth({
       },
     },
     organization: {
+      //@ts-ignore
       sendInvitationEmail: async (data) => {
-        const { userId, organizationId, organizationSlug, createdAt } = data;
+        const { id, email, organization, inviter } = data;
         // TODO: Make a catch all route that captures and verifies these details before verifying a user has access to the correct invite info!
-        const inviteLink = `${env.NEXT_PUBLIC_APP_URL}/auth/invite?user_id=${userId}&brand_id=${organizationId}&brand_slug=${organizationSlug}&created_at=${createdAt}`;
+        const inviteLink = `${env.NEXT_PUBLIC_APP_URL}/auth/invite?user_id=${id}&brand_id=${organization.id}&brand_slug=${organization.slug}&created_at=${new Date().toISOString()}`;
 
         await resend.emails.send({
           from: env.RESEND_FROM,
-          to: data.email,
+          to: email,
           subject: 'Invitation to join organization',
           react: (
             <InviteTemplate
-              name={data.organization.name}
-              inviter={data.inviter.user.name}
+              name={organization.name}
+              inviter={inviter.user.name}
               inviteLink={inviteLink}
             />
           ),
