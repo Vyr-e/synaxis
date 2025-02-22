@@ -49,7 +49,7 @@ export const DeleteAccountTemplate: FC<DeleteAccountTemplateProps> = ({
             <div className="flex h-fit flex-col rounded-lg bg-[#2A2A2A] px-4 py-2">
               <div className="flex flex-col gap-2">
                 <h2 className="mb-0 w-full text-left font-normal text-2xl">
-                  We're sad to see you go, {name} 😢
+                  We're sad to see you go, {name}
                 </h2>
                 <Text className="mt-0 text-lg">
                   Your account deletion request has been received. Before we say
