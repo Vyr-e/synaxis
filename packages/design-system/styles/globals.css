@@ -4,6 +4,12 @@
 
 @layer base {
   :root {
+
+    
+  --input-autofill-bg: white;
+  --input-autofill-text: #000000;
+
+
     --background: 0 0% 100%;
     --foreground: 0 0% 3.9%;
 
@@ -55,6 +61,11 @@
     --sidebar-ring: 217.2 91.2% 59.8%;
 
     .dark {
+
+      
+  --input-autofill-bg: 00000;
+  --input-autofill-text: white;
+  
       --background: 0 0% 0%;
       --foreground: 0 0% 98%;
 
@@ -130,3 +141,26 @@
   }
 }
 
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px var(--input-autofill-bg) inset !important;
+  -webkit-text-fill-color: var(--input-autofill-text) !important;
+  -webkit-transition: background-color 5000s ease-in-out 0s;
+  transition: background-color 5000s ease-in-out 0s;
+  @apply focus-visible:ring-2 focus-visible:ring-quantum-blue;
+}
+
+
+
+input:autofill,
+input:autofill:hover,
+input:autofill:focus,
+input:autofill:active {
+  box-shadow: 0 0 0 30px var(--input-autofill-bg) inset !important;
+  -webkit-text-fill-color: var(--input-autofill-text) !important;
+  transition: background-color 5000s ease-in-out 0s;
+  @apply focus-visible:ring-2 focus-visible:ring-quantum-blue;
+}

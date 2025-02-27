@@ -1,4 +1,4 @@
-import { AnalyticsProvider } from '@repo/analytics';
+// import { AnalyticsProvider } from '@repo/analytics';
 import { AuthProvider } from '@repo/auth/provider';
 import { env } from '@repo/env';
 import { VercelToolbar } from '@vercel/toolbar/next';
@@ -17,13 +17,13 @@ export const DesignSystemProvider = ({
 }: DesignSystemProviderProperties) => (
   <ThemeProvider {...properties}>
     <AuthProvider>
-      <AnalyticsProvider>
-        <TooltipProvider>{children}</TooltipProvider>
-        <Toaster />
-        {env.NODE_ENV === 'development' && env.FLAGS_SECRET && env.TOOLBAR && (
-          <VercelToolbar />
-        )}
-      </AnalyticsProvider>
+      {/* <AnalyticsProvider> */}
+      <TooltipProvider>{children}</TooltipProvider>
+      <Toaster />
+      {env.NODE_ENV === 'development' && env.FLAGS_SECRET && env.TOOLBAR && (
+        <VercelToolbar />
+      )}
+      {/* </AnalyticsProvider> */}
     </AuthProvider>
   </ThemeProvider>
 );

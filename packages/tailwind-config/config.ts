@@ -25,6 +25,10 @@ export const config: Config = {
     },
     extend: {
       colors: {
+        'onyx-mirage': '#0b0c10',
+        'platinum-glint': '#B0B4B9',
+        'quantum-blue': '#0077FF',
+        'vital-burst': '#FF3D00',
         'background-accent': 'var(--accent)',
         border: 'hsl(var(--border) / <alpha-value>)',
         input: 'hsl(var(--input) / <alpha-value>)',
@@ -81,6 +85,10 @@ export const config: Config = {
           border: 'hsl(var(--sidebar-border))',
           ring: 'hsl(var(--sidebar-ring))',
         },
+      },
+      backgroundImage: {
+        'custom-gradient':
+          'linear-gradient(to right, #ffffff, #f3f4f6, #ffffff)',
       },
       fontFamily: {
         sans: ['var(--font-geist-sans)', ...defaultTheme.fontFamily.sans],
