@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import type { JSX, ReactNode } from 'react';
-import { AuthLayoutWrapper } from './layout.wrapper';
 
 export const metadata: Metadata = {
   title: 'Authentication',
@@ -16,9 +15,7 @@ export default function AuthLayout({
 }: AuthLayoutProperties): JSX.Element {
   return (
     <div className="flex min-h-dvh items-center justify-center overflow-y-hidden">
-      <div className="w-full">
-        <AuthLayoutWrapper>{children}</AuthLayoutWrapper>
-      </div>
+      <div className="w-full">{children}</div>
     </div>
   );
 }

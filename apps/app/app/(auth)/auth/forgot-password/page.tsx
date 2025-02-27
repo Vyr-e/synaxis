@@ -13,9 +13,9 @@ import {
   FormMessage,
 } from '@repo/design-system/components/ui/form';
 import { Input } from '@repo/design-system/components/ui/input';
-import { useToast } from '@repo/design-system/components/ui/use-toast';
+import { toast } from '@repo/design-system/components/ui/sonner';
 import { clashDisplay } from '@repo/design-system/fonts';
-import { KeyRound, Loader2 } from 'lucide-react';
+import { ChevronLeft, KeyRound, Loader2 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -30,7 +30,6 @@ type ForgotPasswordForm = z.infer<typeof forgotPasswordSchema>;
 
 export default function page() {
   const router = useRouter();
-  const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<ForgotPasswordForm>({
@@ -49,12 +48,8 @@ export default function page() {
         redirectTo: '/auth/reset-password',
       });
 
-      toast({
-        title: 'Reset link sent',
-        description: 'Please check your inbox for the password reset link.',
-      });
+      toast('Reset link sent');
 
-      // Optional: Redirect after a delay to give user time to read the toast
       setTimeout(() => router.push('/auth/sign-in'), 2000);
     } catch (error: unknown) {
       captureException(error as Error, {
@@ -63,9 +58,7 @@ export default function page() {
           email: data.email,
         },
       });
-      toast({
-        variant: 'destructive',
-        title: 'Failed to send reset link',
+      toast.error('Failed to send reset link', {
         description:
           'Please try again or contact support if the problem persists.',
       });
@@ -74,9 +67,24 @@ export default function page() {
     }
   }
 
+  const handleGoBack = () => {
+    router.back();
+  };
+
   return (
     <div className="flex min-h-screen flex-col">
-      <main className="flex flex-1 flex-col items-center justify-center p-4">
+      <main className="relative flex flex-1 flex-col items-center justify-center bg-white p-4">
+        <button
+          type="button"
+          onClick={handleGoBack}
+          className="group absolute top-4 left-4 flex items-center"
+        >
+          <div className="relative flex items-center gap-2 rounded-full bg-black/5 px-3 py-1.5 transition-all duration-300 hover:bg-black/10">
+            <ChevronLeft className="size-4 text-black/60" />
+            <span className="font-medium text-black/60 text-sm">Go back</span>
+          </div>
+        </button>
+
         <motion.div
           className="w-full max-w-md space-y-6"
           initial={{ opacity: 0, y: 20 }}
@@ -115,7 +123,7 @@ export default function page() {
                         autoCapitalize="none"
                         autoComplete="email"
                         autoCorrect="off"
-                        className="h-12 rounded-xl border-none bg-zinc-900 px-4 text-base text-white transition-all ease-in-out placeholder:text-zinc-500 focus-visible:ring-2 focus-visible:ring-white"
+                        className="h-12 rounded-xl border-2 bg-white/80 px-4 text-base text-black transition-all ease-in-out placeholder:text-zinc-500 focus-visible:ring-2 focus-visible:ring-quantum-blue"
                         {...field}
                       />
                     </FormControl>
@@ -127,9 +135,9 @@ export default function page() {
                 type="submit"
                 className={cn(
                   'w-full',
-                  'relative h-12 overflow-hidden rounded-xl px-4 py-2 font-medium text-sm transition-all hover:scale-[1.02]',
+                  'relative h-12 w-full overflow-hidden rounded-xl px-4 py-2 font-medium text-sm transition-all hover:scale-[1.02] hover:bg-quantum-blue/80',
                   isSubmitting && 'bg-gray-500 text-white',
-                  'bg-white text-black'
+                  'bg-quantum-blue text-white'
                 )}
                 disabled={isSubmitting}
               >

@@ -16,9 +16,9 @@ import {
   FormMessage,
 } from '@repo/design-system/components/ui/form';
 import { Input } from '@repo/design-system/components/ui/input';
-import { useToast } from '@repo/design-system/components/ui/use-toast';
+import { toast } from '@repo/design-system/components/ui/sonner';
 import { clashDisplay } from '@repo/design-system/fonts';
-import { KeyRound, Loader2 } from 'lucide-react';
+import { ChevronLeft, KeyRound, Loader2 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -39,7 +39,6 @@ type ResetPasswordForm = z.infer<typeof resetPasswordSchema>;
 
 export default function ResetPasswordPage() {
   const router = useRouter();
-  const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [token, setToken] = useState<string | null>(null);
 
@@ -52,28 +51,22 @@ export default function ResetPasswordPage() {
   });
 
   useEffect(() => {
-    // Only run on client side
-    const token = new URLSearchParams(window.location.search).get("token");
+    const token = new URLSearchParams(window.location.search).get('token');
     if (!token) {
-      toast({
-        variant: 'destructive',
-        title: 'Invalid or Missing Token',
+      toast('Invalid or Missing Token', {
         description: 'Please request a new password reset link.',
       });
       router.push('/auth/forgot-password');
       return;
     }
     setToken(token);
-  }, [router, toast]);
+  }, [router]);
 
   async function onSubmit(data: ResetPasswordForm) {
     if (!token) {
-      toast({
-        variant: 'destructive',
-        title: 'Invalid or Missing Token',
+      toast('Invalid or Missing Token', {
         description: 'Please request a new password reset link.',
       });
-      router.push('/auth/forgot-password');
       return;
     }
 
@@ -85,8 +78,7 @@ export default function ResetPasswordPage() {
         token,
       });
 
-      toast({
-        title: 'Password reset successful',
+      toast('Password reset successful', {
         description: 'You can now sign in with your new password.',
       });
 
@@ -95,9 +87,7 @@ export default function ResetPasswordPage() {
       captureException(error as Error, {
         level: 'error',
       });
-      toast({
-        variant: 'destructive',
-        title: 'Failed to reset password',
+      toast('Failed to reset password', {
         description:
           'The reset link may have expired. Please request a new one.',
       });
@@ -107,9 +97,24 @@ export default function ResetPasswordPage() {
     }
   }
 
+  const handleGoBack = () => {
+    router.back();
+  };
+
   return (
     <div className="flex min-h-screen flex-col">
-      <main className="flex flex-1 flex-col items-center justify-center p-4">
+      <main className="flex flex-1 flex-col items-center justify-center bg-white p-4">
+        <button
+          type="button"
+          onClick={handleGoBack}
+          className="group absolute top-4 left-4 flex items-center"
+        >
+          <div className="relative flex items-center gap-2 rounded-full bg-black/5 px-3 py-1.5 transition-all duration-300 hover:bg-black/10">
+            <ChevronLeft className="size-4 text-black/60" />
+            <span className="font-medium text-black/60 text-sm">Go back</span>
+          </div>
+        </button>
+
         <motion.div
           className="w-full max-w-md space-y-6"
           initial={{ opacity: 0, y: 20 }}
@@ -117,21 +122,19 @@ export default function ResetPasswordPage() {
         >
           <div className="space-y-2 text-center">
             <div className="mb-6 flex justify-center">
-              <div className="relative rounded-full bg-primary/10 p-3">
-                <KeyRound className="h-8 w-8 text-primary" />
+              <div className="relative rounded-full bg-quantum-blue/10 p-3">
+                <KeyRound className="h-8 w-8 text-quantum-blue" />
               </div>
             </div>
             <h1
               className={cn(
-                'text-4xl font-bold tracking-tight text-zinc-950 dark:text-zinc-50',
+                'font-bold text-4xl text-zinc-950 tracking-tight dark:text-zinc-50',
                 clashDisplay.className
               )}
             >
               Reset Password
             </h1>
-            <p className="text-muted-foreground">
-              Enter your new password below
-            </p>
+            <p className="text-zinc-500">Enter your new password below</p>
           </div>
 
           <Form {...form}>
@@ -145,7 +148,7 @@ export default function ResetPasswordPage() {
                       <PasswordStrengthChecker
                         placeholder="New password"
                         autoComplete="new-password"
-                        className="h-12 w-full rounded-xl border-none bg-zinc-900 px-4 text-base text-white transition-all ease-in-out placeholder:text-zinc-500 focus-visible:ring-2 focus-visible:ring-white"
+                        className="h-12 w-full rounded-xl border-2 bg-white/80 px-4 text-base text-black transition-all ease-in-out placeholder:text-zinc-500 focus-visible:ring-2 focus-visible:ring-quantum-blue"
                         error={!!form.formState.errors.password}
                         {...field}
                       />
@@ -164,7 +167,7 @@ export default function ResetPasswordPage() {
                         placeholder="Confirm password"
                         type="password"
                         autoComplete="new-password"
-                        className="h-12 w-full rounded-xl border-none bg-zinc-900 px-4 text-base text-white transition-all ease-in-out placeholder:text-zinc-500 focus-visible:ring-2 focus-visible:ring-white"
+                        className="h-12 w-full rounded-xl border-2 bg-white/80 px-4 text-base text-black transition-all ease-in-out placeholder:text-zinc-500 focus-visible:ring-2 focus-visible:ring-quantum-blue"
                         {...field}
                       />
                     </FormControl>
@@ -174,7 +177,7 @@ export default function ResetPasswordPage() {
               />
               <Button
                 type="submit"
-                className="w-full"
+                className="relative h-12 w-full overflow-hidden rounded-xl px-4 py-2 font-medium text-sm transition-all hover:scale-[1.02] hover:bg-quantum-blue/80"
                 disabled={isSubmitting || !token}
               >
                 {isSubmitting && (
@@ -185,12 +188,12 @@ export default function ResetPasswordPage() {
             </form>
           </Form>
 
-          <div className="text-center text-sm text-muted-foreground">
+          <div className="text-center text-sm text-zinc-500">
             <p>
               Remember your password?{' '}
               <Button
                 variant="link"
-                className="p-0 text-primary dark:text-muted-foreground"
+                className="p-0 text-quantum-blue hover:text-quantum-blue/80"
                 onClick={() => router.push('/auth/sign-in')}
               >
                 Back to sign in
