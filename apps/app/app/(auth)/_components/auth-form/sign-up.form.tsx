@@ -3,6 +3,7 @@
 import { PasswordStrengthChecker } from '@/app/(auth)/_components/password-strength-checker';
 import { handleBackendError } from '@/app/(auth)/auth.util';
 import { captureException } from '@/sentry/utils';
+import { useAuthStore } from '@/stores/useAuthStore';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { signIn, signUp } from '@repo/auth/client';
 import { cn } from '@repo/design-system';
@@ -23,6 +24,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { type UseFormReturn, useForm } from 'react-hook-form';
 import * as z from 'zod';
+import { LastUsedWrapper } from './last-used-wrapper';
 
 const signUpSchema = z.object({
   firstName: z.string().min(2, 'First name must be at least 2 characters'),
@@ -70,11 +72,10 @@ const socialProviders = [
 ] as const;
 
 export function SignUpForm() {
-  const [formStatus, setFormStatus] = useState<'idle' | 'success' | 'error'>(
-    'idle'
-  );
+  const [, setFormStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const { method, setMethod, setNewUserInfo } = useAuthStore();
 
   const form = useForm<SignUpFormValues>({
     resolver: zodResolver(signUpSchema),
@@ -108,6 +109,7 @@ export function SignUpForm() {
         },
         {
           onSuccess: (ctx) => {
+            setNewUserInfo();
             if (ctx.data.emailVerified) {
               router.push('/auth/setup-profile');
             } else {
@@ -116,6 +118,7 @@ export function SignUpForm() {
           },
         }
       );
+      setMethod('email');
 
       setTimeout(() => router.push('/auth/verify-email'), 1000);
     } catch (error) {
@@ -169,24 +172,35 @@ export function SignUpForm() {
         <div className="mx-auto w-full max-w-sm space-y-4">
           <div className="grid grid-cols-3 gap-3">
             {socialProviders.map((provider) => (
-              <Button
+              <LastUsedWrapper
                 key={provider.id}
-                onClick={() => handleSocialSignUp(provider.id)}
-                className="flex h-10 w-fit items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/5 text-white transition-colors hover:bg-white/10"
+                type="button"
+                show={method === provider.id}
               >
-                <provider.icon className="h-5 w-5" />
-                <span>{provider.label}</span>
-              </Button>
+                <Button
+                  onClick={() => handleSocialSignUp(provider.id)}
+                  className={cn(
+                    'flex h-10 w-fit items-center justify-center gap-2 rounded-lg border border-black/10 bg-white/5 text-black/80 transition-colors hover:bg-white/10',
+                    'relative'
+                  )}
+                >
+                  {method === provider.id && (
+                    <span className="-top-1 -right-1 absolute h-2 w-2 animate-ping rounded-full bg-blue-500" />
+                  )}
+                  <provider.icon className="h-5 w-5" />
+                  <span>{provider.label}</span>
+                </Button>
+              </LastUsedWrapper>
             ))}
           </div>
 
           {/* Divider */}
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-white/10 border-t" />
+              <div className="w-full border-black/10 border-t" />
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="rounded-full border bg-black px-2 text-zinc-500">
+              <span className="rounded-full border bg-white px-2 text-zinc-500">
                 Or
               </span>
             </div>
@@ -195,101 +209,39 @@ export function SignUpForm() {
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(onSubmit)}
-              className={cn('space-y-6 transition-all duration-200')}
+              className="space-y-6 transition-all duration-200"
             >
-              <div className="flex flex-col space-y-4">
-                {/* Name Fields Row */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <h2 className="font-medium text-sm text-white">
-                      First Name
-                    </h2>
-                    <FormField
-                      control={form.control}
-                      name="firstName"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormControl>
-                            <Input
-                              placeholder="John"
-                              className="h-12 rounded-xl border-none bg-zinc-900 px-4 text-base text-white transition-all ease-in-out placeholder:text-zinc-500 focus-visible:ring-2 focus-visible:ring-white"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <h2 className="font-medium text-sm text-white">
-                      Last Name
-                    </h2>
-                    <FormField
-                      control={form.control}
-                      name="lastName"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormControl>
-                            <Input
-                              placeholder="Doe"
-                              className="h-12 rounded-xl border-none bg-zinc-900 px-4 text-base text-white transition-all ease-in-out placeholder:text-zinc-500 focus-visible:ring-2 focus-visible:ring-white"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                </div>
-
-                {/* Email Field */}
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div className="space-y-2">
-                  <h2 className="font-medium text-sm text-white">Email</h2>
+                  <h2 className="font-medium text-black text-sm">First Name</h2>
                   <FormField
                     control={form.control}
-                    name="email"
+                    name="firstName"
                     render={({ field }) => (
                       <FormItem>
                         <FormControl>
-                          <div className="relative">
-                            <Input
-                              placeholder="eg. johnfran@gmail.com"
-                              type="email"
-                              className="h-12 rounded-xl border-none bg-zinc-900 px-4 text-base text-white transition-all ease-in-out placeholder:text-zinc-500 focus-visible:ring-2 focus-visible:ring-white"
-                              {...field}
-                            />
-                            <div className="pointer-events-none absolute inset-y-0 end-0 flex items-center justify-center pe-3 text-zinc-500">
-                              <Mail
-                                size={20}
-                                strokeWidth={1.5}
-                                aria-hidden="true"
-                              />
-                            </div>
-                          </div>
+                          <Input
+                            placeholder="John"
+                            className="h-12 rounded-xl border-2 bg-white/80 px-4 text-base text-black transition-all ease-in-out placeholder:text-zinc-500 focus-visible:ring-2 focus-visible:ring-quantum-blue"
+                            {...field}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
                 </div>
-
-                {/* Password Field */}
                 <div className="space-y-2">
-                  <h2 className="font-medium text-sm text-white">Password</h2>
+                  <h2 className="font-medium text-black text-sm">Last Name</h2>
                   <FormField
                     control={form.control}
-                    name="password"
+                    name="lastName"
                     render={({ field }) => (
                       <FormItem>
                         <FormControl>
-                          <PasswordStrengthChecker
-                            placeholder="Create a password"
-                            className="h-12 w-full rounded-xl border-none bg-zinc-900 px-4 text-base text-white transition-all ease-in-out placeholder:text-zinc-500 focus-visible:ring-2 focus-visible:ring-white"
-                            autoComplete="new-password"
-                            error={!!form.formState.errors.password}
+                          <Input
+                            placeholder="Doe"
+                            className="h-12 rounded-xl border-2 bg-white/80 px-4 text-base text-black transition-all ease-in-out placeholder:text-zinc-500 focus-visible:ring-2 focus-visible:ring-quantum-blue"
                             {...field}
                           />
                         </FormControl>
@@ -300,67 +252,74 @@ export function SignUpForm() {
                 </div>
               </div>
 
+              <div className="space-y-2">
+                <h2 className="font-medium text-black text-sm">Email</h2>
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <div className="relative">
+                          <Input
+                            placeholder="eg. johnfran@gmail.com"
+                            type="email"
+                            className="h-12 rounded-xl border-2 bg-white/80 px-4 text-base text-black transition-all ease-in-out placeholder:text-zinc-500 focus-visible:ring-2 focus-visible:ring-quantum-blue"
+                            {...field}
+                          />
+                          <div className="pointer-events-none absolute inset-y-0 end-0 flex items-center justify-center pe-3 text-zinc-500">
+                            <Mail
+                              size={20}
+                              strokeWidth={1.5}
+                              aria-hidden="true"
+                            />
+                          </div>
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <h2 className="font-medium text-black text-sm">Password</h2>
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <PasswordStrengthChecker
+                          placeholder="Create a password"
+                          className="h-12 w-full rounded-xl border-2 bg-white/80 px-4 text-base text-black transition-all ease-in-out placeholder:text-zinc-500 focus-visible:ring-2 focus-visible:ring-quantum-blue"
+                          autoComplete="new-password"
+                          error={!!form.formState.errors.password}
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
               <div className="relative">
                 <Button
                   type="submit"
                   className={cn(
-                    'relative h-12 w-full overflow-hidden rounded-xl px-4 py-2 font-medium text-sm transition-all hover:scale-[1.02]',
-                    isLoading && 'bg-gray-500 text-white',
-                    'bg-white text-black'
+                    'relative h-12 w-full overflow-hidden rounded-xl bg-quantum-blue px-4 py-2 font-medium text-sm text-white transition-all hover:scale-[1.02]',
+                    isLoading && 'bg-gray-500 text-white'
                   )}
                   disabled={isLoading}
                 >
                   {isLoading && (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   )}
-                  <div className="absolute inset-0 animate-shimmer bg-gradient-to-r from-white/0 via-white/5 to-white/0" />
                   <div className="relative flex items-center justify-center gap-2">
                     <span>Create Account</span>
-                    {formStatus !== 'idle' && (
-                      <motion.div
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        className="relative h-2 w-2"
-                      >
-                        <div
-                          className={cn(
-                            'absolute h-2 w-2 rounded-full',
-                            formStatus === 'success' && 'bg-emerald-500',
-                            formStatus === 'error' && 'bg-red-500'
-                          )}
-                        />
-                        <div
-                          className={cn(
-                            'absolute h-2 w-2 animate-ping rounded-full',
-                            formStatus === 'success' && 'bg-emerald-500',
-                            formStatus === 'error' && 'bg-red-500'
-                          )}
-                        />
-                      </motion.div>
-                    )}
                   </div>
                 </Button>
-
-                {/* Form Status Indicator */}
-                {formStatus !== 'idle' && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="-bottom-6 absolute right-0 left-0 text-center"
-                  >
-                    <span
-                      className={cn(
-                        'font-medium text-xs',
-                        formStatus === 'success' && 'text-emerald-500',
-                        formStatus === 'error' && 'text-red-500'
-                      )}
-                    >
-                      {formStatus === 'success' &&
-                        '✓ Account created successfully'}
-                      {formStatus === 'error' && '× Something went wrong'}
-                    </span>
-                  </motion.div>
-                )}
               </div>
 
               {/* Privacy and Sign In Link */}

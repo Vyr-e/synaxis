@@ -63,9 +63,6 @@ const PasswordStrengthChecker = forwardRef<
       if (index === 4) {
         return 'bg-green-500';
       }
-      if (index > 4) {
-        return 'bg-violet-500';
-      }
       if (index < 4) {
         switch (index) {
           case 1:
@@ -109,7 +106,7 @@ const PasswordStrengthChecker = forwardRef<
           aria-describedby={`${id}-description`}
         />
         <button
-          className="absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-lg text-muted-foreground/80 outline-offset-2 transition-colors hover:text-foreground focus:z-10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring/70 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
+          className="absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-lg text-muted-foreground/90 outline-offset-2 transition-colors hover:text-foreground focus:z-10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring/70 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
           type="button"
           onClick={toggleVisibility}
           aria-label={isVisible ? 'Hide password' : 'Show password'}
@@ -134,14 +131,15 @@ const PasswordStrengthChecker = forwardRef<
             className="overflow-hidden"
           >
             <div className="mt-2 mb-3 flex gap-1.5">
-              {requirements.slice(0, 5).map((_, index) => {
+              {requirements.slice(0, 6).map((_, index) => {
                 const isActive = index < strengthScore;
                 return (
                   <motion.div
                     key={index}
                     className={cn(
                       'h-2 flex-1 rounded-full transition-colors duration-300',
-                      getColor(index, strengthScore)
+                      getColor(index, strengthScore),
+                      index === 5 && strengthScore === 5 ? 'bg-violet-500' : ''
                     )}
                     initial={{ scale: 0.8, opacity: 0 }}
                     animate={{
@@ -191,7 +189,11 @@ const PasswordStrengthChecker = forwardRef<
                       className="text-emerald-500"
                       aria-hidden="true"
                     />
-                    <span className="text-emerald-600 text-xs dark:text-emerald-400">
+                    <span
+                      className={
+                        'text-emerald-600 text-xs dark:text-emerald-400'
+                      }
+                    >
                       {requirements[4].text}
                     </span>
                   </div>
