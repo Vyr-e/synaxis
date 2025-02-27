@@ -2,17 +2,21 @@
 
 import { captureException } from '@/sentry';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { /*sendVerificationEmail,*/ useSession } from '@repo/auth/client';
+import {
+  changeEmail,
+  sendVerificationEmail,
+  useSession,
+} from '@repo/auth/client';
 import { cn } from '@repo/design-system';
 import { Button } from '@repo/design-system/components/ui/button';
 import { Form } from '@repo/design-system/components/ui/form';
 import { Input } from '@repo/design-system/components/ui/input';
-import { useToast } from '@repo/design-system/components/ui/use-toast';
+import { toast } from '@repo/design-system/components/ui/sonner';
 import { clashDisplay } from '@repo/design-system/fonts';
-import { Loader2, Mail } from 'lucide-react';
+import { ChevronLeft, Loader2, Mail } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -22,29 +26,19 @@ const verifyEmailSchema = z.object({
 
 type VerifyEmailForm = z.infer<typeof verifyEmailSchema>;
 
-const COOLDOWN_DELAY = 30; // 30 seconds between attempts
+const COOLDOWN_DELAY = 15; // 15 seconds between attempts
 const MAX_ATTEMPTS = 5;
-const RATE_LIMIT_DELAY = 120; // 2 minutes rate limit after max attempts
-
-// Mock function for testing UI
-const mockSendVerification = () =>
-  new Promise<void>((resolve, reject) => {
-    if (Math.random() > 0.3) {
-      setTimeout(resolve, 1000);
-    } else {
-      setTimeout(() => reject(new Error('Failed to send email')), 1000);
-    }
-  });
+const RATE_LIMIT_DELAY = 30; // 30 seconds rate limit after max attempts
 
 export default function VerifyEmailPage() {
   const router = useRouter();
-  const { toast } = useToast();
   const { data: session } = useSession();
   const user = session?.user;
   const [isResending, setIsResending] = useState(false);
   const [attempts, setAttempts] = useState(0);
   const [countdown, setCountdown] = useState(0);
   const [isRateLimited, setIsRateLimited] = useState(false);
+  const [showEmailInput, setShowEmailInput] = useState(false);
 
   const form = useForm<VerifyEmailForm>({
     resolver: zodResolver(verifyEmailSchema),
@@ -76,7 +70,6 @@ export default function VerifyEmailPage() {
     }
   }, [countdown, isRateLimited]);
 
-  // Calculate circle properties
   const CIRCLE_RADIUS = 48;
   const SEGMENT_COUNT = 3;
   const GAP_SIZE = 4;
@@ -92,7 +85,7 @@ export default function VerifyEmailPage() {
 
     return {
       length: maxLength * progress,
-      scale: 0.8 + 0.2 * progress, // Scale from 0.8 to 1.0
+      scale: 0.8 + 0.2 * progress,
     };
   };
 
@@ -105,23 +98,24 @@ export default function VerifyEmailPage() {
       if (newAttemptCount >= MAX_ATTEMPTS) {
         setIsRateLimited(true);
         setCountdown(RATE_LIMIT_DELAY);
-        toast({
-          variant: 'destructive',
-          title: 'Too Many Attempts',
-          description: 'Please try again in 2 minutes.',
+        toast.warning('Too Many Attempts', {
+          description: 'Please try again in 30 seconds.',
         });
         return;
       }
-      // TODO: Comment out real implementation
-      // await sendVerificationEmail({
-      //   email: user?.email || form.getValues('email'),
-      //   callbackURL: '/auth/setup-profile',
-      // })
-      await mockSendVerification();
 
-      toast({
-        title: 'Verification email sent',
-        description: 'Please check your inbox and spam folder.',
+      const newEmail = form.getValues('email');
+
+      await changeEmail({
+        newEmail,
+        callbackURL: '/auth/setup-profile',
+      });
+
+      await sendVerificationEmail({
+        email: user?.email || form.getValues('email'),
+        callbackURL: '/auth/setup-profile',
+      }).then(() => {
+        toast('Verification mail sent to your mail');
       });
 
       setCountdown(COOLDOWN_DELAY);
@@ -129,12 +123,11 @@ export default function VerifyEmailPage() {
       captureException(error as Error, {
         level: 'error',
         extra: {
+          page: 'verify-mail',
           email: user?.email,
         },
       });
-      toast({
-        variant: 'destructive',
-        title: 'Failed to send email',
+      toast.error('Failed to send email', {
         description:
           'Please try again or contact support if the problem persists.',
       });
@@ -143,28 +136,59 @@ export default function VerifyEmailPage() {
     }
   };
 
+  const handleGoBack = () => {
+    router.back();
+  };
+
+  const handleTryAnotherEmail = () => {
+    setShowEmailInput(true);
+  };
+
   return (
     <div className="flex min-h-screen flex-col">
-      <main className="flex flex-1 flex-col items-center justify-center p-4">
+      <main className="relative flex flex-1 flex-col items-center justify-center bg-white p-4">
+        <button
+          type="button"
+          onClick={handleGoBack}
+          className="group absolute top-4 left-4 flex items-center"
+        >
+          <div className="relative flex items-center gap-2 rounded-full bg-black/5 px-3 py-1.5 transition-all duration-300 hover:bg-black/10">
+            <ChevronLeft className="size-4 text-black/60" />
+            <span className="font-medium text-black/60 text-sm">Go back</span>
+          </div>
+        </button>
+
         <motion.div
           className="w-full max-w-md space-y-6"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          {/* Icon and Header */}
           <div className="space-y-2 text-center">
             <div className="mb-6 flex justify-center">
-              <div className="relative rounded-full bg-primary/10 p-3">
-                <Mail
-                  className={cn(
-                    'h-8 w-8 text-primary transition-opacity duration-300',
-                    countdown > 0 && 'opacity-0'
-                  )}
-                />
+              <div
+                className={cn(
+                  'relative rounded-full bg-quantum-blue/10 p-3 text-quantum-blue',
+                  isRateLimited && 'bg-red-500/10 text-red-500',
+                  'transition-all'
+                )}
+              >
+                <motion.div
+                  animate={{
+                    opacity: countdown > 0 ? 0 : 1,
+                  }}
+                  transition={{ duration: 0.3, ease: 'easeOut' }}
+                >
+                  <Mail
+                    className={cn(
+                      'h-8 w-8 transition-opacity',
+                      countdown > 0 || (isRateLimited && 'opacity-0')
+                    )}
+                  />
+                </motion.div>
                 {countdown > 0 && !isRateLimited && (
                   <div className="absolute inset-0">
                     <svg
-                      className="h-full w-full text-muted-foreground/20"
+                      className="h-full w-full"
                       viewBox="0 0 100 100"
                       fill="transparent"
                     >
@@ -174,7 +198,7 @@ export default function VerifyEmailPage() {
                         return (
                           <circle
                             key={index}
-                            className="origin-center text-primary transition-all duration-300 ease-in-out"
+                            className="origin-center text-quantum-blue transition-all duration-300 ease-in-out"
                             strokeWidth="4"
                             strokeDasharray={`${length} ${360}`}
                             strokeLinecap="round"
@@ -190,9 +214,13 @@ export default function VerifyEmailPage() {
                         );
                       })}
                     </svg>
-                    <span className="absolute inset-0 flex items-center justify-center font-medium text-xs">
+                    <motion.span
+                      className="absolute inset-0 flex items-center justify-center font-medium text-xs"
+                      animate={{ opacity: 1 }}
+                      initial={{ opacity: 0.5 }}
+                    >
                       {countdown}s
-                    </span>
+                    </motion.span>
                   </div>
                 )}
               </div>
@@ -205,56 +233,73 @@ export default function VerifyEmailPage() {
             >
               Check your email
             </h1>
-            <p className="text-muted-foreground">
+            <p className="text-zinc-500">
               We sent you a verification link. Please check your email to verify
               your account.
             </p>
           </div>
 
-          {/* Form Section */}
-          <Form {...form}>
-            <form className="space-y-4">
-              {!user?.email && (
-                <Input
-                  {...form.register('email')}
-                  type="email"
-                  placeholder="Enter your email"
-                  className="h-12 w-full rounded-xl border-none bg-zinc-900 px-4 text-base text-white transition-all ease-in-out placeholder:text-zinc-500 focus-visible:ring-2 focus-visible:ring-white"
-                />
-              )}
-              <Button
-                type="button"
-                className={cn(
-                  'w-full',
-                  'relative h-12 overflow-hidden rounded-xl px-4 py-2 font-medium text-sm transition-all hover:scale-[1.02]',
-                  isResending && 'bg-gray-500 text-white',
-                  isRateLimited && 'bg-red-500/10 text-red-500',
-                  !isResending && !isRateLimited && 'bg-white text-black'
-                )}
-                onClick={handleResendVerification}
-                disabled={isResending || countdown > 0}
+          {/* Email Input Section */}
+          {showEmailInput && (
+            // biome-ignore lint/style/useFragmentSyntax: This shouldnt be a rule
+            <Fragment>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
               >
-                {isResending && (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                )}
-                {isRateLimited
-                  ? `Rate limited - Try again in ${countdown}s`
-                  : 'Resend verification email'}
-              </Button>
-            </form>
-          </Form>
+                <Form {...form}>
+                  <form className="space-y-4">
+                    {!user?.email && (
+                      <Input
+                        {...form.register('email')}
+                        type="email"
+                        placeholder="Enter your email"
+                        className="h-12 rounded-xl border-2 bg-white/80 px-4 text-base text-black transition-all ease-in-out placeholder:text-zinc-500 focus-visible:ring-2 focus-visible:ring-quantum-blue"
+                      />
+                    )}
+                    <Button
+                      type="button"
+                      className={cn(
+                        'relative h-12 w-full overflow-hidden rounded-xl px-4 py-2 font-medium text-sm transition-all hover:scale-[1.02] hover:bg-quantum-blue/80',
+                        isResending && 'bg-gray-500 text-white',
+                        isRateLimited && 'bg-red-500/10 text-red-500',
+                        !isResending &&
+                          !isRateLimited &&
+                          'bg-quantum-blue text-white'
+                      )}
+                      onClick={handleResendVerification}
+                      disabled={isResending || countdown > 0}
+                    >
+                      {isResending && (
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      )}
+                      <div className="absolute inset-0 animate-shimmer bg-gradient-to-r from-white/0 via-white/5 to-white/0" />
+                      <div className="relative flex items-center justify-center gap-2">
+                        <span>
+                          {isRateLimited
+                            ? `Rate limited - Try again in ${countdown}s`
+                            : 'Resend verification email'}
+                        </span>
+                      </div>
+                    </Button>
+                  </form>
+                </Form>
+              </motion.div>
+            </Fragment>
+          )}
 
-          {/* Help Text */}
-          <div className="text-center text-muted-foreground text-sm">
+          {/* Help Text with Try Another Email Link */}
+          <div className="text-center text-sm text-zinc-500">
             <p>
               Didn't receive the email? Check your spam folder or{' '}
-              <Button
-                variant="link"
-                className={cn('p-0 text-primary dark:text-muted-foreground')}
-                onClick={() => router.push('/auth/sign-in')}
+              <button
+                type="button"
+                onClick={handleTryAnotherEmail}
+                className="text-quantum-blue underline hover:text-quantum-blue/80"
               >
                 try another email
-              </Button>
+              </button>
             </p>
           </div>
         </motion.div>
