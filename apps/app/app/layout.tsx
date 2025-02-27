@@ -1,4 +1,4 @@
-import { cn, DesignSystemProvider } from '@repo/design-system';
+import { DesignSystemProvider, cn } from '@repo/design-system';
 import { clashDisplay } from '@repo/design-system/fonts';
 import '@repo/design-system/styles/globals.css';
 // import { ErrorBoundary } from '@sentry';
@@ -52,9 +52,13 @@ export default function RootLayout({
   children,
 }: RootLayoutProperties): JSX.Element {
   return (
-    <html lang="en" className={cn(inter.className, clashDisplay.variable)} suppressHydrationWarning>
+    <html
+      lang="en"
+      className={cn(inter.className, clashDisplay.variable)}
+      suppressHydrationWarning
+    >
       <body>
-        <DesignSystemProvider defaultTheme="dark">
+        <DesignSystemProvider defaultTheme="light">
           {children}
           <CookieConsent />
         </DesignSystemProvider>
