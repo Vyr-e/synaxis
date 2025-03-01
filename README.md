@@ -75,7 +75,7 @@ Synaxis is built with a modern, scalable tech stack to handle its ambitious feat
 - Node.js (v18+)
 - PostgreSQL (v15+)
 - Redis (v7+)
-- Go (v1.21+)
+- Go (v1.23+)
 - Vercel CLI
 - API keys: OpenAI/Google (embeddings), Upstash, Cloudflare, Uploadthing, Arcjet, PostHog, Sentry
 
