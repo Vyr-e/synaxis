@@ -46,7 +46,7 @@
   },
   "packageManager": "pnpm@9.15.0",
   "dependencies": {
-    "commander": "^12.1.0",
+    "commander": "^13.1.0",
     "dotenv": "^16.4.7",
     "drizzle-orm": "^0.38.4",
     "gsap": "^3.12.7",
