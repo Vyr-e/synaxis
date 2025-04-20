@@ -2,7 +2,12 @@ import { env } from '@repo/env';
 import { config, withAnalyzer, withSentry } from '@repo/next-config';
 import type { NextConfig } from 'next';
 
-let nextConfig: NextConfig = { ...config };
+let nextConfig: NextConfig = { ...config, 
+experimental: {
+    nodeMiddleware: true,
+    ...(config.experimental || {}),
+  },
+};
 
 if (env.VERCEL) {
   nextConfig = withSentry(nextConfig);
