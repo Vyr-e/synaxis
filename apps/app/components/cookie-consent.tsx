@@ -8,6 +8,7 @@ import {
 } from '@repo/design-system/components/ui/dialog';
 import { Switch } from '@repo/design-system/components/ui/switch';
 import { X } from 'lucide-react';
+// Assuming motion/react is intentional. If using framer-motion, import from 'framer-motion'
 import { AnimatePresence, motion } from 'motion/react';
 import { useEffect, useRef, useState } from 'react';
 
@@ -35,7 +36,7 @@ const consentOptions: ConsentOption[] = [
     id: 'functional',
     label: 'Functional',
     description:
-      'Enable features that enhance your browsing experience and preferences.',
+      'Enable features that enhance your Browse experience and preferences.',
   },
   {
     id: 'essential',
@@ -54,6 +55,10 @@ const setCookie = (
   value: string,
   options: { expires?: Date; path?: string; sameSite?: string } = {}
 ) => {
+  // Ensure this only runs client-side
+  if (typeof document === 'undefined') {
+    return;
+  }
   let cookie = `${name}=${value}`;
 
   if (options.expires) {
@@ -68,7 +73,7 @@ const setCookie = (
     cookie += `; SameSite=${options.sameSite}`;
   }
 
-  // biome-ignore lint/nursery/noDocumentCookie: ?
+  // biome-ignore lint/nursery/noDocumentCookie: Intentional cookie setting
   document.cookie = cookie;
 };
 
@@ -76,15 +81,21 @@ export function CookieConsent() {
   const [showConsent, setShowConsent] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [consents, setConsents] = useState<Record<string, boolean>>(() => {
-    const savedConsents =
-      typeof window !== 'undefined'
-        ? document.cookie
-            .split('; ')
-            .find((row) => row.startsWith(`${CONSENT_SETTINGS_KEY}=`))
-            ?.split('=')[1]
-        : null;
+    // Client-side check for document access
+    if (typeof window === 'undefined') {
+      return {
+        marketing: false,
+        analytics: false,
+        functional: false,
+        essential: true,
+      };
+    }
+    const savedConsents = document.cookie
+      .split('; ')
+      .find((row) => row.startsWith(`${CONSENT_SETTINGS_KEY}=`))
+      ?.split('=')[1];
 
-    return savedConsents
+    const initialState = savedConsents
       ? JSON.parse(decodeURIComponent(savedConsents))
       : {
           marketing: false,
@@ -92,10 +103,16 @@ export function CookieConsent() {
           functional: false,
           essential: true,
         };
+    initialState.essential = true;
+    return initialState;
   });
   const consentTimeout = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
+    if (typeof document === 'undefined') {
+      return;
+    }
+
     const consent = document.cookie
       .split('; ')
       .find((row) => row.startsWith(COOKIE_CONSENT_KEY));
@@ -117,18 +134,36 @@ export function CookieConsent() {
     const expiryDate = new Date();
     expiryDate.setFullYear(expiryDate.getFullYear() + 1);
 
-    setCookie(COOKIE_CONSENT_KEY, accepted.toString(), {
+    const newConsents = accepted
+      ? { marketing: true, analytics: true, functional: true, essential: true }
+      : { ...consents, essential: true };
+
+    setCookie(COOKIE_CONSENT_KEY, accepted ? 'true' : 'false', {
       expires: expiryDate,
       path: '/',
       sameSite: 'Lax',
     });
+
+    setCookie(
+      CONSENT_SETTINGS_KEY,
+      encodeURIComponent(JSON.stringify(newConsents)),
+      {
+        expires: expiryDate,
+        path: '/',
+        sameSite: 'Lax',
+      }
+    );
+
+    setConsents(newConsents as Record<string, boolean>);
     setShowConsent(false);
+    setShowSettings(false);
   };
 
   const handleToggle = (id: string) => {
     if (id === 'essential') {
       return;
     }
+
     const newConsents = { ...consents, [id]: !consents[id] };
     setConsents(newConsents);
 
@@ -144,6 +179,41 @@ export function CookieConsent() {
         sameSite: 'Lax',
       }
     );
+
+    const consentCookie = document.cookie
+      .split('; ')
+      .find((row) => row.startsWith(COOKIE_CONSENT_KEY));
+    if (!consentCookie || consentCookie.split('=')[1] === 'false') {
+      setCookie(COOKIE_CONSENT_KEY, 'true', {
+        expires: expiryDate,
+        path: '/',
+        sameSite: 'Lax',
+      });
+    }
+  };
+
+  const handleSaveSettings = () => {
+    const expiryDate = new Date();
+    expiryDate.setFullYear(expiryDate.getFullYear() + 1);
+
+    setCookie(COOKIE_CONSENT_KEY, 'true', {
+      expires: expiryDate,
+      path: '/',
+      sameSite: 'Lax',
+    });
+
+    // Save the specific settings
+    setCookie(
+      CONSENT_SETTINGS_KEY,
+      encodeURIComponent(JSON.stringify(consents)),
+      {
+        expires: expiryDate,
+        path: '/',
+        sameSite: 'Lax',
+      }
+    );
+    setShowSettings(false);
+    setShowConsent(false);
   };
 
   return (
@@ -157,15 +227,16 @@ export function CookieConsent() {
             transition={{ duration: 0.2 }}
             className="fixed inset-x-0 bottom-4 left-4 z-[100] w-[400px] max-w-3xl"
           >
-            <div className="rounded-xl bg-gray-100 p-4 text-gray-800 shadow-lg">
+            {/* Banner appearance as per your original code */}
+            <div className="p-4 text-gray-800 bg-gray-100 rounded-xl shadow-lg">
               <div className="space-y-4">
                 <p className="text-sm">
                   This site uses tracking technologies. You may opt in or opt
                   out of the use of these technologies.
                 </p>
-
-                <div className="flex flex-wrap items-center justify-between gap-2">
+                <div className="flex flex-wrap gap-2 justify-between items-center">
                   <div className="flex gap-2">
+                    {/* Deny Button - original styles */}
                     <Button
                       variant="outline"
                       size="sm"
@@ -174,6 +245,7 @@ export function CookieConsent() {
                     >
                       Deny
                     </Button>
+                    {/* Accept All Button - original styles */}
                     <Button
                       variant="outline"
                       size="sm"
@@ -183,11 +255,18 @@ export function CookieConsent() {
                       Accept all
                     </Button>
                   </div>
-
+                  {/* Consent Settings Button - original styles */}
                   <Button
                     variant="secondary"
                     size="sm"
-                    onClick={() => setShowSettings(true)}
+                    onClick={() => {
+                      setShowSettings(true);
+                      // Optionally hide banner when settings open
+                      setShowConsent(false);
+                      if (consentTimeout.current) {
+                        clearTimeout(consentTimeout.current);
+                      }
+                    }}
                     className="rounded-full bg-quantum-blue text-white transition-colors duration-300 hover:bg-[#0066DD]"
                   >
                     Consent Settings
@@ -199,24 +278,30 @@ export function CookieConsent() {
         )}
       </AnimatePresence>
 
+      {/* --- Settings Dialog --- */}
       <Dialog open={showSettings} onOpenChange={setShowSettings}>
-        <DialogContent className="relative gap-0 overflow-hidden p-0">
-          {/* Custom close button with circle ring */}
-          <DialogClose className="absolute top-6 right-6 flex h-8 w-8 items-center justify-center rounded-full border border-gray-300 transition-all duration-200 hover:border-gray-400 hover:bg-gray-100">
-            <X className="h-4 w-4" />
+        <DialogContent
+          className="overflow-hidden gap-0 p-0 max-w-lg border-2 border-red-500"
+          defaultCloseIcon={false}
+        >
+          <DialogClose className="flex absolute top-6 right-6 justify-center items-center w-8 h-8 rounded-full border border-gray-300 transition-all duration-200 hover:border-gray-400 hover:bg-gray-100">
+            <div className="">
+              <X className="w-4 h-4" />
+              <span className="sr-only">Close</span>
+            </div>
           </DialogClose>
 
           <div className="p-6">
-            <div className="mb-6 flex items-center">
-              <h2 className="font-semibold text-2xl">Your Privacy</h2>
+            <div className="flex items-center mb-6">
+              <h2 className="text-2xl font-semibold">Your Privacy</h2>
             </div>
           </div>
 
-          <div className="bg-gray-50 px-6 pb-6">
+          <div className="px-6 pb-6 bg-gray-50">
             <div className="space-y-6">
               {consentOptions.map((option) => (
                 <div key={option.id} className="space-y-2">
-                  <div className="flex items-center justify-between">
+                  <div className="flex justify-between items-center">
                     <span
                       className={`rounded-md px-3 py-1 font-medium text-sm ${
                         option.required
@@ -231,14 +316,18 @@ export function CookieConsent() {
                       onCheckedChange={() => handleToggle(option.id)}
                       disabled={option.required}
                       className="data-[state=checked]:bg-[#0077FF]"
+                      aria-label={option.label}
                     />
                   </div>
-                  <p className="text-gray-500 text-sm leading-relaxed">
+                  <p className="text-sm leading-relaxed text-gray-500">
                     {option.description}
                   </p>
                 </div>
               ))}
             </div>
+          </div>
+          <div className="flex justify-end px-6 py-4 border-t bg-muted/30">
+            <Button onClick={handleSaveSettings}>Save Preferences</Button>
           </div>
         </DialogContent>
       </Dialog>
