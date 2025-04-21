@@ -228,13 +228,13 @@ export function CookieConsent() {
             className="fixed inset-x-0 bottom-4 left-4 z-[100] w-[400px] max-w-3xl"
           >
             {/* Banner appearance as per your original code */}
-            <div className="p-4 text-gray-800 bg-gray-100 rounded-xl shadow-lg">
+            <div className="rounded-xl bg-gray-100 p-4 text-gray-800 shadow-lg">
               <div className="space-y-4">
                 <p className="text-sm">
                   This site uses tracking technologies. You may opt in or opt
                   out of the use of these technologies.
                 </p>
-                <div className="flex flex-wrap gap-2 justify-between items-center">
+                <div className="flex flex-wrap items-center justify-between gap-2">
                   <div className="flex gap-2">
                     {/* Deny Button - original styles */}
                     <Button
@@ -261,7 +261,6 @@ export function CookieConsent() {
                     size="sm"
                     onClick={() => {
                       setShowSettings(true);
-                      // Optionally hide banner when settings open
                       setShowConsent(false);
                       if (consentTimeout.current) {
                         clearTimeout(consentTimeout.current);
@@ -281,27 +280,27 @@ export function CookieConsent() {
       {/* --- Settings Dialog --- */}
       <Dialog open={showSettings} onOpenChange={setShowSettings}>
         <DialogContent
-          className="overflow-hidden gap-0 p-0 max-w-lg border-2 border-red-500"
+          className="max-w-lg gap-0 overflow-hidden p-0"
           defaultCloseIcon={false}
         >
-          <DialogClose className="flex absolute top-6 right-6 justify-center items-center w-8 h-8 rounded-full border border-gray-300 transition-all duration-200 hover:border-gray-400 hover:bg-gray-100">
+          <DialogClose className="absolute top-6 right-6 flex h-8 w-8 items-center justify-center rounded-full border border-gray-300 transition-all duration-200 hover:border-gray-400 hover:bg-gray-100">
             <div className="">
-              <X className="w-4 h-4" />
+              <X className="h-4 w-4" />
               <span className="sr-only">Close</span>
             </div>
           </DialogClose>
 
           <div className="p-6">
-            <div className="flex items-center mb-6">
-              <h2 className="text-2xl font-semibold">Your Privacy</h2>
+            <div className="mb-6 flex items-center">
+              <h2 className="font-semibold text-2xl">Your Privacy</h2>
             </div>
           </div>
 
-          <div className="px-6 pb-6 bg-gray-50">
+          <div className="bg-gray-50 px-6 pb-6">
             <div className="space-y-6">
               {consentOptions.map((option) => (
                 <div key={option.id} className="space-y-2">
-                  <div className="flex justify-between items-center">
+                  <div className="flex items-center justify-between">
                     <span
                       className={`rounded-md px-3 py-1 font-medium text-sm ${
                         option.required
@@ -319,14 +318,14 @@ export function CookieConsent() {
                       aria-label={option.label}
                     />
                   </div>
-                  <p className="text-sm leading-relaxed text-gray-500">
+                  <p className="text-gray-500 text-sm leading-relaxed">
                     {option.description}
                   </p>
                 </div>
               ))}
             </div>
           </div>
-          <div className="flex justify-end px-6 py-4 border-t bg-muted/30">
+          <div className="flex justify-end border-t bg-muted/30 px-6 py-4">
             <Button onClick={handleSaveSettings}>Save Preferences</Button>
           </div>
         </DialogContent>
