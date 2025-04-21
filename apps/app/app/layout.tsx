@@ -1,7 +1,6 @@
 import { DesignSystemProvider, cn } from '@repo/design-system';
 import { clashDisplay } from '@repo/design-system/fonts';
 import '@repo/design-system/styles/globals.css';
-// import { ErrorBoundary } from '@sentry';
 import { CookieConsent } from '@/components/cookie-consent';
 import { env } from '@repo/env';
 import type { Metadata } from 'next';
