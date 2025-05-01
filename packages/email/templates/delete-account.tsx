@@ -98,7 +98,12 @@ export const DeleteAccountTemplate: FC<DeleteAccountTemplateProps> = ({
               <Text
                 className={`mb-[24px] text-center text-[14px] leading-[24px] text-[${redColor}] break-all`}
               >
-                <Button href={deleteLink} target="_blank" rel="noreferrer">
+                <Button
+                  href={deleteLink}
+                  target="_blank"
+                  rel="noreferrer"
+                  className={`text-[${redColor}]`}
+                >
                   Delete Account
                 </Button>
               </Text>

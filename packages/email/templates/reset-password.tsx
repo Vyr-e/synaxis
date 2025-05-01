@@ -96,7 +96,12 @@ export const ResetPasswordTemplate: FC<ResetPasswordTemplateProps> = ({
                 className={`mb-[24px] text-center text-[14px] leading-[24px] text-[${blueColor}] break-all`}
               >
                 {/* Displaying the link textually as fallback */}
-                <Button href={resetLink} target="_blank" rel="noreferrer">
+                <Button
+                  href={resetLink}
+                  target="_blank"
+                  rel="noreferrer"
+                  className={`text-[${blueColor}]`}
+                >
                   Here
                 </Button>
               </Text>

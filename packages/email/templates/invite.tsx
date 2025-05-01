@@ -99,7 +99,12 @@ export const InviteTemplate: FC<InviteTemplateProps> = ({
               <Text
                 className={`mb-[24px] text-center text-[14px] leading-[24px] text-[${blueColor}] break-all`}
               >
-                <Button href={inviteLink} target="_blank" rel="noreferrer">
+                <Button
+                  href={inviteLink}
+                  target="_blank"
+                  rel="noreferrer"
+                  className={`text-[${blueColor}]`}
+                >
                   Here
                 </Button>
               </Text>

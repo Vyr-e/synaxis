@@ -107,6 +107,7 @@ export const VerificationTemplate: FC<VerificationTemplateProps> = ({
                   href={verificationLink}
                   target="_blank"
                   rel="noreferrer"
+                  className={`text-[${blueColor}]`}
                 >
                   Here
                 </Button>
