@@ -1,7 +1,10 @@
 import {
   Body,
+  Button,
   Container,
   Head,
+  Heading,
+  Hr,
   Html,
   Preview,
   Section,
@@ -18,113 +21,104 @@ type DeleteAccountTemplateProps = {
 export const DeleteAccountTemplate: FC<DeleteAccountTemplateProps> = ({
   name,
   deleteLink,
-}) => (
-  <Tailwind>
+}) => {
+  // Dark theme colors
+  const redColor = '#f87171'; // Using Tailwind red-400 for delete button
+  const darkBg = '#121212';
+  const contentBg = '#1e1e1e';
+  const textColor = '#e0e0e0';
+  const mutedTextColor = '#a0a0a0';
+  const borderColor = '#333333';
+
+  return (
     <Html>
       <Head />
-      <Preview>We're sad to see you go, {name}</Preview>
-      <Body className="flex min-h-screen items-center justify-center bg-[#121212] p-4 font-sans">
-        <Container className="mx-4 w-full max-w-[600px] overflow-hidden rounded-lg bg-[#1E1E1E] text-gray-200">
-          {/* Header with Logo */}
-          <Section className="p-2 pt-4">
-            <div className="flex w-fit items-center gap-2 rounded-full bg-[#2A2A2A] px-4 py-2">
-              <svg width="24" height="24" viewBox="0 0 32 32" fill="none">
-                <title>logo</title>
-                <circle
-                  cx="16"
-                  cy="16"
-                  r="12"
-                  fill="#000000"
-                  stroke="#FFFFFF"
-                  strokeWidth="2"
-                />
-              </svg>
-              <span className="font-bold text-sm text-white">Synaxis</span>
-              <span className="h-2 w-2 animate-ping rounded-full bg-blue-500" />
-            </div>
-          </Section>
-
-          {/* Main Content */}
-          <Section className="space-y-1 p-2">
-            <div className="flex h-fit flex-col rounded-lg bg-[#2A2A2A] px-4 py-2">
-              <div className="flex flex-col gap-2">
-                <h2 className="mb-0 w-full text-left font-normal text-2xl">
-                  We're sad to see you go, {name}
-                </h2>
-                <Text className="mt-0 text-lg">
-                  Your account deletion request has been received. Before we say
-                  goodbye, please confirm this action by clicking the button
-                  below:
+      <Preview>Confirm Your Account Deletion - Synaxis</Preview>
+      <Tailwind>
+        <Body className={`font-sans bg-[${darkBg}]`}>
+          <Container className="mx-auto my-[40px] max-w-[500px] p-[20px]">
+            <Section
+              className={`rounded-[8px] border-[1px] border-solid border-[${borderColor}] bg-[${contentBg}] p-[40px]`}
+            >
+              {/* Logo Section */}
+              <Section className="mb-[32px] text-center">
+                <Text className="m-0 mb-[8px] text-center">
+                  <span
+                    className={`inline-block h-[40px] w-[40px] rounded-full border-[2px] border-solid border-[${borderColor}] bg-black shadow-md`}
+                  />
                 </Text>
-              </div>
+                <Text
+                  className={`m-0 font-bold text-[20px] text-[${textColor}]`}
+                >
+                  <span>Synaxis</span>
+                </Text>
+              </Section>
 
-              <Section className="flex items-center justify-center">
-                <a
+              <Heading
+                className={`m-0 mb-[24px] text-center font-bold text-[24px] text-[${textColor}]`}
+              >
+                Confirm Account Deletion
+              </Heading>
+
+              <Text
+                className={`mb-[32px] text-center text-[16px] leading-[24px] text-[${mutedTextColor}]`}
+              >
+                We're sad to see you go, {name}. We received a request to delete
+                your Synaxis account. To confirm this action, please click the
+                button below.
+              </Text>
+
+              <Section className="mb-[32px] text-center">
+                <Button
+                  className={`box-border inline-block rounded-[4px] bg-[${redColor}] px-[32px] py-[12px] text-center font-bold text-white no-underline`}
                   href={deleteLink}
-                  className="relative h-12 w-fit overflow-hidden rounded-lg bg-red-400 px-6 py-2 font-medium text-sm text-white transition-all hover:text-red-300"
-                  style={{ textDecoration: 'none' }}
                 >
                   Confirm Account Deletion
-                </a>
+                </Button>
               </Section>
-              <Text className="mt-4 text-gray-400/80 text-xs">
-                If you change your mind, simply ignore this email and your
-                account will remain active. We hope to see you again soon!
+
+              <Text
+                className={`text-center text-[14px] leading-[24px] text-[${mutedTextColor}]`}
+              >
+                This action is irreversible. If you change your mind, simply
+                ignore this email and your account will remain active.
               </Text>
-            </div>
-          </Section>
 
-          {/* Footer */}
-          <Section className="space-y-4 border-gray-700 border-t p-4 text-gray-400 text-sm">
-            <Text>
-              If you have any feedback about your experience with Synaxis, we'd
-              love to hear from you.{' '}
-              <span className="text-white">
-                reach out to us at{' '}
-                <a
-                  href="mailto:support@synaxis.app"
-                  className="font-semibold text-white text-xs"
-                >
-                  support@synaxis.app
-                </a>
-              </span>
-            </Text>
+              <Hr
+                className={`my-[32px] border border-solid border-[${borderColor}]`}
+              />
 
-            <Section className="flex flex-row gap-3 space-x-6">
-              <a
-                href={'https://synaxis-app.vercel.app/legal/terms-of-use'}
-                className="text-white hover:underline"
+              <Text
+                className={`text-center text-[14px] leading-[24px] text-[${mutedTextColor}]`}
               >
-                Terms of Use
-              </a>
-              <span>|</span>
-              <a
-                href={'https://synaxis-app.vercel.app/legal/privacy-policy'}
-                className="text-white hover:underline"
+                If the button doesn't work, copy and paste this link into your
+                browser:
+              </Text>
+
+              <Text
+                className={`mb-[24px] text-center text-[14px] leading-[24px] text-[${redColor}] break-all`}
               >
-                Privacy Policy
-              </a>
-              <span>|</span>
-              <a
-                href={'https://synaxis-app.vercel.app/support/contact'}
-                className="text-white hover:underline"
-              >
-                Contact Us
-              </a>
+                <Button href={deleteLink} target="_blank" rel="noreferrer">
+                  Delete Account
+                </Button>
+              </Text>
             </Section>
-          </Section>
-        </Container>
-      </Body>
+
+            <Section
+              className={`mt-[32px] text-center text-[12px] text-[${mutedTextColor}]`}
+            >
+              <Text className="m-0">
+                © {new Date().getFullYear()} Synaxis. All rights reserved.
+              </Text>
+              {/* Optional Footer Links */}
+              <Text className="m-0 mt-[8px]">
+                If you have any feedback, please contact us at
+                support@synaxis.app
+              </Text>
+            </Section>
+          </Container>
+        </Body>
+      </Tailwind>
     </Html>
-  </Tailwind>
-);
-
-// Example usage
-const ExampleDeleteAccountEmail: FC = () => (
-  <DeleteAccountTemplate
-    name="Jane"
-    deleteLink="http://localhost:3000/auth/delete-account?token=exampleToken"
-  />
-);
-
-export default ExampleDeleteAccountEmail;
+  );
+};
