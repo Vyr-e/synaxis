@@ -21,7 +21,7 @@ import type { JSXElementConstructor, ReactElement } from 'react';
  * - seat: string (for tickets)
  * - ticketNumber: string (for tickets)
  *
- * TODO: This is a preliminary implementation and is subject to change:
+ * TODO: This is a basic implementation and is subject to change:
  * - Add more layout variations
  * - Improve responsive design
  * - Add theme support
@@ -33,11 +33,7 @@ import type { JSXElementConstructor, ReactElement } from 'react';
 
 export const runtime = 'edge';
 
-const defaultLayout = (): ReactElement<
-  unknown,
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-  string | JSXElementConstructor<any>
-> => {
+const defaultLayout = () => {
   return (
     <div
       tw="flex flex-col w-full h-full"
