@@ -13,12 +13,13 @@
     "gsap": "^3.12.5",
     "lenis": "^1.1.18",
     "motion": "^11.15.0",
-    "react": "^19.0.0",
+    "react": "^19.1.0",
+    "react-dom": "19.1.0",
     "use-sound": "^4.0.3"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
-    "@types/react": "^19.0.2",
+    "@types/react": "^19.1.0",
     "typescript": "^5.0.0"
   }
 }
