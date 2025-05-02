@@ -3,6 +3,7 @@
 import { PasswordStrengthChecker } from '@/app/(auth)/_components/password-strength-checker';
 import { handleBackendError } from '@/app/(auth)/auth.util';
 import { captureException } from '@/sentry/utils';
+import { useFormStore } from '@/store/use-onboarding-store';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { signIn, signUp } from '@repo/auth/client';
@@ -44,7 +45,7 @@ const socialProviders = [
       signIn.social({
         provider: 'google',
         callbackURL: '/',
-        newUserCallbackURL: '/auth/setup-profile',
+        newUserCallbackURL: '/onboard',
       }),
   },
   {
@@ -55,7 +56,7 @@ const socialProviders = [
       signIn.social({
         provider: 'twitter',
         callbackURL: '/',
-        newUserCallbackURL: '/auth/verify-email',
+        newUserCallbackURL: '/onboard',
       }),
   },
   {
@@ -66,7 +67,7 @@ const socialProviders = [
       signIn.social({
         provider: 'facebook',
         callbackURL: '/',
-        newUserCallbackURL: '/auth/verify-email',
+        newUserCallbackURL: '/onboard',
       }),
   },
 ] as const;
@@ -74,8 +75,10 @@ const socialProviders = [
 export function SignUpForm() {
   const [, setFormStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [isLoading, setIsLoading] = useState(false);
+  const [apiError, setApiError] = useState<string | null>(null);
   const router = useRouter();
   const { method, setMethod, setNewUserInfo } = useAuthStore();
+  const onboardingSetField = useFormStore((state) => state.setField);
 
   const form = useForm<SignUpFormValues>({
     resolver: zodResolver(signUpSchema),
@@ -96,31 +99,46 @@ export function SignUpForm() {
   async function onSubmit(_values: SignUpFormValues) {
     try {
       setIsLoading(true);
-      setFormStatus('success');
-
-      const name = `${_values.firstName} ${_values.lastName}`;
+      setFormStatus('idle');
+      setApiError(null);
 
       await signUp.email(
         {
           email: _values.email,
           password: _values.password,
-          name,
-          callbackURL: '/auth/setup-profile',
+          firstName: _values.firstName,
+          lastName: _values.lastName,
+          /***
+           * INFO: the idea is if a usr is successfullyy signed up and better auth sends
+           *  verification token to thier mail,
+           *  we redirect them to the verified page cause of course its verified
+           */
+          callbackURL: '/auth/verified',
         },
         {
           onSuccess: (ctx) => {
+            onboardingSetField('firstName', _values.firstName);
+            onboardingSetField('lastName', _values.lastName);
+
             setNewUserInfo();
-            if (ctx.data.emailVerified) {
-              router.push('/auth/setup-profile');
-            } else {
-              router.push('/auth/verify-email');
-            }
+          },
+          onError: (error) => {
+            console.error('Sign up error:', error);
+            const message =
+              error.error?.message || 'An unknown sign-up error occurred.';
+            setApiError(message);
+            form.setError('root', { type: 'server', message });
+            setFormStatus('error');
           },
         }
       );
       setMethod('email');
-
-      setTimeout(() => router.push('/auth/verify-email'), 1000);
+      if (!apiError) {
+        /***
+         * If theres no error from the api we redirect the user to the verify email page
+         */
+        router.push('/auth/verify-email');
+      }
     } catch (error) {
       setFormStatus('error');
 
@@ -304,11 +322,16 @@ export function SignUpForm() {
                 />
               </div>
 
+              {/* Display API Error Message */}
+              {apiError && (
+                <p className="text-center text-red-500 text-sm">{apiError}</p>
+              )}
+
               <div className="relative">
                 <Button
                   type="submit"
                   className={cn(
-                    'relative h-12 w-full overflow-hidden rounded-xl bg-quantum-blue px-4 py-2 font-medium text-sm text-white transition-all hover:scale-[1.02]',
+                    'relative h-12 w-full overflow-hidden rounded-xl bg-quantum-blue px-4 py-2 font-medium text-sm text-white transition-all hover:scale-[1.02] hover:bg-quantum-blue/80',
                     isLoading && 'bg-gray-500 text-white'
                   )}
                   disabled={isLoading}

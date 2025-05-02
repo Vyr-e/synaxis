@@ -29,7 +29,7 @@ export function LastUsedWrapper({
     >
       <div className="-top-2 absolute right-4 space-x-1 bg-black px-2 text-[10px]">
         <span className="text-zinc-500">Last used</span>
-        <span className=" h-2 w-2 animate-ping rounded-full bg-blue-500" />
+        <span className=" h-2 w-2 animate-ping rounded-full bg-quantum-blue" />
       </div>
       <div className="p-4">{children}</div>
     </div>

@@ -151,63 +151,71 @@ const PasswordStrengthChecker = forwardRef<
                 );
               })}
             </div>
-            {/* Show only current requirement text */}
+            {/* Revert to showing only the current requirement text */}
             <AnimatePresence mode="wait">
               {strengthScore < 5 && (
                 <motion.div
-                  key={strengthScore}
+                  key={strengthScore} // Key changes when score changes
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 10 }}
+                  transition={{ duration: 0.15 }}
                   className="flex h-5 items-center gap-2"
                 >
-                  {strengthScore < requirements.length - 1 && (
-                    <>
-                      <X
-                        size={16}
-                        className="text-muted-foreground/80"
-                        aria-hidden="true"
-                      />
-                      <span className="text-muted-foreground text-xs">
-                        {requirements[strengthScore].text}
-                      </span>
-                    </>
-                  )}
+                  {/* Show X and text for the current unmet requirement */}
+                  {strengthScore < requirements.length - 1 &&
+                    !requirements[strengthScore].optional && (
+                      <>
+                        <X
+                          size={16}
+                          className="flex-shrink-0 text-muted-foreground/80" // Sorted classes
+                          aria-hidden="true"
+                        />
+                        <span className="text-muted-foreground text-xs">
+                          {requirements[strengthScore].text}
+                        </span>
+                      </>
+                    )}
                 </motion.div>
               )}
 
-              {/* Show both final requirement and optional one when we reach strength 4 */}
+              {/* Show final required and optional when score is 4+ */}
               {strengthScore >= 4 && (
                 <motion.div
+                  key="completed-optional"
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="space-y-2"
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.15 }}
+                  className="space-y-1"
                 >
+                  {/* Final mandatory requirement (index 4) - always show check */}
                   <div className="flex items-center gap-2">
                     <Check
                       size={16}
-                      className="text-emerald-500"
+                      className="flex-shrink-0 text-emerald-500" // Sorted classes
                       aria-hidden="true"
                     />
                     <span
                       className={
-                        'text-emerald-600 text-xs dark:text-emerald-400'
+                        'text-emerald-600 text-xs dark:text-emerald-400' // Sorted classes
                       }
                     >
                       {requirements[4].text}
                     </span>
                   </div>
+                  {/* Optional requirement (index 5) */}
                   <div className="flex items-center gap-2">
                     {strength[5].met ? (
                       <Check
                         size={16}
-                        className="text-violet-500"
+                        className="flex-shrink-0 text-violet-500" // Sorted classes
                         aria-hidden="true"
                       />
                     ) : (
                       <X
                         size={16}
-                        className="text-muted-foreground/50"
+                        className="flex-shrink-0 text-muted-foreground/50" // Sorted classes
                         aria-hidden="true"
                       />
                     )}

@@ -46,7 +46,7 @@ const socialProviders = [
       signIn.social({
         provider: 'google',
         callbackURL: '/',
-        newUserCallbackURL: '/auth/verify-email',
+        newUserCallbackURL: '/onboard',
       }),
   },
   {
@@ -57,7 +57,7 @@ const socialProviders = [
       signIn.social({
         provider: 'twitter',
         callbackURL: '/',
-        newUserCallbackURL: '/auth/verify-email',
+        newUserCallbackURL: '/onboard',
       }),
   },
   {
@@ -68,7 +68,7 @@ const socialProviders = [
       signIn.social({
         provider: 'facebook',
         callbackURL: '/',
-        newUserCallbackURL: '/auth/verify-email',
+        newUserCallbackURL: '/onboard',
       }),
   },
 ] as const;
@@ -78,6 +78,7 @@ export function SignInForm() {
     'idle'
   );
   const [isLoading, setIsLoading] = useState(false);
+  const [apiError, setApiError] = useState<string | null>(null);
   const router = useRouter();
   const { method, setMethod } = useAuthStore();
   const [showPassword, setShowPassword] = useState(false);
@@ -100,7 +101,8 @@ export function SignInForm() {
   async function onSubmit(_values: SignInFormValues) {
     try {
       setIsLoading(true);
-      setFormStatus('success');
+      setFormStatus('idle');
+      setApiError(null);
 
       await signIn.email(
         {
@@ -111,27 +113,38 @@ export function SignInForm() {
         {
           onSuccess: (ctx) => {
             if (ctx.data.emailVerified) {
-              router.push('/auth/setup-profile');
+              router.push('/onboard');
             } else {
               router.push('/auth/verify-email');
             }
           },
+          onError: (error) => {
+            console.error('Sign in error:', error);
+            const message = error.error?.message || 'An unknown sign-in error occurred.';
+            setApiError(message);
+            form.setError('root', { type: 'server', message });
+            setFormStatus('error');
+          }
         }
       );
 
       setMethod('email');
     } catch (error) {
       setFormStatus('error');
+      let errorMessage = 'An unknown sign-in error occurred.';
 
       if (error instanceof z.ZodError) {
         handleValidationError(error);
+        errorMessage = error.errors[0]?.message || errorMessage;
       } else if (error instanceof Error) {
         handleBackendError(
           'sign-in',
           form as unknown as UseFormReturn<{ email: string }>,
           error as Error & { status?: number }
         );
+        errorMessage = error.message || errorMessage;
       }
+      setApiError(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -317,6 +330,11 @@ export function SignInForm() {
                 />
                 <Label className="text-sm text-zinc-400">Remember me</Label>
               </div>
+
+              {/* Display API Error Message */}
+              {apiError && (
+                <p className="text-center text-red-500 text-sm">{apiError}</p>
+              )}
 
               <div className="relative">
                 <Button
