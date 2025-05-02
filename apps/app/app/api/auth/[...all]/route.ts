@@ -2,6 +2,7 @@ import ip from '@arcjet/ip';
 import arcjet, {
   type ArcjetDecision,
   type ArcjetEmailType,
+  type ArcjetMode,
   detectBot,
   protectSignup,
   shield,
@@ -12,6 +13,9 @@ import { env } from '@repo/env';
 import { toNextJsHandler } from 'better-auth/next-js';
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
+
+const ARCJET_MODE: ArcjetMode =
+  env.NODE_ENV === 'production' ? 'LIVE' : 'DRY_RUN';
 
 const isPublicRoute = (request: NextRequest) => {
   return PUBLIC_ROUTES.some((route) => request.url.includes(route));
@@ -32,18 +36,18 @@ const aj = arcjet({
   key: env.ARCJET_KEY,
   characteristics: ['userId'],
   rules: [
-    shield({ mode: 'LIVE' }),
+    shield({ mode: ARCJET_MODE }),
     protectSignup({
       email: {
-        mode: 'LIVE',
+        mode: ARCJET_MODE,
         block: ['DISPOSABLE', 'INVALID', 'NO_MX_RECORDS'],
       },
       bots: {
-        mode: 'LIVE',
+        mode: ARCJET_MODE,
         allow: [],
       },
       rateLimit: {
-        mode: 'LIVE',
+        mode: ARCJET_MODE,
         interval: '5m',
         max: 5,
       },
@@ -62,19 +66,26 @@ const EMAIL_ERRORS = {
 
 async function protect(req: NextRequest): Promise<ArcjetDecision> {
   const session = await auth.api.getSession({ headers: req.headers });
-  const userId = session?.user?.id ?? ip(req) ?? '127.0.0.1';
+  const sessionId = session?.user?.id;
+  const requestIp = ip(req);
   const body = await req.clone().json();
+
+  const userId =
+    sessionId ??
+    (typeof requestIp === 'string' && requestIp !== ''
+      ? requestIp
+      : 'unknown_user_or_ip');
 
   if (isPublicRoute(req)) {
     return typeof body.email === 'string'
       ? aj.protect(req, { email: body.email, userId })
       : aj
-          .withRule(detectBot({ mode: 'LIVE', allow: [] }))
+          .withRule(detectBot({ mode: ARCJET_MODE, allow: [] }))
           .protect(req, { userId, email: body.email });
   }
 
   return aj
-    .withRule(detectBot({ mode: 'LIVE', allow: [] }))
+    .withRule(detectBot({ mode: ARCJET_MODE, allow: [] }))
     .protect(req, { userId, email: body.email });
 }
 
@@ -88,6 +99,20 @@ export const POST = async (req: NextRequest) => {
     debug('POST request received', req.url);
 
     if (decision.isDenied()) {
+      if (decision.reason.isShield()) {
+        return NextResponse.json(
+          { message: 'You are not authorized to access this resource.' },
+          { status: 403 }
+        );
+      }
+
+      if (decision.reason.isBot()) {
+        return NextResponse.json(
+          { message: 'You are not authorized to access this resource.' },
+          { status: 403 }
+        );
+      }
+
       if (decision.reason.isRateLimit()) {
         return NextResponse.json(
           {
@@ -102,6 +127,7 @@ export const POST = async (req: NextRequest) => {
         const message = decision.reason.emailTypes.map(
           (type) => EMAIL_ERRORS[type] ?? 'Invalid email.'
         )[0];
+        console.log('Debug: Email error message:', message);
         return NextResponse.json({ message }, { status: 400 });
       }
 
