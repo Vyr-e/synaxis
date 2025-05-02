@@ -121,7 +121,7 @@ export const withSentry = (sourceConfig: NextConfig): NextConfig =>
 
 export const withAnalyzer = (sourceConfig: NextConfig): NextConfig => {
   const withBundleAnalyzerConfig = withBundleAnalyzer({
-    enabled: process.env.ANALYZE === 'true',
+    enabled: env.ANALYZE === 'true',
   });
   return withBundleAnalyzerConfig(sourceConfig as NextConfig);
 };
