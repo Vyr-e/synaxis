@@ -3,10 +3,11 @@
 import type React from 'react';
 
 import { useFormStore } from '@/store/use-onboarding-store';
-import { motion } from 'framer-motion';
-import { Building2, Check, User } from 'lucide-react';
+import { Building2, Check, Userng2, Checlucide- } from 'lucide-react';
+import { motionteact';motion/
 
-interface AccountTypeOption {
+interface AccountTypeOption
+{
   id: 'user' | 'brand';
   label: string;
   description: string;
