@@ -36,7 +36,7 @@ export async function middleware(request: NextRequest) {
     if (
       pathname === '/onboard' &&
       session &&
-      (session.user as Session)?.username
+      (session.user as unknown as { username: string })?.username
     ) {
       return NextResponse.redirect(new URL('/', request.url));
     }
@@ -51,7 +51,7 @@ export async function middleware(request: NextRequest) {
     if (!session.user?.emailVerified) {
       return NextResponse.redirect(new URL('/auth/verify-email', request.url));
     }
-    if (session.user?.username) {
+    if ((session.user as unknown as { username: string })?.username) {
       return NextResponse.redirect(new URL('/', request.url));
     }
   }
