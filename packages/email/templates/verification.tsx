@@ -1,15 +1,15 @@
 import {
-  Body,
+	Body,
   Button,
-  Container,
-  Head,
+	Container,
+	Head,
   Heading,
   Hr,
-  Html,
-  Preview,
-  Section,
-  Tailwind,
-  Text,
+	Html,
+	Preview,
+	Section,
+	Tailwind,
+	Text,
 } from '@react-email/components';
 import type { FC } from 'react';
 
@@ -79,7 +79,7 @@ export const VerificationTemplate: FC<VerificationTemplateProps> = ({
                 >
                   Verify Email Address
                 </Button>
-              </Section>
+          </Section>
 
               <Text
                 className={`text-center text-[14px] leading-[24px] text-[${mutedTextColor}]`}
@@ -130,9 +130,9 @@ export const VerificationTemplate: FC<VerificationTemplateProps> = ({
 									Unsubscribe
 								</a>
 							</Text> */}
-            </Section>
-          </Container>
-        </Body>
+          </Section>
+        </Container>
+      </Body>
       </Tailwind>
     </Html>
   );
