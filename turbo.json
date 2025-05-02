@@ -46,7 +46,11 @@
         "ANALYZE",
         "BLOB_READ_WRITE_TOKEN",
         "SENTRY_SUPPRESS_TURBOPACK_WARNING",
-        "LIVEBLOCKS_SECRET"
+        "LIVEBLOCKS_SECRET",
+        "AI_MODEL_NAME",
+        "OPENAI_API_KEY",
+        "TOOLBAR",
+        "UPLOADTHING_TOKEN"
       ],
       "outputs": [".next/**", "!.next/cache/**"]
     },
@@ -92,7 +96,8 @@
         "BLOB_READ_WRITE_TOKEN",
         "TOOLBAR",
         "NODE_ENV",
-        "SENTRY_SUPPRESS_TURBOPACK_WARNING"
+        "SENTRY_SUPPRESS_TURBOPACK_WARNING",
+        "UPLOADTHING_TOKEN"
       ]
     },
     "web": {
