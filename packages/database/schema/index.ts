@@ -28,12 +28,21 @@ export {
 // Media & Content
 export { default as eventMedia } from '../models/media';
 
-export { invitations, members, organizations } from '../models/organization';
+export { organizations } from '../models/organization';
 
 // Analytics & Tracking
 export { default as eventMetrics } from '../models/analytics';
 export { default as notifications } from '../models/notifications';
 export { default as referrals } from '../models/referrals';
+
+// JWKS
+export { jwkss } from '../models/jwkss';
+
+// Members
+export { members } from '../models/members';
+
+// Invitations
+export { invitations } from '../models/invitations';
 
 // Enums
 export {
@@ -50,3 +59,5 @@ export {
 
 // Relations
 export * as relations from '../relations';
+
+export * as schema from '../models';

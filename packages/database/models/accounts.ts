@@ -4,12 +4,10 @@ import {
   index,
   integer,
   pgTable,
-  primaryKey,
   text,
   timestamp,
   uuid,
 } from 'drizzle-orm/pg-core';
-import { accountType } from './enums';
 import { users } from './users';
 
 export const accounts = pgTable(
@@ -21,23 +19,23 @@ export const accounts = pgTable(
         onDelete: 'cascade',
         onUpdate: 'cascade',
       }),
+    id: uuid('id').defaultRandom().primaryKey(),
 
     // Auth info
-    type: accountType('type').notNull().default('email'),
-    provider: text('provider').notNull(),
-    providerAccountId: text('providerAccountId').notNull(),
+    providerId: text('providerId').notNull(),
+    provider: text('provider').notNull().default('credentials'),
+    accountId: text('accountId').notNull(),
     password: text('password'),
     twoFactorSecret: text('twoFactorSecret'),
     twoFactorEnabled: boolean('twoFactorEnabled').default(false),
 
     // OAuth specific
-    refresh_token: text('refresh_token'),
-    access_token: text('access_token'),
+    refreshToken: text('refresh_token'),
+    accessToken: text('access_token'),
     expires_at: integer('expires_at'),
     token_type: text('token_type'),
     scope: text('scope'),
-    id_token: text('id_token'),
-    session_state: text('session_state'),
+    idToken: text('id_token'),
 
     // Token expiration tracking
     accessTokenExpiresAt: timestamp('access_token_expires_at'),
@@ -50,9 +48,6 @@ export const accounts = pgTable(
   (account) => ({
     // Use composite primary key only
 
-    pk: primaryKey({
-      columns: [account.provider, account.providerAccountId],
-    }),
     // Keep index for performance
     userIdx: index('user_account_idx').on(account.userId),
   })

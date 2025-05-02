@@ -39,6 +39,7 @@ export const users = pgTable(
     firstName: varchar('first_name', { length: 256 }),
     lastName: varchar('last_name', { length: 256 }),
     username: varchar('username', { length: 256 }).unique(),
+    displayUsername: varchar('display_username', { length: 256 }).unique(),
     email: varchar('email', { length: 256 }).notNull().unique(),
     emailVerified: boolean('email_verified')
       .notNull()
@@ -63,5 +64,8 @@ export const users = pgTable(
     emailIdx: index('email_idx').on(table.email),
     usernameIdx: index('username_idx').on(table.username),
     usernameUnique: unique('username_unique').on(table.username),
+    displayUsernameUnique: unique('display_username_unique').on(
+      table.displayUsername
+    ),
   })
 );
