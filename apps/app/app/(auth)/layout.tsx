@@ -7,7 +7,7 @@ export const metadata: Metadata = {
 };
 
 type AuthLayoutProperties = {
-  readonly children: ReactNode;
+  children: ReactNode;
 };
 
 export default function AuthLayout({
