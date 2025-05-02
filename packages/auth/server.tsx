@@ -345,5 +345,20 @@ const auth: ReturnType<typeof betterAuth> = betterAuth({
       },
     }),
   ],
+  databaseHooks: {
+    user: {
+      create: {
+        before: async (user, ctx) => {
+          return {
+            data: {
+              ...user,
+              firstName: user.name.split(' ')[0],
+              lastName: user.name.split(' ')[1],
+            },
+          };
+        },
+      },
+    },
+  },
 });
 export { auth };
