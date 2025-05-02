@@ -12,5 +12,5 @@ const pool = new Pool({
 const db = drizzle_orm(pool);
 
 (async () => {
-  await migrate(db, { migrationsFolder: resolve(__dirname, './migration') });
+  await migrate(db, { migrationsFolder: './migrations' });
 })();

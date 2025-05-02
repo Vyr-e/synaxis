@@ -1,6 +1,6 @@
 {
-  "id": "5e040dfe-44eb-4f2c-8222-542ab90e1056",
-  "prevId": "06e97f2c-b6e9-4625-a2ac-65154622a433",
+  "id": "dafac6fe-a110-444e-a26a-669ffc268436",
+  "prevId": "ddf3da08-2a41-4a94-9533-495bc486caef",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -31,16 +31,16 @@
         },
         "providerId": {
           "name": "providerId",
-          "type": "uuid",
+          "type": "text",
           "primaryKey": false,
-          "notNull": true,
-          "default": "gen_random_uuid()"
+          "notNull": true
         },
         "provider": {
           "name": "provider",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "default": "'credentials'"
         },
         "accountId": {
           "name": "accountId",

@@ -1,6 +1,6 @@
 {
-  "id": "0d22bde9-0009-4cbe-a6ac-e9791e301dea",
-  "prevId": "f8b39bf7-2ec3-4fdb-baae-065532e03e31",
+  "id": "c3f7dccc-0662-4829-8d09-05179766eadd",
+  "prevId": "cb6009f4-28a9-4068-ba93-e05d5d4d99fd",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -14,6 +14,13 @@
           "primaryKey": false,
           "notNull": true
         },
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
         "type": {
           "name": "type",
           "type": "account_type",
@@ -22,9 +29,22 @@
           "notNull": true,
           "default": "'email'"
         },
+        "providerId": {
+          "name": "providerId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
         "provider": {
           "name": "provider",
           "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "accountId": {
+          "name": "accountId",
+          "type": "uuid",
           "primaryKey": false,
           "notNull": true
         },
@@ -1371,15 +1391,19 @@
         },
         "role": {
           "name": "role",
-          "type": "varchar(50)",
+          "type": "collaboration_role",
+          "typeSchema": "public",
           "primaryKey": false,
-          "notNull": false
+          "notNull": false,
+          "default": "'member'"
         },
         "status": {
           "name": "status",
-          "type": "varchar(50)",
+          "type": "referral_status",
+          "typeSchema": "public",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false,
+          "default": "'pending'"
         },
         "token": {
           "name": "token",
@@ -1389,7 +1413,7 @@
         },
         "expires_at": {
           "name": "expires_at",
-          "type": "timestamp",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true
         },
@@ -1401,14 +1425,14 @@
         },
         "created_at": {
           "name": "created_at",
-          "type": "timestamp",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true,
           "default": "now()"
         },
         "updated_at": {
           "name": "updated_at",
-          "type": "timestamp",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true,
           "default": "now()"
@@ -1518,6 +1542,91 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
+    "public.jwkss": {
+      "name": "jwkss",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "public_key": {
+          "name": "public_key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "private_key": {
+          "name": "private_key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "jwkss_id_idx": {
+          "name": "jwkss_id_idx",
+          "columns": [
+            {
+              "expression": "id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "jwkss_public_key_idx": {
+          "name": "jwkss_public_key_idx",
+          "columns": [
+            {
+              "expression": "public_key",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "jwkss_private_key_idx": {
+          "name": "jwkss_private_key_idx",
+          "columns": [
+            {
+              "expression": "private_key",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "public.members": {
       "name": "members",
       "schema": "",
@@ -1543,13 +1652,15 @@
         },
         "role": {
           "name": "role",
-          "type": "varchar(50)",
+          "type": "collaboration_role",
+          "typeSchema": "public",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false,
+          "default": "'member'"
         },
         "created_at": {
           "name": "created_at",
-          "type": "timestamp",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true,
           "default": "now()"
@@ -1774,14 +1885,14 @@
         },
         "created_at": {
           "name": "created_at",
-          "type": "timestamp",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true,
           "default": "now()"
         },
         "updated_at": {
           "name": "updated_at",
-          "type": "timestamp",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true,
           "default": "now()"
@@ -2755,6 +2866,18 @@
           "primaryKey": false,
           "notNull": false
         },
+        "username": {
+          "name": "username",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "display_username": {
+          "name": "display_username",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": false
+        },
         "email": {
           "name": "email",
           "type": "varchar(256)",
@@ -2773,6 +2896,19 @@
           "type": "text",
           "primaryKey": false,
           "notNull": false
+        },
+        "bio": {
+          "name": "bio",
+          "type": "varchar(500)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "preferences": {
+          "name": "preferences",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'{}'::jsonb"
         },
         "created_at": {
           "name": "created_at",
@@ -2843,6 +2979,21 @@
           "concurrently": false,
           "method": "btree",
           "with": {}
+        },
+        "username_idx": {
+          "name": "username_idx",
+          "columns": [
+            {
+              "expression": "username",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
         }
       },
       "foreignKeys": {
@@ -2862,11 +3013,39 @@
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
+        "users_username_unique": {
+          "name": "users_username_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "username"
+          ]
+        },
+        "users_display_username_unique": {
+          "name": "users_display_username_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "display_username"
+          ]
+        },
         "users_email_unique": {
           "name": "users_email_unique",
           "nullsNotDistinct": false,
           "columns": [
             "email"
+          ]
+        },
+        "username_unique": {
+          "name": "username_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "username"
+          ]
+        },
+        "display_username_unique": {
+          "name": "display_username_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "display_username"
           ]
         }
       },
