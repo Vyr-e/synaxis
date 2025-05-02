@@ -21,7 +21,7 @@ import {
 } from 'better-auth/plugins';
 import { getUserProfileById } from './user';
 
-const auth: ReturnType<typeof betterAuth> = betterAuth({
+const auth = betterAuth({
   database: drizzleAdapter(drizzle, {
     provider: 'pg',
     schema: {
