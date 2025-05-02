@@ -9,7 +9,11 @@ import {
 } from '@repo/auth/client';
 import { cn } from '@repo/design-system';
 import { Button } from '@repo/design-system/components/ui/button';
-import { Form } from '@repo/design-system/components/ui/form';
+import {
+  Form,
+  FormControl,
+  FormField,
+} from '@repo/design-system/components/ui/form';
 import { Input } from '@repo/design-system/components/ui/input';
 import { toast } from '@repo/design-system/components/ui/sonner';
 import { clashDisplay } from '@repo/design-system/fonts';
@@ -50,7 +54,7 @@ export default function VerifyEmailPage() {
   useEffect(() => {
     const checkVerification = async () => {
       if (await user?.emailVerified) {
-        router.push('/auth/setup-profile');
+        router.push('/onboard');
       }
     };
 
@@ -108,12 +112,12 @@ export default function VerifyEmailPage() {
 
       await changeEmail({
         newEmail,
-        callbackURL: '/auth/setup-profile',
+        callbackURL: '/onboard',
       });
 
       await sendVerificationEmail({
         email: user?.email || form.getValues('email'),
-        callbackURL: '/auth/setup-profile',
+        callbackURL: '/onboard',
       }).then(() => {
         toast('Verification mail sent to your mail');
       });
@@ -251,11 +255,19 @@ export default function VerifyEmailPage() {
                 <Form {...form}>
                   <form className="space-y-4">
                     {!user?.email && (
-                      <Input
-                        {...form.register('email')}
-                        type="email"
-                        placeholder="Enter your email"
-                        className="h-12 rounded-xl border-2 bg-white/80 px-4 text-base text-black transition-all ease-in-out placeholder:text-zinc-500 focus-visible:ring-2 focus-visible:ring-quantum-blue"
+                      <FormField
+                        control={form.control}
+                        name="email"
+                        render={({ field }) => (
+                          <FormControl>
+                            <Input
+                              {...field}
+                              type="email"
+                              placeholder="Enter your email"
+                              className="h-12 rounded-xl border-2 bg-white/80 px-4 text-base text-black transition-all ease-in-out placeholder:text-zinc-500 focus-visible:ring-2 focus-visible:ring-quantum-blue"
+                            />
+                          </FormControl>
+                        )}
                       />
                     )}
                     <Button

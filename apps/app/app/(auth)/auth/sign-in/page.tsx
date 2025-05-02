@@ -1,8 +1,8 @@
 'use client';
 
-import { AuthBackground } from '@/app/(auth)/_components/auth-background';
 import { AuthForm } from '@/app/(auth)/_components/auth-form';
 import { AnimatedIcon } from '@/components/animated-logo';
+import { AuthBackground } from '@/components/auth-background';
 import { cn } from '@repo/design-system';
 import { clashDisplay } from '@repo/design-system/fonts';
 import { motion } from 'motion/react';
