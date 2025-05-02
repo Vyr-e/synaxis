@@ -23,7 +23,9 @@ const server = {
   TOOLBAR: z.string().optional(),
 
   // Optional integrations
-  RESEND_FROM: z.string().email(),
+  RESEND_FROM: z.string().refine((val) => val.includes('@'), {
+    message: 'RESEND_FROM must be an email address',
+  }),
   RESEND_TOKEN: z.string().startsWith('re_'),
   STRIPE_SECRET_KEY: z.string().startsWith('sk_').optional(),
   STRIPE_WEBHOOK_SECRET: z.string().startsWith('whsec_').optional(),
@@ -44,6 +46,7 @@ const server = {
   SVIX_TOKEN: z
     .union([z.string().startsWith('sk_'), z.string().startsWith('testsk_')])
     .optional(),
+  UPLOADTHING_TOKEN: z.string().optional(),
 };
 
 const client = {
@@ -66,6 +69,7 @@ export const env = createEnv({
   client,
 
   runtimeEnv: {
+    UPLOADTHING_TOKEN: process.env.UPLOADTHING_TOKEN,
     TOOLBAR: process.env.TOOLBAR,
     BETTER_AUTH_SECRET: process.env.BETTER_AUTH_SECRET,
     NODE_ENV: process.env.NODE_ENV,
