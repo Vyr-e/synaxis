@@ -3,11 +3,10 @@
 import type React from 'react';
 
 import { useFormStore } from '@/store/use-onboarding-store';
-import { Building2, Check, Userng2, Checlucide- } from 'lucide-react';
-import { motionteact';motion/
+import { Building2, Check, User } from 'lucide-react';
+import { motion } from 'motion/react';
 
-interface AccountTypeOption
-{
+interface AccountTypeOption {
   id: 'user' | 'brand';
   label: string;
   description: string;
@@ -45,7 +44,7 @@ export function AccountTypeSelector({
 
   if (isInitialStep) {
     return (
-      <div className="w-full max-w-screen-md">
+      <div className="w-full max-w-md">
         <div className="grid grid-cols-2 gap-6">
           {/* biome-ignore lint/complexity/noExcessiveCognitiveComplexity: ? */}
           {accountTypes.map((type) => {
