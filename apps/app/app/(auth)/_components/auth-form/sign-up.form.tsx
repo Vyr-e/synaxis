@@ -106,8 +106,7 @@ export function SignUpForm() {
         {
           email: _values.email,
           password: _values.password,
-          firstName: _values.firstName,
-          lastName: _values.lastName,
+          name: `${_values.firstName} ${_values.lastName}`,
           /***
            * INFO: the idea is if a usr is successfullyy signed up and better auth sends
            *  verification token to thier mail,
