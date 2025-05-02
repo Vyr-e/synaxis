@@ -10,7 +10,6 @@ import {
 import { env } from '@repo/env';
 import { betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
-import { createAuthMiddleware } from 'better-auth/api';
 import { nextCookies } from 'better-auth/next-js';
 import {
   admin,
@@ -130,14 +129,7 @@ const auth = betterAuth({
       trustedProviders: ['google', 'facebook', 'twitter', 'email'],
     },
   },
-  hooks: {
-    after: createAuthMiddleware(async (ctx) => {
-      if (ctx.path.includes('/sign-up')) {
-        const newSession = await ctx.context.newSession;
-        console.log('newSession', newSession);
-      }
-    }),
-  },
+
   emailVerification: {
     sendOnSignUp: true,
     sendOnChangeEmail: true,
@@ -245,7 +237,12 @@ const auth = betterAuth({
     },
     organization: {
       //@ts-ignore
-      sendInvitationEmail: async (data) => {
+      sendInvitationEmail: async (data: {
+        id: string;
+        email: string;
+        organization: { id: string; name: string; slug: string };
+        inviter: { user: { firstName: string } };
+      }) => {
         const { id, email, organization, inviter } = data;
         // TODO: Make a catch all route that captures and verifies these details before verifying a user has access to the correct invite info!
         const inviteLink = `${env.NEXT_PUBLIC_APP_URL}/auth/invite?user_id=${id}&brand_id=${organization.id}&brand_slug=${organization.slug}&created_at=${new Date().toISOString()}`;
@@ -326,7 +323,7 @@ const auth = betterAuth({
     organization({
       creatorRole: 'brand',
       memberRole: ['user', 'brand', 'admin'],
-      allowUserToCreateOrganization: async (user) => {
+      allowUserToCreateOrganization: async (user: { id: string }) => {
         const userProfile = await getUserProfileById(user.id);
         if (!userProfile) {
           return false;
@@ -335,7 +332,7 @@ const auth = betterAuth({
           userProfile.role === 'brand' || userProfile.role === 'admin';
         return isAllowed;
       },
-      allowUserToJoinOrganization: async (user) => {
+      allowUserToJoinOrganization: async (user: { id: string }) => {
         const userProfile = await getUserProfileById(user.id);
         if (!userProfile) {
           return false;
@@ -348,7 +345,8 @@ const auth = betterAuth({
   databaseHooks: {
     user: {
       create: {
-        before: async (user, ctx) => {
+        // biome-ignore lint/suspicious/useAwait: we only need it to be async
+        before: async (user, _ctx) => {
           return {
             data: {
               ...user,
