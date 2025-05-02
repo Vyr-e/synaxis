@@ -4,9 +4,7 @@
   "bin": {
     "next-forge": "scripts/init.mjs"
   },
-  "files": [
-    "scripts/init.mjs"
-  ],
+  "files": ["scripts/init.mjs"],
   "scripts": {
     "web": "turbo run web#dev --filter=web...",
     "app": "turbo run app#dev --filter=app...",
@@ -58,10 +56,7 @@
     "pino": "^9.6.0",
     "use-sound": "^4.0.4"
   },
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ],
+  "workspaces": ["apps/*", "packages/*"],
   "trustedDependencies": [
     "@biomejs/biome",
     "@clerk/shared",

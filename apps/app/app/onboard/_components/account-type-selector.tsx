@@ -99,7 +99,7 @@ export function AccountTypeSelector({
                 </motion.p>
 
                 {isSelected && (
-                  <motion.div
+                  <motion.div   
                     className="absolute top-3 right-3"
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
