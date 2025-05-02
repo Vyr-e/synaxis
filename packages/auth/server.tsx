@@ -1,5 +1,4 @@
 import { drizzle, schema } from '@repo/database';
-import type { User } from '@repo/database/types';
 import { resend } from '@repo/email';
 import {
   ChangeEmailTemplate,
@@ -13,9 +12,16 @@ import { betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { createAuthMiddleware } from 'better-auth/api';
 import { nextCookies } from 'better-auth/next-js';
-import { admin, organization, username } from 'better-auth/plugins';
+import {
+  admin,
+  customSession,
+  jwt,
+  organization,
+  username,
+} from 'better-auth/plugins';
+import { getUserProfileById } from './user';
 
-const auth = betterAuth({
+const auth: ReturnType<typeof betterAuth> = betterAuth({
   database: drizzleAdapter(drizzle, {
     provider: 'pg',
     schema: {
@@ -27,8 +33,31 @@ const auth = betterAuth({
       organization: schema.organizations,
       invitation: schema.invitations,
     },
+
     usePlural: true,
   }),
+
+  advanced: {
+    cookiePrefix: 'synaxis',
+    cookies: {
+      session_token: {
+        name: 'synaxis_session_token',
+        attributes: {
+          httpOnly: true,
+          secure: env.NODE_ENV === 'production',
+        },
+      },
+    },
+    defaultCookieAttributes: {
+      httpOnly: true,
+      secure: env.NODE_ENV === 'production',
+    },
+    useSecureCookies: env.NODE_ENV === 'production',
+
+    database: {
+      generateId: false,
+    },
+  },
 
   socialProviders: {
     google: {
@@ -105,9 +134,7 @@ const auth = betterAuth({
     after: createAuthMiddleware(async (ctx) => {
       if (ctx.path.includes('/sign-up')) {
         const newSession = await ctx.context.newSession;
-        if (newSession) {
-          await ctx.redirect('/auth/verify-email');
-        }
+        console.log('newSession', newSession);
       }
     }),
   },
@@ -115,17 +142,21 @@ const auth = betterAuth({
     sendOnSignUp: true,
     sendOnChangeEmail: true,
     sendOnDeleteAccount: true,
+    autoSignInAfterVerification: true,
     expiresIn: 15 * 60,
     sendVerificationEmail: async ({ user, url }) => {
       await resend.emails.send({
         from: env.RESEND_FROM,
-        to: user.email,
+        to: [user.email],
         subject: 'Verify your email',
         react: (
-          <VerificationTemplate
-            name={user.name?.split(' ')[0] || 'there'}
-            verificationLink={url}
-          />
+          <>
+            {VerificationTemplate({
+              name:
+                (user as unknown as { firstName: string }).firstName || 'there',
+              verificationLink: url,
+            })}
+          </>
         ),
       });
     },
@@ -143,7 +174,7 @@ const auth = betterAuth({
         from: env.RESEND_FROM,
         to: user.email,
         subject: 'Reset your password',
-        react: <ResetPasswordTemplate resetLink={url} />,
+        react: <>{ResetPasswordTemplate({ resetLink: url })}</>,
       });
     },
   },
@@ -152,6 +183,7 @@ const auth = betterAuth({
       email: 'email',
       firstName: 'firstName',
       username: 'username',
+      displayUsername: 'display_username',
       lastName: 'lastName',
       role: 'role',
       image: 'image',
@@ -189,7 +221,7 @@ const auth = betterAuth({
           from: env.RESEND_FROM,
           to: newEmail,
           subject: 'Verify email change',
-          react: <ChangeEmailTemplate changeLink={url} />,
+          react: <>{ChangeEmailTemplate({ changeLink: url })}</>,
         });
       },
     },
@@ -202,7 +234,9 @@ const auth = betterAuth({
           subject: 'Verify account deletion',
           react: (
             <DeleteAccountTemplate
-              name={user.name?.split(' ')[0] || 'there'}
+              name={
+                (user as unknown as { firstName: string }).firstName || 'there'
+              }
               deleteLink={url}
             />
           ),
@@ -223,7 +257,7 @@ const auth = betterAuth({
           react: (
             <InviteTemplate
               name={organization.name}
-              inviter={inviter.user.name}
+              inviter={inviter.user.firstName}
               inviteLink={inviteLink}
             />
           ),
@@ -232,44 +266,84 @@ const auth = betterAuth({
     },
   },
   plugins: [
+    customSession(async ({ user, session }) => {
+      const userProfile = await getUserProfileById(user.id);
+
+      if (!userProfile) {
+        return {
+          user,
+          session,
+        };
+      }
+
+      return {
+        user: {
+          id: userProfile.id,
+          banned: userProfile.banned,
+          bannedReason: userProfile.banReason,
+          banExpires: userProfile.banExpires,
+          email: userProfile.email,
+          name: `${userProfile.firstName} ${userProfile.lastName}`,
+          username: userProfile.username,
+          role: userProfile.role,
+          firstName: userProfile.firstName,
+          lastName: userProfile.lastName,
+          image: userProfile.image,
+          emailVerified: userProfile.emailVerified,
+          createdAt: userProfile.createdAt,
+          updatedAt: userProfile.updatedAt,
+        },
+        session,
+      };
+    }),
+    jwt({
+      jwt: {
+        audience: env.NEXT_PUBLIC_APP_URL,
+        issuer: env.NEXT_PUBLIC_APP_URL,
+        expirationTime: '1h',
+        definePayload: ({ user }) => {
+          return {
+            id: user.id,
+            email: user.email,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            role: user.role,
+            image: user.image,
+            username: user.username,
+            emailVerified: user.emailVerified,
+          };
+        },
+      },
+    }),
     nextCookies(),
     username(),
     admin({
       defaultRole: 'user',
       adminRole: ['admin', 'brand'],
       defaultBanReason: 'You are not authorized to access this resource',
-      defaultBanExpiresIn: 30 * 60, //30 min default
+      defaultBanExpiresIn: 30 * 60,
     }),
     organization({
       creatorRole: 'brand',
       memberRole: ['user', 'brand', 'admin'],
       allowUserToCreateOrganization: async (user) => {
-        const typedUser = (await user) as unknown as User;
+        const userProfile = await getUserProfileById(user.id);
+        if (!userProfile) {
+          return false;
+        }
         const isAllowed =
-          typedUser.role === 'brand' || typedUser.role === 'admin';
+          userProfile.role === 'brand' || userProfile.role === 'admin';
         return isAllowed;
       },
-      // biome-ignore lint/suspicious/useAwait: <explanation>
-      allowUserToJoinOrganization: async () => {
-        return true;
+      allowUserToJoinOrganization: async (user) => {
+        const userProfile = await getUserProfileById(user.id);
+        if (!userProfile) {
+          return false;
+        }
+        const isAllowed = !!userProfile.role;
+        return isAllowed;
       },
     }),
   ],
-  databaseHooks: {
-    user: {
-      create: {
-        before: async (user) => {
-          const nameParts = (await user.name?.split(' ')) || ['', ''];
-          return {
-            data: {
-              ...user,
-              firstName: nameParts[0] || '',
-              lastName: nameParts.slice(1).join(' ') || '',
-            },
-          };
-        },
-      },
-    },
-  },
 });
 export { auth };
