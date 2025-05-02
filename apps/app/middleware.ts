@@ -10,14 +10,22 @@ const isPublicRoute = (pathname: string) => {
   return PUBLIC_ROUTES.some((route) => pathname.startsWith(route));
 };
 
+type Session = typeof auth.$Infer.Session;
+
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
+
+  // Redirect root path to signup
+  //TODO: remove this when the home page is done
+  if (pathname === '/') {
+    return NextResponse.redirect(new URL('/auth/sign-up', request.url));
+  }
 
   try {
     await noseconeMiddleware(noseconeConfig)();
   } catch (error) {
     // biome-ignore lint/suspicious/noConsole: Important for logging middleware errors
-    console.error('Nosecone Middleware Error:', (error as Error));
+    console.error('Nosecone Middleware Error:', error as Error);
     // return NextResponse.redirect(new URL('/error', request.url));
   }
 
@@ -26,9 +34,9 @@ export async function middleware(request: NextRequest) {
   });
   if (isPublicRoute(pathname)) {
     if (
-      pathname === '/auth/setup-profile' &&
+      pathname === '/onboard' &&
       session &&
-      session.user?.username
+      (session.user as Session)?.username
     ) {
       return NextResponse.redirect(new URL('/', request.url));
     }
@@ -39,7 +47,7 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/auth/sign-in', request.url));
   }
 
-  if (pathname === '/auth/setup-profile') {
+  if (pathname === '/onboard') {
     if (!session.user?.emailVerified) {
       return NextResponse.redirect(new URL('/auth/verify-email', request.url));
     }
