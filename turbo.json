@@ -39,7 +39,14 @@
         "X_ID",
         "X_SECRET",
         "BETTER_AUTH_SECRET",
-        "RESEND_FROM"
+        "RESEND_FROM",
+        "GITHUB_AI_KEY",
+        "AZURE_AI_ENDPOINT",
+        "NODE_ENV",
+        "ANALYZE",
+        "BLOB_READ_WRITE_TOKEN",
+        "SENTRY_SUPPRESS_TURBOPACK_WARNING",
+        "LIVEBLOCKS_SECRET"
       ],
       "outputs": [".next/**", "!.next/cache/**"]
     },
@@ -51,7 +58,42 @@
       "persistent": true
     },
     "test": {
-      "dependsOn": ["^test"]
+      "dependsOn": ["^test"],
+      "env": [
+        "DATABASE_URL",
+        "REDIS_URL",
+        "UPSTASH_REDIS_REST_URL",
+        "UPSTASH_REDIS_REST_TOKEN",
+        "AUTH_SECRET",
+        "GOOGLE_ID",
+        "GOOGLE_SECRET",
+        "FACEBOOK_ID",
+        "FACEBOOK_SECRET",
+        "X_ID",
+        "X_SECRET",
+        "BETTER_AUTH_SECRET",
+        "RESEND_FROM",
+        "RESEND_TOKEN",
+        "STRIPE_SECRET_KEY",
+        "STRIPE_WEBHOOK_SECRET",
+        "BETTERSTACK_API_KEY",
+        "BETTERSTACK_URL",
+        "ARCJET_KEY",
+        "GITHUB_AI_KEY",
+        "AZURE_AI_ENDPOINT",
+        "AI_MODEL_NAME",
+        "OPENAI_API_KEY",
+        "LIVEBLOCKS_SECRET",
+        "SVIX_TOKEN",
+        "SENTRY_ORG",
+        "SENTRY_PROJECT",
+        "FLAGS_SECRET",
+        "ANALYZE",
+        "BLOB_READ_WRITE_TOKEN",
+        "TOOLBAR",
+        "NODE_ENV",
+        "SENTRY_SUPPRESS_TURBOPACK_WARNING"
+      ]
     },
     "web": {
       "cache": false
