@@ -6,6 +6,7 @@ import { env } from '@repo/env';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import type { JSX } from 'react';
+import { QueryProvider } from '@/providers/query-provider';
 
 import type { ReactNode } from 'react';
 
@@ -58,8 +59,10 @@ export default function RootLayout({
     >
       <body>
         <DesignSystemProvider defaultTheme="light">
-          {children}
-          <CookieConsent />
+          <QueryProvider>
+            <>{children}</>
+            <CookieConsent />
+          </QueryProvider>
         </DesignSystemProvider>
       </body>
     </html>
