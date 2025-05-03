@@ -82,24 +82,24 @@ Synaxis is built with a modern, scalable tech stack to handle its ambitious feat
 ### Installation
 1. Clone the repo:
    ```bash
-   git clone https://github.com/yourusername/synaxis.git
+   git clone https://github.com/vyre/synaxis.git
    cd synaxis
    ```
 2. Install dependencies:
    ```bash
-   npm install
+   bun install
    ```
 3. Set up environment variables (see `.env.example`):
    ```bash
-   cp .env.example .env.local
+   cp .env.example .env
    ```
 4. Run database migrations:
    ```bash
-   npx prisma migrate dev
+   cd pacakages/database && bunx prisma migrate dev
    ```
 5. Start the development server:
    ```bash
-   npm run dev
+   bun run dev
    ```
 
 ### Running Locally
