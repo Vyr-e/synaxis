@@ -5,7 +5,6 @@ export const metadata: Metadata = {
   title: 'Authentication',
   description: 'Sign in or create an account to join vibrant communities',
 };
-;
 
 export default function Layout({
   children,

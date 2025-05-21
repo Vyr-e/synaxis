@@ -9,11 +9,11 @@ import { motion } from 'motion/react';
 
 export default function SignInPage() {
   return (
-    <div className="relative flex min-h-screen flex-col md:flex-row">
+    <div className="flex relative flex-col min-h-screen md:flex-row">
       {/* Background Section - Always full width/height on mobile */}
       <div className="absolute inset-0 md:relative md:w-[55%]">
         <AuthBackground
-          className="h-full w-full"
+          className="w-full h-full"
           colors1={'#ffffff'}
           colors2={'#f8fafc'}
           colors3={'#f1f5f9'}
@@ -27,15 +27,15 @@ export default function SignInPage() {
           />
 
           {/* Branding Content - Visible on desktop or as overlay on mobile */}
-          <div className="relative z-10 flex h-full flex-col items-center p-8">
+          <div className="flex relative z-10 flex-col items-center p-8 h-full">
             {/* Logo Section */}
             <motion.div
-              className="flex items-center gap-2"
+              className="flex gap-2 items-center"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
             >
               <div className="relative">
-                <div className="absolute inset-0 rounded-full bg-black/5 blur-xl" />
+                <div className="absolute inset-0 rounded-full blur-xl bg-black/5" />
                 <AnimatedIcon className={'relative'} />
               </div>
               <span
@@ -49,15 +49,15 @@ export default function SignInPage() {
             </motion.div>
 
             {/* Center Content */}
-            <div className="hidden flex-1 items-center justify-center md:flex">
+            <div className="hidden flex-1 justify-center items-center md:flex">
               <motion.div
                 className="relative max-w-lg text-center"
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.2 }}
               >
-                <div className="-inset-4 absolute rounded-3xl bg-gradient-to-r from-white/5 to-white/10 blur-3xl" />
-                <div className="relative space-y-6 p-8">
+                <div className="absolute -inset-4 bg-gradient-to-r rounded-3xl blur-3xl from-white/5 to-white/10" />
+                <div className="relative p-8 space-y-6">
                   <h2
                     className={cn(
                       'bg-gradient-to-r from-gray-800/90 via-gray-600/80 to-gray-800/90 bg-clip-text font-bold text-5xl text-transparent backdrop-blur-sm',
@@ -66,17 +66,17 @@ export default function SignInPage() {
                   >
                     Welcome to Your Digital Space
                   </h2>
-                  <p className="text-lg text-zinc-600 leading-relaxed">
+                  <p className="text-lg leading-relaxed text-zinc-600">
                     Where every conversation matters and communities thrive
                     together in real-time
                   </p>
 
                   {/* Floating Badges */}
-                  <div className="flex justify-center gap-4 py-4">
+                  <div className="flex gap-4 justify-center py-4">
                     {['Real-time', 'Secure', 'Scalable'].map((badge, i) => (
                       <motion.span
                         key={badge}
-                        className="rounded-full border border-black/10 bg-white/50 px-4 py-1 text-black/70 text-sm shadow-sm backdrop-blur-sm"
+                        className="px-4 py-1 text-sm rounded-full border shadow-sm backdrop-blur-sm border-black/10 bg-white/50 text-black/70"
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.4 + i * 0.1 }}
@@ -91,7 +91,7 @@ export default function SignInPage() {
 
             {/* Bottom Section */}
             <motion.div
-              className="hidden items-center gap-2 md:flex"
+              className="hidden gap-2 items-center md:flex"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.6 }}
@@ -113,11 +113,11 @@ export default function SignInPage() {
           'bg-gradient-to-t from-white via-white/90 to-transparent md:bg-white'
         )}
       >
-        <div className="flex flex-1 items-center justify-center px-4 py-8">
+        <div className="flex flex-1 justify-center items-center px-4 py-8">
           <AuthForm type="sign-in" />
         </div>
         {/* Footer - Now properly positioned */}
-        <footer className="w-full border-t p-4 text-center text-muted-foreground text-sm">
+        <footer className="p-4 w-full text-sm text-center border-t text-muted-foreground">
           © {new Date().getFullYear()} Synaxis. All rights reserved.
         </footer>
       </div>
