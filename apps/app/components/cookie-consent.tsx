@@ -1,14 +1,8 @@
 'use client';
 
 import { Button } from '@repo/design-system/components/ui/button';
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-} from '@repo/design-system/components/ui/dialog';
 import { Switch } from '@repo/design-system/components/ui/switch';
 import { X } from 'lucide-react';
-// Assuming motion/react is intentional. If using framer-motion, import from 'framer-motion'
 import { AnimatePresence, motion } from 'motion/react';
 import { useEffect, useRef, useState } from 'react';
 
@@ -108,6 +102,10 @@ export function CookieConsent() {
   });
   const consentTimeout = useRef<NodeJS.Timeout | null>(null);
 
+  // Add a ref for the settings panel for focus management
+  const settingsRef = useRef<HTMLDialogElement>(null);
+  const initialFocusRef = useRef<HTMLButtonElement>(null);
+
   useEffect(() => {
     if (typeof document === 'undefined') {
       return;
@@ -129,6 +127,26 @@ export function CookieConsent() {
       }
     };
   }, []);
+
+  // Add focus trap and escape key handler for accessibility
+  useEffect(() => {
+    if (!showSettings) return;
+
+    // Focus the first interactive element when opened
+    if (initialFocusRef.current) {
+      initialFocusRef.current.focus();
+    }
+
+    // Handle escape key
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setShowSettings(false);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [showSettings]);
 
   const handleConsent = (accepted: boolean) => {
     const expiryDate = new Date();
@@ -216,6 +234,97 @@ export function CookieConsent() {
     setShowConsent(false);
   };
 
+  // Settings panel content section
+  const renderSettingsPanel = () => {
+    if (!showSettings) return null;
+
+    return (
+      <>
+        {/* Backdrop overlay */}
+        <div
+          className="fixed inset-0 bg-black/50 z-[190]"
+          onClick={() => setShowSettings(false)}
+          onKeyDown={(e) => e.key === 'Enter' && setShowSettings(false)}
+          aria-hidden="true"
+        />
+
+        {/* Settings panel */}
+        <dialog
+          ref={settingsRef}
+          open={true}
+          aria-labelledby="cookie-settings-title"
+          aria-describedby="cookie-settings-desc"
+          className="fixed left-[50%] top-[50%] z-[200] w-[95vw] max-h-[90vh] overflow-auto max-w-lg translate-x-[-50%] translate-y-[-50%] rounded-lg border bg-background p-0 shadow-lg"
+          style={{ margin: 0 }}
+        >
+          <div className="relative">
+            <button
+              type="button"
+              ref={initialFocusRef}
+              onClick={() => setShowSettings(false)}
+              className="flex absolute top-6 right-6 justify-center items-center w-8 h-8 rounded-full border border-gray-300 transition-all duration-200 hover:border-gray-400 hover:bg-gray-100"
+              aria-label="Close cookie settings"
+            >
+              <X className="w-4 h-4" />
+            </button>
+
+            <div className="p-6">
+              <p id="cookie-settings-desc" className="sr-only">
+                Cookie consent settings panel
+              </p>
+              <div className="flex items-center mb-6">
+                <h2
+                  id="cookie-settings-title"
+                  className="text-2xl font-semibold"
+                >
+                  Your Privacy
+                </h2>
+              </div>
+            </div>
+
+            <div className="px-6 pb-6 bg-gray-50">
+              <div className="space-y-6">
+                {consentOptions.map((option) => (
+                  <div key={option.id} className="space-y-2">
+                    <div className="flex justify-between items-center">
+                      <span
+                        className={`rounded-md px-3 py-1 font-medium text-sm ${
+                          option.required
+                            ? 'text-gray-600'
+                            : 'bg-[#0077FF] text-white'
+                        }`}
+                      >
+                        {option.label}
+                      </span>
+                      <Switch
+                        checked={consents[option.id]}
+                        onCheckedChange={() => handleToggle(option.id)}
+                        disabled={option.required}
+                        className="rounded-md [&_span]:rounded data-[state=checked]:bg-[#0077FF] data-[state=checked]:[&_span]:ml-auto transition-all duration-300 ease-in-out [&_span]:size-[0.9rem] p-[0.1rem]"
+                        aria-label={`${option.label} cookies ${option.required ? '(required)' : ''}`}
+                      />
+                    </div>
+                    <p className="text-sm leading-relaxed text-gray-500">
+                      {option.description}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="flex justify-end px-6 py-4 border-t bg-muted/30">
+              <Button
+                onClick={handleSaveSettings}
+                className="rounded-md bg-quantum-blue px-6 font-medium text-white hover:bg-[#0066DD] transition-colors"
+              >
+                Save Preferences
+              </Button>
+            </div>
+          </div>
+        </dialog>
+      </>
+    );
+  };
+
   return (
     <>
       <AnimatePresence>
@@ -228,13 +337,13 @@ export function CookieConsent() {
             className="fixed inset-x-0 bottom-4 left-4 z-[100] w-[400px] max-w-3xl"
           >
             {/* Banner appearance as per your original code */}
-            <div className="rounded-xl bg-gray-100 p-4 text-gray-800 shadow-lg">
+            <div className="p-4 text-gray-800 bg-gray-100 rounded-xl shadow-lg">
               <div className="space-y-4">
                 <p className="text-sm">
                   This site uses tracking technologies. You may opt in or opt
                   out of the use of these technologies.
                 </p>
-                <div className="flex flex-wrap items-center justify-between gap-2">
+                <div className="flex flex-wrap gap-2 justify-between items-center">
                   <div className="flex gap-2">
                     {/* Deny Button - original styles */}
                     <Button
@@ -277,59 +386,8 @@ export function CookieConsent() {
         )}
       </AnimatePresence>
 
-      {/* --- Settings Dialog --- */}
-      <Dialog open={showSettings} onOpenChange={setShowSettings}>
-        <DialogContent
-          className="max-w-lg gap-0 overflow-hidden p-0"
-          defaultCloseIcon={false}
-        >
-          <DialogClose className="absolute top-6 right-6 flex h-8 w-8 items-center justify-center rounded-full border border-gray-300 transition-all duration-200 hover:border-gray-400 hover:bg-gray-100">
-            <div className="">
-              <X className="h-4 w-4" />
-              <span className="sr-only">Close</span>
-            </div>
-          </DialogClose>
-
-          <div className="p-6">
-            <div className="mb-6 flex items-center">
-              <h2 className="font-semibold text-2xl">Your Privacy</h2>
-            </div>
-          </div>
-
-          <div className="bg-gray-50 px-6 pb-6">
-            <div className="space-y-6">
-              {consentOptions.map((option) => (
-                <div key={option.id} className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span
-                      className={`rounded-md px-3 py-1 font-medium text-sm ${
-                        option.required
-                          ? 'text-gray-600'
-                          : 'bg-[#0077FF] text-white'
-                      }`}
-                    >
-                      {option.label}
-                    </span>
-                    <Switch
-                      checked={consents[option.id]}
-                      onCheckedChange={() => handleToggle(option.id)}
-                      disabled={option.required}
-                      className="data-[state=checked]:bg-[#0077FF]"
-                      aria-label={option.label}
-                    />
-                  </div>
-                  <p className="text-gray-500 text-sm leading-relaxed">
-                    {option.description}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className="flex justify-end border-t bg-muted/30 px-6 py-4">
-            <Button onClick={handleSaveSettings}>Save Preferences</Button>
-          </div>
-        </DialogContent>
-      </Dialog>
+      {/* Render custom settings panel */}
+      {renderSettingsPanel()}
     </>
   );
 }
