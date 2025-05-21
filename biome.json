@@ -4,6 +4,14 @@
   "javascript": {
     "globals": ["Liveblocks"]
   },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "nursery": {
+        "useSortedClasses": "off"
+      }
+    }
+  },
   "files": {
     "ignore": [
       "packages/design-system/components/ui/**",
