@@ -184,12 +184,12 @@ export function SignUpForm() {
       transition={{ delay: 0.3 }}
     >
       <div className="space-y-6">
-        <div className="mb-4 space-y-2 text-center">
-          <h1 className="font-bold text-3xl">Join Synaxis</h1>
+        <div className="mt-8 mb-4 space-y-2 text-center">
+          <h1 className="text-3xl font-bold">Join Synaxis</h1>
           <p className="text-gray-500">Create an account to get started</p>
         </div>
 
-        <div className="mx-auto w-full max-w-sm space-y-4">
+        <div className="mx-auto space-y-4 w-full max-w-sm">
           <div className="grid grid-cols-3 gap-3">
             {socialProviders.map((provider) => (
               <LastUsedWrapper
@@ -200,14 +200,14 @@ export function SignUpForm() {
                 <Button
                   onClick={() => handleSocialSignUp(provider.id)}
                   className={cn(
-                    'flex h-10 w-fit items-center justify-center gap-2 rounded-lg border border-black/10 bg-white/5 text-black/80 transition-colors hover:bg-white/10',
+                    'flex gap-2 justify-center items-center h-10 rounded-lg border transition-colors w-fit border-black/10 bg-white/5 text-black/80 hover:bg-white/10',
                     'relative'
                   )}
                 >
                   {method === provider.id && (
-                    <span className="-top-1 -right-1 absolute h-2 w-2 animate-ping rounded-full bg-blue-500" />
+                    <span className="absolute -top-1 -right-1 w-2 h-2 bg-blue-500 rounded-full animate-ping" />
                   )}
-                  <provider.icon className="h-5 w-5" />
+                  <provider.icon className="w-5 h-5" />
                   <span>{provider.label}</span>
                 </Button>
               </LastUsedWrapper>
@@ -216,11 +216,11 @@ export function SignUpForm() {
 
           {/* Divider */}
           <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-black/10 border-t" />
+            <div className="flex absolute inset-0 items-center">
+              <div className="w-full border-t border-black/10" />
             </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="rounded-full border bg-white px-2 text-zinc-500">
+            <div className="flex relative justify-center text-sm">
+              <span className="px-2 bg-white rounded-full border text-zinc-500">
                 Or
               </span>
             </div>
@@ -233,7 +233,7 @@ export function SignUpForm() {
             >
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div className="space-y-2">
-                  <h2 className="font-medium text-black text-sm">First Name</h2>
+                  <h2 className="text-sm font-medium text-black">First Name</h2>
                   <FormField
                     control={form.control}
                     name="firstName"
@@ -242,7 +242,7 @@ export function SignUpForm() {
                         <FormControl>
                           <Input
                             placeholder="John"
-                            className="h-12 rounded-xl border-2 bg-white/80 px-4 text-base text-black transition-all ease-in-out placeholder:text-zinc-500 focus-visible:ring-2 focus-visible:ring-quantum-blue"
+                            className="px-4 h-12 text-base text-black rounded-xl border-2 transition-all ease-in-out bg-white/80 placeholder:text-zinc-500 focus-visible:ring-2 focus-visible:ring-quantum-blue"
                             {...field}
                           />
                         </FormControl>
@@ -252,7 +252,7 @@ export function SignUpForm() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <h2 className="font-medium text-black text-sm">Last Name</h2>
+                  <h2 className="text-sm font-medium text-black">Last Name</h2>
                   <FormField
                     control={form.control}
                     name="lastName"
@@ -261,7 +261,7 @@ export function SignUpForm() {
                         <FormControl>
                           <Input
                             placeholder="Doe"
-                            className="h-12 rounded-xl border-2 bg-white/80 px-4 text-base text-black transition-all ease-in-out placeholder:text-zinc-500 focus-visible:ring-2 focus-visible:ring-quantum-blue"
+                            className="px-4 h-12 text-base text-black rounded-xl border-2 transition-all ease-in-out bg-white/80 placeholder:text-zinc-500 focus-visible:ring-2 focus-visible:ring-quantum-blue"
                             {...field}
                           />
                         </FormControl>
@@ -273,7 +273,7 @@ export function SignUpForm() {
               </div>
 
               <div className="space-y-2">
-                <h2 className="font-medium text-black text-sm">Email</h2>
+                <h2 className="text-sm font-medium text-black">Email</h2>
                 <FormField
                   control={form.control}
                   name="email"
@@ -284,10 +284,10 @@ export function SignUpForm() {
                           <Input
                             placeholder="eg. johnfran@gmail.com"
                             type="email"
-                            className="h-12 rounded-xl border-2 bg-white/80 px-4 text-base text-black transition-all ease-in-out placeholder:text-zinc-500 focus-visible:ring-2 focus-visible:ring-quantum-blue"
+                            className="px-4 h-12 text-base text-black rounded-xl border-2 transition-all ease-in-out bg-white/80 placeholder:text-zinc-500 focus-visible:ring-2 focus-visible:ring-quantum-blue"
                             {...field}
                           />
-                          <div className="pointer-events-none absolute inset-y-0 end-0 flex items-center justify-center pe-3 text-zinc-500">
+                          <div className="flex absolute inset-y-0 justify-center items-center pointer-events-none end-0 pe-3 text-zinc-500">
                             <Mail
                               size={20}
                               strokeWidth={1.5}
@@ -303,7 +303,7 @@ export function SignUpForm() {
               </div>
 
               <div className="space-y-2">
-                <h2 className="font-medium text-black text-sm">Password</h2>
+                <h2 className="text-sm font-medium text-black">Password</h2>
                 <FormField
                   control={form.control}
                   name="password"
@@ -312,7 +312,7 @@ export function SignUpForm() {
                       <FormControl>
                         <PasswordStrengthChecker
                           placeholder="Create a password"
-                          className="h-12 w-full rounded-xl border-2 bg-white/80 px-4 text-base text-black transition-all ease-in-out placeholder:text-zinc-500 focus-visible:ring-2 focus-visible:ring-quantum-blue"
+                          className="px-4 w-full h-12 text-base text-black rounded-xl border-2 transition-all ease-in-out bg-white/80 placeholder:text-zinc-500 focus-visible:ring-2 focus-visible:ring-quantum-blue"
                           autoComplete="new-password"
                           error={!!form.formState.errors.password}
                           {...field}
@@ -326,7 +326,7 @@ export function SignUpForm() {
 
               {/* Display API Error Message */}
               {apiError && (
-                <p className="text-center text-red-500 text-sm">{apiError}</p>
+                <p className="text-sm text-center text-red-500">{apiError}</p>
               )}
 
               <div className="relative">
@@ -339,16 +339,16 @@ export function SignUpForm() {
                   disabled={isLoading}
                 >
                   {isLoading && (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    <Loader2 className="mr-2 w-4 h-4 animate-spin" />
                   )}
-                  <div className="relative flex items-center justify-center gap-2">
+                  <div className="flex relative gap-2 justify-center items-center">
                     <span>Create Account</span>
                   </div>
                 </Button>
               </div>
 
               {/* Privacy and Sign In Link */}
-              <div className="space-y-4 text-center text-muted-foreground text-sm">
+              <div className="space-y-4 text-sm text-center text-muted-foreground">
                 <p>
                   By continuing, you agree to our{' '}
                   <Link
@@ -370,7 +370,7 @@ export function SignUpForm() {
                   Already have an account?{' '}
                   <Link
                     href="/auth/sign-in"
-                    className="font-medium text-foreground underline hover:text-foreground/80"
+                    className="font-medium underline text-foreground hover:text-foreground/80"
                   >
                     Sign in
                   </Link>

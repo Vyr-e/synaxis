@@ -120,11 +120,12 @@ export function SignInForm() {
           },
           onError: (error) => {
             console.error('Sign in error:', error);
-            const message = error.error?.message || 'An unknown sign-in error occurred.';
+            const message =
+              error.error?.message || 'An unknown sign-in error occurred.';
             setApiError(message);
             form.setError('root', { type: 'server', message });
             setFormStatus('error');
-          }
+          },
         }
       );
 
@@ -180,18 +181,18 @@ export function SignInForm() {
       transition={{ delay: 0.3 }}
     >
       <div className="space-y-6">
-        <div className="mb-4 space-y-2 text-center">
-          <h1 className="font-bold text-3xl">Welcome back to Synaxis</h1>
+        <div className="mt-8 mb-4 space-y-2 text-center">
+          <h1 className="text-3xl font-bold">Welcome back to Synaxis</h1>
           <p className="text-gray-500">Continue to your Communities</p>
         </div>
 
-        <div className="mx-auto w-full max-w-sm space-y-4">
+        <div className="mx-auto space-y-4 w-full max-w-sm">
           <div className="grid grid-cols-3 gap-3">
             {socialProviders.map((provider) => (
               <Button
                 key={provider.id}
                 onClick={() => handleSocialSignIn(provider.id)}
-                className="flex h-10 w-fit items-center justify-center gap-2 rounded-lg border border-black/10 bg-white/5 text-black/80 transition-colors hover:bg-white/10"
+                className="flex gap-2 justify-center items-center h-10 rounded-lg border transition-colors w-fit border-black/10 bg-white/5 text-black/80 hover:bg-white/10"
               >
                 <provider.icon
                   className={cn(
@@ -206,11 +207,11 @@ export function SignInForm() {
 
           {/* Divider */}
           <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-black/10 border-t" />
+            <div className="flex absolute inset-0 items-center">
+              <div className="w-full border-t border-black/10" />
             </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="rounded-full border bg-white px-2 text-zinc-500">
+            <div className="flex relative justify-center text-sm">
+              <span className="px-2 bg-white rounded-full border text-zinc-500">
                 Or
               </span>
             </div>
@@ -222,7 +223,7 @@ export function SignInForm() {
               className="space-y-6 transition-all duration-200"
             >
               <div className="space-y-2">
-                <h2 className="font-medium text-black text-sm">Email</h2>
+                <h2 className="text-sm font-medium text-black">Email</h2>
                 <LastUsedWrapper type="form" show={method === 'email'}>
                   <FormField
                     control={form.control}
@@ -241,7 +242,7 @@ export function SignInForm() {
                               )}
                               {...field}
                             />
-                            <div className="pointer-events-none absolute inset-y-0 end-0 flex items-center justify-center pe-3 text-zinc-500">
+                            <div className="flex absolute inset-y-0 justify-center items-center pointer-events-none end-0 pe-3 text-zinc-500">
                               <Mail
                                 size={20}
                                 strokeWidth={1.5}
@@ -263,12 +264,12 @@ export function SignInForm() {
               </div>
 
               <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <h2 className="font-medium text-black text-sm">Password</h2>
+                <div className="flex justify-between items-center">
+                  <h2 className="text-sm font-medium text-black">Password</h2>
                   <Button
                     type="button"
                     variant="link"
-                    className="h-auto p-0 text-xs text-zinc-400 hover:text-black"
+                    className="p-0 h-auto text-xs text-zinc-400 hover:text-black"
                     onClick={handleForgotPassword}
                   >
                     Forgot password?
@@ -293,7 +294,7 @@ export function SignInForm() {
                           <button
                             type="button"
                             onClick={() => setShowPassword(!showPassword)}
-                            className="absolute inset-y-0 end-0 flex items-center justify-center pe-3 text-zinc-500 hover:text-zinc-300"
+                            className="flex absolute inset-y-0 justify-center items-center end-0 pe-3 text-zinc-500 hover:text-zinc-300"
                           >
                             {showPassword ? (
                               <Eye
@@ -322,7 +323,7 @@ export function SignInForm() {
                 />
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex gap-2 items-center">
                 <Checkbox
                   checked={rememberMe}
                   onCheckedChange={(checked) => setRememberMe(!!checked)}
@@ -333,7 +334,7 @@ export function SignInForm() {
 
               {/* Display API Error Message */}
               {apiError && (
-                <p className="text-center text-red-500 text-sm">{apiError}</p>
+                <p className="text-sm text-center text-red-500">{apiError}</p>
               )}
 
               <div className="relative">
@@ -347,10 +348,10 @@ export function SignInForm() {
                   disabled={isLoading}
                 >
                   {isLoading && (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    <Loader2 className="mr-2 w-4 h-4 animate-spin" />
                   )}
-                  <div className="absolute inset-0 animate-shimmer bg-gradient-to-r from-white/0 via-white/5 to-white/0" />
-                  <div className="relative flex items-center justify-center gap-2">
+                  <div className="absolute inset-0 bg-gradient-to-r animate-shimmer from-white/0 via-white/5 to-white/0" />
+                  <div className="flex relative gap-2 justify-center items-center">
                     <span>Sign In</span>
                   </div>
                 </Button>
@@ -360,7 +361,7 @@ export function SignInForm() {
                   <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="-bottom-6 absolute right-0 left-0 text-center"
+                    className="absolute right-0 left-0 -bottom-6 text-center"
                   >
                     <span
                       className={cn(
@@ -377,7 +378,7 @@ export function SignInForm() {
               </div>
 
               {/* Add privacy message and sign up link */}
-              <div className="space-y-4 text-center text-muted-foreground text-sm">
+              <div className="space-y-4 text-sm text-center text-muted-foreground">
                 <p>
                   By continuing, you agree to our{' '}
                   <Link
@@ -399,7 +400,7 @@ export function SignInForm() {
                   Don't have an account?{' '}
                   <Link
                     href="/auth/sign-up"
-                    className="font-medium text-foreground underline hover:text-foreground/80"
+                    className="font-medium underline text-foreground hover:text-foreground/80"
                   >
                     Sign up
                   </Link>
