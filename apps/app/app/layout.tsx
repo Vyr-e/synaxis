@@ -2,11 +2,11 @@ import { DesignSystemProvider, cn } from '@repo/design-system';
 import { clashDisplay } from '@repo/design-system/fonts';
 import '@repo/design-system/styles/globals.css';
 import { CookieConsent } from '@/components/cookie-consent';
+import { QueryProvider } from '@/providers/query-provider';
 import { env } from '@repo/env';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import type { JSX } from 'react';
-import { QueryProvider } from '@/providers/query-provider';
 
 import type { ReactNode } from 'react';
 
@@ -19,7 +19,7 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: {
     default: 'Synaxis',
-    template: '%s | Synaxis',
+    template: '',
   },
   description: 'Create vibrant spaces where conversations flow naturally',
   icons: {
@@ -60,7 +60,7 @@ export default function RootLayout({
       <body>
         <DesignSystemProvider defaultTheme="light">
           <QueryProvider>
-            <>{children}</>
+            {children}
             <CookieConsent />
           </QueryProvider>
         </DesignSystemProvider>
