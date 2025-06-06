@@ -1,8 +1,8 @@
 'use client';
 
+import { ArrowLeft, ArrowRight } from 'lucide-react';
 // Correct import for motion component
 import { motion } from 'motion/react';
-import { ArrowLeft, ArrowRight } from 'lucide-react';
 
 interface NavigationButtonsProps {
   // Removed currentStep
@@ -43,12 +43,12 @@ export function NavigationButtons({
 
       <motion.button
         onClick={onNext}
-        disabled={!isStepValid || isNavigating} // Disable if step invalid OR navigating
-        className={`flex h-12 w-12 items-center justify-center rounded-full shadow-sm transition-colors ${
+        disabled={!isStepValid || isNavigating}
+        className={`flex h-12 w-12 items-center justify-center rounded-full shadow-sm transition-all ${
           isStepValid && !isNavigating
-            ? 'bg-[#0057FF] text-white hover:bg-[#0057FF]/90'
+            ? 'bg-[#0057FF] text-white hover:bg-[#0057FF]/90 relative before:absolute before:inset-0 before:rounded-full before:border-2 before:border-[#0057FF] before:opacity-0 before:scale-110 before:animate-ping after:absolute after:inset-0 after:rounded-full after:bg-gradient-to-r after:from-[#0057FF] after:to-[#00A3FF] after:opacity-0 after:z-[-1] hover:after:opacity-60 hover:before:opacity-80'
             : 'cursor-not-allowed bg-gray-200 text-gray-400'
-        } ${isNavigating ? 'cursor-wait opacity-50' : ''}`} // Style for navigating state
+        } ${isNavigating ? 'cursor-wait opacity-50' : ''}`}
         initial={{ x: 20, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
         exit={{ x: 20, opacity: 0 }}

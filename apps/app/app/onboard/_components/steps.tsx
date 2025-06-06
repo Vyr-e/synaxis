@@ -1,12 +1,13 @@
 'use client';
 
+import { useFormStore } from '@/store/use-onboarding-store';
+import { clashDisplay } from '@repo/design-system/fonts';
 import { AnimatePresence, motion } from 'motion/react';
 import { notFound, useRouter } from 'next/navigation'; // Import hooks
 import type React from 'react';
 import { useEffect, useMemo, useState } from 'react';
-
-import { useFormStore } from '@/store/use-onboarding-store';
 import { AccountTypeSelector } from './account-type-selector';
+import { CommunitySetupForm } from './community-setup-form';
 import { Completion } from './completion';
 import { IdentityForm } from './identity-form';
 import { InterestSelector } from './interest-selector';
@@ -15,7 +16,7 @@ import { ProfileForm } from './profile-form';
 // Define the starting points for the dynamic routes
 const onboardingStartPaths = {
   user: '/onboard/user/identity',
-  brand: '/onboard/brand/profile',
+  brand: '/onboard/brand/community',
 };
 
 interface StepsProps {
@@ -57,7 +58,7 @@ export default function StepsComponent({ steps }: StepsProps) {
       const isValidSubstep =
         (steps[0] === 'user' &&
           ['identity', 'profile', 'interests'].includes(steps[1])) ||
-        (steps[0] === 'brand' && ['profile'].includes(steps[1])); // Add more brand substeps if needed
+        (steps[0] === 'brand' && ['community'].includes(steps[1])); // Only allow 'community' for brand
 
       if (isValidSubstep) {
         return {
@@ -78,25 +79,6 @@ export default function StepsComponent({ steps }: StepsProps) {
   }, [steps]);
   // --- End Determine Current Step Info ---
 
-  // Effect to handle navigation after account type selection
-  useEffect(() => {
-    // Only run on the initial step when an account type is selected and we aren't already navigating
-    if (isInitialStep && formData.accountType && !isNavigating) {
-      const nextUrl =
-        onboardingStartPaths[formData.accountType as 'user' | 'brand'];
-      if (nextUrl) {
-        setIsNavigating(true);
-        router.push(nextUrl);
-      } else {
-        // biome-ignore lint/suspicious/noConsole: <explanation>
-        console.error(
-          'Invalid account type for navigation:',
-          formData.accountType
-        );
-      }
-    }
-  }, [formData.accountType, isInitialStep, isNavigating, router]);
-
   // --- Validation Logic ---
   useEffect(() => {
     // Skip validation for the initial step
@@ -114,8 +96,8 @@ export default function StepsComponent({ steps }: StepsProps) {
         !!formData.lastName?.trim();
     } else if (type === 'user' && subStep === 'interests') {
       isValid = true; // Interests can be skipped
-    } else if (type === 'brand' && subStep === 'profile') {
-      isValid = !!formData.brandName?.trim(); // Add other brand profile fields if needed
+    } else if (type === 'brand' && subStep === 'community') {
+      isValid = true; // Adjust validation as needed
     } else if (type === 'completion') {
       isValid = true; // Completion step is always valid
     }
@@ -127,8 +109,6 @@ export default function StepsComponent({ steps }: StepsProps) {
     formData.username,
     formData.firstName,
     formData.lastName,
-    formData.brandName,
-    // formData.interests?.length, // Uncomment if interests become mandatory
     setValidation,
     isInitialStep, // Add dependency
   ]);
@@ -175,13 +155,13 @@ export default function StepsComponent({ steps }: StepsProps) {
     }
   } else if (type === 'brand') {
     switch (subStep) {
-      case 'profile': {
-        componentKey = 'brand-profile';
-        currentStepComponent = <ProfileForm />; // Use ProfileForm for brand too
+      case 'community': {
+        componentKey = 'brand-community';
+        currentStepComponent = <CommunitySetupForm />;
         break;
       }
       default:
-        notFound(); // Should not happen if isValidRoute is true
+        notFound();
     }
   }
 
@@ -218,10 +198,10 @@ export default function StepsComponent({ steps }: StepsProps) {
     }
     if (type === 'brand') {
       switch (subStep) {
-        case 'profile':
+        case 'community':
           return {
-            title: 'Set up your brand profile',
-            description: 'Showcase your brand, events, and community.',
+            title: 'Set up your community',
+            description: 'Configure your community settings and preferences.',
           };
         default:
           return { title: '', description: '' };
@@ -243,6 +223,17 @@ export default function StepsComponent({ steps }: StepsProps) {
     animate: { opacity: 1, scale: 1 },
     exit: { opacity: 0, scale: 0.98 },
   };
+
+  useEffect(() => {
+    if (isInitialStep && formData.accountType && !isNavigating) {
+      const nextUrl =
+        onboardingStartPaths[formData.accountType as 'user' | 'brand'];
+      if (nextUrl) {
+        setIsNavigating(true);
+        router.push(nextUrl);
+      }
+    }
+  }, [formData.accountType, isInitialStep, isNavigating, router]);
 
   return (
     <>
@@ -269,7 +260,9 @@ export default function StepsComponent({ steps }: StepsProps) {
                 <div className="flex h-full flex-col items-center">
                   {showContentHeaders && (
                     <>
-                      <h1 className="mb-4 font-bold font-poppins text-2xl text-gray-900">
+                      <h1
+                        className={`mb-4 font-bold ${clashDisplay.className} text-2xl text-gray-900 `}
+                      >
                         {title}
                       </h1>
                       <p className="mb-8 max-w-lg text-center font-inter text-gray-700">

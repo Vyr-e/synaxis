@@ -14,8 +14,8 @@ import { type FormData, useFormStore } from '@/store/use-onboarding-store';
 
 const onboardingSteps = {
   initial: '/onboard',
-  user: ['profile', 'interests'],
-  brand: ['profile'],
+  user: ['identity', 'profile', 'interests'],
+  brand: ['community'],
   completion: '/onboard/completion',
 };
 
@@ -38,10 +38,10 @@ function getStepUrl(
   // --- Handle navigation FROM initial step ---
   if (pathname === onboardingSteps.initial && direction === 'next') {
     if (formData.accountType === 'user') {
-      return `${onboardingSteps.initial}/user/${onboardingSteps.user[0]}`;
+      return `${onboardingSteps.initial}/user/identity`;
     }
     if (formData.accountType === 'brand') {
-      return `${onboardingSteps.initial}/brand/${onboardingSteps.brand[0]}`;
+      return `${onboardingSteps.initial}/brand/community`;
     }
     return null; // Cannot go next if type not selected
   }
@@ -58,7 +58,12 @@ function getStepUrl(
       return onboardingSteps.completion;
     }
     if (steps[0] === 'brand') {
-      // Brand only has 'profile', so next always goes to completion
+      const currentSubStep = steps[1];
+      const currentIndex = getStepIndex(onboardingSteps.brand, currentSubStep);
+      if (currentIndex < onboardingSteps.brand.length - 1) {
+        const nextSubStep = onboardingSteps.brand[currentIndex + 1];
+        return `${onboardingSteps.initial}/brand/${nextSubStep}`;
+      }
       return onboardingSteps.completion;
     }
   } else {
@@ -104,19 +109,37 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
   const [isNavigating, setIsNavigating] = useState(false);
 
   const formData = useFormStore((state) => state.formData);
-  const isCurrentStepValid =
-    useFormStore((state) => state.isCurrentStepValid) &&
-    pathname !== onboardingSteps.initial;
+  const getStepValidation = useFormStore((state) => state.getStepValidation);
 
+  const isCurrentStepValid = useMemo(() => {
+    if (pathname === onboardingSteps.initial) {
+      return !!formData.accountType;
+    }
+
+    // Parse the current step from pathname
+    const pathSegments = pathname.split('/').filter(Boolean);
+    const steps = pathSegments.slice(1);
+    const stepType = steps[0] as 'user' | 'brand';
+    const subStep = steps[1];
+
+    if (stepType && subStep) {
+      // Use the synchronous getter instead of stored state
+      return getStepValidation(stepType, subStep);
+    }
+
+    return false;
+  }, [pathname, formData, getStepValidation]);
+
+  // Rest of your component logic remains the same...
   const showNavButtons = useMemo(() => {
     if (pathname === onboardingSteps.completion) {
       return false;
     }
-    if (pathname !== onboardingSteps.initial) {
+    if (pathname === onboardingSteps.initial) {
       return true;
     }
-    return !!formData.accountType;
-  }, [pathname, formData.accountType]);
+    return true;
+  }, [pathname]);
 
   const showIndicator = useMemo(() => {
     return (
@@ -125,16 +148,15 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
     );
   }, [pathname]);
 
-  // Navigation Handlers
   const handleNext = () => {
     if (isNavigating || !isCurrentStepValid) return;
+
     const nextUrl = getStepUrl(pathname, formData, 'next');
     if (nextUrl) {
       setIsNavigating(true);
       router.push(nextUrl);
       setTimeout(() => setIsNavigating(false), 500);
     } else {
-      // biome-ignore lint/suspicious/noConsole: <explanation>
       console.warn(
         'Could not determine next step from:',
         pathname,
@@ -179,6 +201,7 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
     }
     return { current: -1, total: -1 };
   };
+
   const indicator = calculateIndicatorSteps();
 
   return (
@@ -191,7 +214,6 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
       edge={'0%'}
       className="min-h-screen w-full "
     >
-      {/* Use showIndicator flag here */}
       {showIndicator && indicator.current !== -1 && (
         <StepIndicator
           currentStep={indicator.current}
@@ -203,7 +225,6 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
         {children}
       </div>
 
-      {/* Use showNavButtons flag here */}
       {showNavButtons && (
         <motion.div
           key="nav-buttons"
@@ -217,7 +238,6 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
             onNext={handleNext}
             onPrev={handlePrev}
             isNavigating={isNavigating}
-            // Determine if 'Prev' button should be disabled (only on initial step now)
             canGoBack={pathname !== onboardingSteps.initial}
           />
         </motion.div>
