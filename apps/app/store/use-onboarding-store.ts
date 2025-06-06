@@ -7,23 +7,31 @@ export type FormData = {
   lastName: string;
   accountType: string;
   bio: string;
-  profilePicture: File | null; // Temporary file for upload
-  profilePictureUrl: string; // URL reference after upload
+  profilePicture: File | null;
+  profilePictureUrl: string;
   profilePicturePreview: string;
   bannerColor: string;
   interests: string[];
-  // Social media
   instagram: string;
   twitter: string;
   facebook: string;
-  // Brand specific
   brandName: string;
   brandDescription: string;
   website: string;
   communityPrivacy: 'public' | 'private';
+  slug: string;
+  logo: string;
+  isPrivate: boolean;
+  brandColor: string;
+  location: string;
+  linkedin: string;
+  isProfilePublic: boolean;
+  showLocation: boolean;
+  allowMessages: boolean;
+  selectedAvatarIndex: number | null;
+  useGeneratedAvatar: boolean;
 };
 
-// Add validation state
 type ValidationState = {
   isCurrentStepValid: boolean;
   validationErrors: Record<string, string>;
@@ -31,20 +39,17 @@ type ValidationState = {
 
 type FormStore = {
   formData: FormData;
-  // Validation state
   isCurrentStepValid: boolean;
   validationErrors: Record<string, string>;
-  // Form actions
   setFormData: (data: Partial<FormData>) => void;
   setField: <K extends keyof FormData>(field: K, value: FormData[K]) => void;
   setProfilePicture: (file: File | null, url: string) => void;
-  // Add toggleInterest action type
   toggleInterest: (interest: string) => void;
-  // Validation actions
   setValidation: (isValid: boolean) => void;
   setValidationError: (field: string, error: string | null) => void;
   validateCurrentStep: (stepType: 'user' | 'brand', subStep: string) => boolean;
-  // Reset
+  // Add a computed validation getter
+  getStepValidation: (stepType: 'user' | 'brand', subStep: string) => boolean;
   clear: () => void;
 };
 
@@ -59,15 +64,24 @@ const initialFormData: FormData = {
   profilePicturePreview: '',
   bannerColor: '#0057FF',
   interests: [],
-  // Social media
   instagram: '',
   twitter: '',
   facebook: '',
-  // Brand specific
   brandName: '',
   brandDescription: '',
   website: '',
   communityPrivacy: 'public',
+  slug: '',
+  logo: '',
+  isPrivate: false,
+  brandColor: '#0057FF',
+  location: '',
+  linkedin: '',
+  isProfilePublic: true,
+  showLocation: true,
+  allowMessages: true,
+  selectedAvatarIndex: null,
+  useGeneratedAvatar: false,
 };
 
 const initialValidation: ValidationState = {
@@ -90,12 +104,20 @@ export const useFormStore = create<FormStore>()(
         })),
 
       setField: (field, value) =>
-        set((state) => ({
-          formData: {
+        set((state) => {
+          const newFormData = {
             ...state.formData,
             [field]: value,
-          },
-        })),
+          };
+
+          // Auto-validate after field update
+          const newState = { formData: newFormData };
+
+          // You could add auto-validation here if needed
+          // For now, we'll rely on the computed getter
+
+          return newState;
+        }),
 
       setProfilePicture: (file, url) =>
         set((state) => ({
@@ -107,7 +129,6 @@ export const useFormStore = create<FormStore>()(
           },
         })),
 
-      // Add toggleInterest implementation
       toggleInterest: (interest) =>
         set((state) => {
           const currentInterests = state.formData.interests;
@@ -122,7 +143,6 @@ export const useFormStore = create<FormStore>()(
           };
         }),
 
-      // Validation methods
       setValidation: (isValid) =>
         set(() => ({
           isCurrentStepValid: isValid,
@@ -136,14 +156,17 @@ export const useFormStore = create<FormStore>()(
           },
         })),
 
+      // Keep the original validateCurrentStep for explicit validation
       validateCurrentStep: (stepType, subStep) => {
         const { formData } = get();
         let isValid = false;
 
-        // Step-specific validation logic
         if (stepType === 'user') {
-          if (subStep === 'profile') {
-            // Validate user profile fields
+          if (subStep === 'identity') {
+            isValid = Boolean(
+              formData.username && formData.username.length >= 3
+            );
+          } else if (subStep === 'profile') {
             isValid = Boolean(
               formData.username &&
                 formData.firstName &&
@@ -151,16 +174,40 @@ export const useFormStore = create<FormStore>()(
                 formData.bio
             );
           } else if (subStep === 'interests') {
-            // Validate interests
             isValid = formData.interests.length > 0;
           }
         } else if (stepType === 'brand' && subStep === 'profile') {
-          // Validate brand profile fields
           isValid = Boolean(formData.brandName && formData.brandDescription);
         }
 
-        // Update the validation state
         set({ isCurrentStepValid: isValid });
+        return isValid;
+      },
+
+      // Add a synchronous getter that doesn't trigger state updates
+      getStepValidation: (stepType, subStep) => {
+        const { formData } = get();
+        let isValid = false;
+
+        if (stepType === 'user') {
+          if (subStep === 'identity') {
+            isValid = Boolean(
+              formData.username && formData.username.length >= 3
+            );
+          } else if (subStep === 'profile') {
+            isValid = Boolean(
+              formData.username &&
+                formData.firstName &&
+                formData.lastName &&
+                formData.bio
+            );
+          } else if (subStep === 'interests') {
+            isValid = formData.interests.length > 0;
+          }
+        } else if (stepType === 'brand' && subStep === 'profile') {
+          isValid = Boolean(formData.brandName && formData.brandDescription);
+        }
+
         return isValid;
       },
 
@@ -176,11 +223,17 @@ export const useFormStore = create<FormStore>()(
       partialize: (state) => ({
         formData: {
           ...state.formData,
-          profilePicture: null, // Don't store the File object
+          profilePicture: null,
         },
-        // Don't persist validation state
-        // isCurrentStepValid and validationErrors are omitted
       }),
+      onRehydrateStorage: () => (state) => {
+        if (state) {
+          const { formData } = state;
+          if (formData.username && formData.username.length >= 3) {
+            state.setValidation(true);
+          }
+        }
+      },
     }
   )
 );
