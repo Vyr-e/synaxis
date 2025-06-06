@@ -236,92 +236,101 @@ export function CookieConsent() {
 
   // Settings panel content section
   const renderSettingsPanel = () => {
-    if (!showSettings) return null;
-
     return (
-      <>
-        {/* Backdrop overlay */}
-        <div
-          className="fixed inset-0 bg-black/50 z-[190]"
-          onClick={() => setShowSettings(false)}
-          onKeyDown={(e) => e.key === 'Enter' && setShowSettings(false)}
-          aria-hidden="true"
-        />
-
-        {/* Settings panel */}
-        <dialog
-          ref={settingsRef}
-          open={true}
-          aria-labelledby="cookie-settings-title"
-          aria-describedby="cookie-settings-desc"
-          className="fixed left-[50%] top-[50%] z-[200] w-[95vw] max-h-[90vh] overflow-auto max-w-lg translate-x-[-50%] translate-y-[-50%] rounded-lg border bg-background p-0 shadow-lg"
-          style={{ margin: 0 }}
-        >
-          <div className="relative">
-            <button
-              type="button"
-              ref={initialFocusRef}
+      <AnimatePresence>
+        {showSettings && (
+          <>
+            {/* Backdrop overlay */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 bg-black/50 z-[190] w-full"
               onClick={() => setShowSettings(false)}
-              className="flex absolute top-6 right-6 justify-center items-center w-8 h-8 rounded-full border border-gray-300 transition-all duration-200 hover:border-gray-400 hover:bg-gray-100"
-              aria-label="Close cookie settings"
+              onKeyDown={(e) => e.key === 'Enter' && setShowSettings(false)}
+              aria-hidden="true"
+            />
+
+            {/* Settings panel */}
+            <motion.dialog
+              ref={settingsRef}
+              open={true}
+              initial={{ opacity: 0, scale: 0.95, y: '-45%' }}
+              animate={{ opacity: 1, scale: 1, y: '-50%' }}
+              exit={{ opacity: 0, scale: 0.95, y: '-45%' }}
+              transition={{ duration: 0.2, ease: 'easeOut' }}
+              aria-labelledby="cookie-settings-title"
+              aria-describedby="cookie-settings-desc"
+              className="fixed translate-x-[-50%] top-[50%] z-[200] max-h-[90vh] overflow-auto max-w-lg  rounded-2xl border bg-background p-0 shadow-lg"
             >
-              <X className="w-4 h-4" />
-            </button>
-
-            <div className="p-6">
-              <p id="cookie-settings-desc" className="sr-only">
-                Cookie consent settings panel
-              </p>
-              <div className="flex items-center mb-6">
-                <h2
-                  id="cookie-settings-title"
-                  className="text-2xl font-semibold"
+              <div className="relative">
+                <button
+                  type="button"
+                  ref={initialFocusRef}
+                  onClick={() => setShowSettings(false)}
+                  className="flex absolute top-6 right-6 justify-center items-center w-8 h-8 rounded-full border border-gray-300 transition-all duration-200 hover:border-gray-400 hover:bg-gray-100"
+                  aria-label="Close cookie settings"
                 >
-                  Your Privacy
-                </h2>
-              </div>
-            </div>
+                  <X className="w-4 h-4" />
+                </button>
 
-            <div className="px-6 pb-6 bg-gray-50">
-              <div className="space-y-6">
-                {consentOptions.map((option) => (
-                  <div key={option.id} className="space-y-2">
-                    <div className="flex justify-between items-center">
-                      <span
-                        className={`rounded-md px-3 py-1 font-medium text-sm ${
-                          option.required
-                            ? 'text-gray-600'
-                            : 'bg-[#0077FF] text-white'
-                        }`}
-                      >
-                        {option.label}
-                      </span>
-                      <Switch
-                        checked={consents[option.id]}
-                        onCheckedChange={() => handleToggle(option.id)}
-                        disabled={option.required}
-                        className="rounded-md [&_span]:rounded data-[state=checked]:bg-[#0077FF] data-[state=checked]:[&_span]:ml-auto transition-all duration-300 ease-in-out [&_span]:size-[0.9rem] p-[0.1rem]"
-                        aria-label={`${option.label} cookies ${option.required ? '(required)' : ''}`}
-                      />
-                    </div>
-                    <p className="text-sm leading-relaxed text-gray-500">
-                      {option.description}
-                    </p>
+                <div className="p-6 pb-4">
+                  <p id="cookie-settings-desc" className="sr-only">
+                    Cookie consent settings panel
+                  </p>
+                  <div className="flex items-center mb-2">
+                    <h2
+                      id="cookie-settings-title"
+                      className="text-2xl font-semibold"
+                    >
+                      Your Privacy
+                    </h2>
                   </div>
-                ))}
+                </div>
+
+                <div className="px-6 pb-6 bg-gray-50">
+                  <div className="space-y-6">
+                    {consentOptions.map((option) => (
+                      <div key={option.id} className="space-y-2">
+                        <div className="flex justify-between items-center">
+                          <span
+                            className={`rounded-md px-3 py-1 font-medium text-sm ${
+                              option.required
+                                ? 'text-gray-700 bg-gray-100 border border-gray-200'
+                                : 'text-[#0077FF] bg-blue-50 border border-[#0077FF]/30'
+                            }`}
+                          >
+                            {option.label}
+                          </span>
+                          <Switch
+                            checked={consents[option.id]}
+                            onCheckedChange={() => handleToggle(option.id)}
+                            disabled={option.required}
+                            className="rounded-md [&_span]:rounded data-[state=checked]:bg-[#0077FF] data-[state=checked]:[&_span]:ml-auto transition-all duration-300 ease-in-out [&_span]:size-[0.9rem] p-[0.1rem]"
+                            aria-label={`${option.label} cookies ${option.required ? '(required)' : ''}`}
+                          />
+                        </div>
+                        <p className="text-sm leading-relaxed text-gray-500">
+                          {option.description}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div className="flex justify-end px-6 py-4">
+                  <Button
+                    onClick={handleSaveSettings}
+                    className="rounded-lg bg-quantum-blue px-6 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-[#0066DD] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-quantum-blue-hover"
+                  >
+                    Save Preferences
+                  </Button>
+                </div>
               </div>
-            </div>
-            <div className="flex justify-end px-6 py-4 border-t bg-muted/30">
-              <Button
-                onClick={handleSaveSettings}
-                className="rounded-md bg-quantum-blue px-6 font-medium text-white hover:bg-[#0066DD] transition-colors"
-              >
-                Save Preferences
-              </Button>
-            </div>
-          </div>
-        </dialog>
-      </>
+            </motion.dialog>
+          </>
+        )}
+      </AnimatePresence>
     );
   };
 
@@ -330,10 +339,10 @@ export function CookieConsent() {
       <AnimatePresence>
         {showConsent && (
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 20 }}
-            transition={{ duration: 0.2 }}
+            initial={{ opacity: 0, y: 30, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 30, scale: 0.98 }}
+            transition={{ duration: 0.3, ease: 'easeOut' }}
             className="fixed inset-x-0 bottom-4 left-4 z-[100] w-[400px] max-w-3xl"
           >
             {/* Banner appearance as per your original code */}
