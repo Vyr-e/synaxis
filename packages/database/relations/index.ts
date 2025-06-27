@@ -152,3 +152,12 @@ export const invitationsRelations = relations(invitations, ({ one }) => ({
     relationName: 'inviter',
   }),
 }));
+
+// Add this if it's missing
+export const brandsRelations = relations(brands, ({ one, many }) => ({
+  owner: one(users, {
+    fields: [brands.ownerId],
+    references: [users.id],
+  }),
+  users: many(users), // Users belonging to this brand
+}));

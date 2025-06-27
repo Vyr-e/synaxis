@@ -1,7 +1,7 @@
 // Auth
 export { accounts } from '../models/accounts';
 export { sessions } from '../models/sessions';
-export { users } from '../models/users';
+export { users, USER_ROLES } from '../models/users';
 export { verifications } from '../models/verifications';
 
 // Events

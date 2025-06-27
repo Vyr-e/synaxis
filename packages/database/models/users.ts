@@ -2,6 +2,7 @@ import { sql } from 'drizzle-orm';
 import {
   boolean,
   index,
+  integer,
   jsonb,
   pgTable,
   text,
@@ -10,8 +11,17 @@ import {
   uuid,
   varchar,
 } from 'drizzle-orm/pg-core';
-import { brands } from './brands';
-import { userRole } from './enums';
+
+// Define role types for type safety
+export const USER_ROLES = {
+  GUEST: 'guest', // Users with incomplete profiles
+  USER: 'user', // Regular users with complete profiles
+  BRAND_OWNER: 'brand_owner', // Users who own brands
+  MODERATOR: 'moderator', // Community moderators
+  ADMIN: 'admin', // Platform administrators
+} as const;
+
+export type UserRole = (typeof USER_ROLES)[keyof typeof USER_ROLES];
 
 // Define preference types for type safety
 export type UserPreferences = {
@@ -47,15 +57,41 @@ export const users = pgTable(
       .$defaultFn(() => sql`USING email_verified::boolean`),
     image: text('image'),
     bio: varchar('bio', { length: 500 }),
+
+    // Location
+    location: varchar('location', { length: 256 }),
+
+    // Social links
+    instagram: varchar('instagram', { length: 256 }),
+    twitter: varchar('twitter', { length: 256 }),
+    facebook: varchar('facebook', { length: 256 }),
+    linkedin: varchar('linkedin', { length: 256 }),
+    website: varchar('website', { length: 500 }),
+
+    // Privacy settings
+    isProfilePublic: boolean('is_profile_public').default(true),
+    showLocation: boolean('show_location').default(true),
+    allowMessages: boolean('allow_messages').default(true),
+
+    // Interests and customization
+    interests: jsonb('interests').$type<string[]>().default([]),
+    bannerColor: varchar('banner_color', { length: 7 }).default('#0057FF'),
+    selectedAvatarIndex: integer('selected_avatar_index'),
+    useGeneratedAvatar: boolean('use_generated_avatar').default(false),
+
     preferences: jsonb('preferences').$type<UserPreferences>().default({}),
     createdAt: timestamp('created_at').notNull().default(sql`now()`),
     updatedAt: timestamp('updated_at').notNull().default(sql`now()`),
     deletedAt: timestamp('deleted_at'),
-    role: userRole('role').default('user').notNull(),
-    brandId: uuid('brand_id').references(() => brands.id, {
-      onDelete: 'cascade',
-      onUpdate: 'cascade',
-    }),
+
+    // Role as varchar with default guest for incomplete profiles
+    role: varchar('role', { length: 50 })
+      .$type<UserRole>()
+      .default(USER_ROLES.GUEST)
+      .notNull(),
+
+    brandId: uuid('brand_id'),
+
     banned: boolean('banned').default(false),
     banReason: text('ban_reason'),
     banExpires: timestamp('ban_expires'),

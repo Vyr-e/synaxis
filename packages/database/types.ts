@@ -1,6 +1,6 @@
 import type { InferInsertModel, InferSelectModel } from 'drizzle-orm';
+import type { USER_ROLES } from './schema';
 import type {
-  // biome-ignore lint/nursery/noExportedImports: <explanation>
   events,
   accounts,
   brandCommunities,
@@ -39,6 +39,7 @@ export type NewCommunityMember = InferInsertModel<typeof communityMembers>;
 // User Types
 export type User = InferSelectModel<typeof users>;
 export type NewUser = InferInsertModel<typeof users>;
+export type UserRole = (typeof USER_ROLES)[keyof typeof USER_ROLES];
 
 export type Session = InferSelectModel<typeof sessions>;
 export type NewSession = InferInsertModel<typeof sessions>;
