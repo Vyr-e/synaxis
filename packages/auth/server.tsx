@@ -25,7 +25,15 @@ const auth = betterAuth({
     provider: 'pg',
     schema: {
       ...schema,
-      users: schema.users,
+      users: {
+        ...schema.users,
+        username: {
+          type: 'string',
+          required: false,
+          input: true,
+          unique: true,
+        },
+      },
       accounts: schema.accounts,
       sessions: schema.sessions,
       verifications: schema.verifications,
@@ -160,6 +168,12 @@ const auth = betterAuth({
     autoSignIn: true,
     maxPasswordLength: 18,
     minPasswordLength: 8,
+    onSignUp: async (data) => {
+      return {
+        email: await data.email,
+        username: null,
+      };
+    },
 
     sendResetPassword: async ({ user, url }) => {
       await resend.emails.send({
@@ -329,7 +343,8 @@ const auth = betterAuth({
           return false;
         }
         const isAllowed =
-          userProfile.role === 'brand' || userProfile.role === 'admin';
+          userProfile.role === schema.USER_ROLES.BRAND_OWNER ||
+          userProfile.role === schema.USER_ROLES.ADMIN;
         return isAllowed;
       },
       allowUserToJoinOrganization: async (user: { id: string }) => {
