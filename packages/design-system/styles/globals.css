@@ -164,3 +164,43 @@ input:autofill:active {
   transition: background-color 5000s ease-in-out 0s;
   @apply focus-visible:ring-2 focus-visible:ring-quantum-blue;
 }
+
+/* Debug utility - only active when data-debug attribute is present */
+:where([data-debug]) .debug {
+  @apply border-2 border-red-500 rounded-md p-1;
+}
+
+@-webkit-keyframes progress-motion-blur {
+  0%,
+  100% {
+    box-shadow: none;
+    -webkit-filter: blur(0);
+            filter: blur(0);
+  }
+  50% {
+    box-shadow: -8px 0 2px rgba(0, 87, 255, 0.9), -16px 0 8px rgba(0, 87, 255, 0.8), -24px 0 6px rgba(0, 87, 255, 0.7),
+      -32px 0 12px rgba(0, 87, 255, 0.6);
+    -webkit-filter: blur(1px);
+            filter: blur(1px);
+  }
+}
+
+@keyframes progress-motion-blur {
+  0%,
+  100% {
+    box-shadow: none;
+    -webkit-filter: blur(0);
+            filter: blur(0);
+  }
+  50% {
+    box-shadow: -8px 0 2px rgba(0, 87, 255, 0.9), -16px 0 8px rgba(0, 87, 255, 0.8), -24px 0 6px rgba(0, 87, 255, 0.7),
+      -32px 0 12px rgba(0, 87, 255, 0.6);
+    -webkit-filter: blur(1px);
+            filter: blur(1px);
+  }
+}
+
+.progress-motion-blur {
+  -webkit-animation: progress-motion-blur 0.6s ease-in-out infinite;
+          animation: progress-motion-blur 0.6s ease-in-out infinite;
+}
