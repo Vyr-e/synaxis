@@ -2,12 +2,14 @@ import { sql } from 'drizzle-orm';
 import {
   boolean,
   index,
+  jsonb,
   pgTable,
   text,
   timestamp,
   uuid,
   varchar,
 } from 'drizzle-orm/pg-core';
+import { users } from './users';
 
 export const brands = pgTable(
   'brands',
@@ -19,7 +21,10 @@ export const brands = pgTable(
     logo: text('logo'),
     website: varchar('website', { length: 500 }),
     isVerified: boolean('is_verified').default(false),
-    ownerId: uuid('owner_id').notNull(),
+    metadata: jsonb('metadata'),
+    ownerId: uuid('owner_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade', onUpdate: 'cascade' }),
     createdAt: timestamp('created_at').notNull().default(sql`now()`),
     updatedAt: timestamp('updated_at').notNull().default(sql`now()`),
     deletedAt: timestamp('deleted_at'),

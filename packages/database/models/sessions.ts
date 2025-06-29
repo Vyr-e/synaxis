@@ -1,6 +1,6 @@
 import { sql } from 'drizzle-orm';
 import { pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
-import { organizations } from './organization';
+import { brands } from './brands';
 import { users } from './users';
 
 export const sessions = pgTable('sessions', {
@@ -20,6 +20,6 @@ export const sessions = pgTable('sessions', {
 
   impersonatedBy: uuid('impersonated_by').references(() => users.id),
   activeOrganizationId: uuid('active_organization_id').references(
-    () => organizations.id
+    () => brands.id
   ),
 });

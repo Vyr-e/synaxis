@@ -2,7 +2,6 @@ import { sql } from 'drizzle-orm';
 import {
   boolean,
   index,
-  integer,
   jsonb,
   pgTable,
   text,
@@ -46,9 +45,12 @@ export const users = pgTable(
   'users',
   {
     id: uuid('id').defaultRandom().primaryKey(),
+    
+					name: text('name').notNull(),
     firstName: varchar('first_name', { length: 256 }),
     lastName: varchar('last_name', { length: 256 }),
     username: varchar('username', { length: 256 }).unique(),
+    displayName: varchar('display_name', { length: 256 }),
     displayUsername: varchar('display_username', { length: 256 }).unique(),
     email: varchar('email', { length: 256 }).notNull().unique(),
     emailVerified: boolean('email_verified')
@@ -76,8 +78,6 @@ export const users = pgTable(
     // Interests and customization
     interests: jsonb('interests').$type<string[]>().default([]),
     bannerColor: varchar('banner_color', { length: 7 }).default('#0057FF'),
-    selectedAvatarIndex: integer('selected_avatar_index'),
-    useGeneratedAvatar: boolean('use_generated_avatar').default(false),
 
     preferences: jsonb('preferences').$type<UserPreferences>().default({}),
     createdAt: timestamp('created_at').notNull().default(sql`now()`),
@@ -90,6 +90,7 @@ export const users = pgTable(
       .default(USER_ROLES.GUEST)
       .notNull(),
 
+    // Brand relationship - will be linked via relations.ts to avoid circular dependency
     brandId: uuid('brand_id'),
 
     banned: boolean('banned').default(false),
