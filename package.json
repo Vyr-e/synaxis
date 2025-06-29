@@ -72,6 +72,7 @@
     "core-js-pure",
     "es5-ext",
     "esbuild",
+    "msgpackr-extract",
     "sharp",
     "workerd"
   ]

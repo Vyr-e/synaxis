@@ -2,7 +2,7 @@
   "$schema": "https://turbo.build/schema.json",
   "globalDependencies": ["**/.env.*local"],
   "tasks": {
-    "//#clean": {
+    "clean": {
       "cache": false
     },
     "analyze": {
@@ -21,7 +21,6 @@
         "DATABASE_URL",
         "FLAGS_SECRET",
         "STRIPE_SECRET_KEY",
-        "RESEND_FROM",
         "RESEND_TOKEN",
         "SENTRY_AUTH_TOKEN",
         "SENTRY_ORG",
@@ -53,9 +52,6 @@
         "UPLOADTHING_TOKEN"
       ],
       "outputs": [".next/**", "!.next/cache/**"]
-    },
-    "clean": {
-      "cache": false
     },
     "dev": {
       "cache": false,

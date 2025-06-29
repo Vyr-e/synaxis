@@ -2,13 +2,22 @@
   "$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
   "extends": ["ultracite"],
   "javascript": {
-    "globals": ["Liveblocks"]
+    "globals": ["Liveblocks", "D1Database", "KVNamespace"]
   },
   "linter": {
     "enabled": true,
     "rules": {
+      "suspicious": {
+        "noConsole": "off"
+      },
       "nursery": {
-        "useSortedClasses": "off"
+        "useSortedClasses": "off",
+        "noExportedImports": "off",
+        "noNestedTernary": "off"
+      },
+      "style": {
+        "useBlockStatements": "off",
+        "useConsistentBuiltinInstantiation": "off"
       }
     }
   },
