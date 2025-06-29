@@ -11,7 +11,7 @@ export interface ProfileAvatarProps {
   avatarStyle?: AvatarStyle
   size?: number
   square?: boolean
-  avatarString?: string // The encoded format: username_variant_style_size_size_square_boolean
+  avatarString?: string // The encoded format: username_variant_[style]_size_[size]_square_[boolean]
   onAvatarGenerated?: (svgString: string) => void
   onMetaDataGenerated?: (metaData: string) => void // The encoded string
   onAvatarSelected?: (avatarString: string) => void // Returns the encoded metadata
