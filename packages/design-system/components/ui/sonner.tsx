@@ -9,8 +9,9 @@ const Toaster = ({ ...props }: ToasterProps) => {
   return (
     <Sonner
       className="toaster group"
-      position="bottom-center"
+      position="bottom-right"
       toastOptions={{
+
         classNames: {
           warning: "!border-orange-400",
           error: "!border-pink-300",
