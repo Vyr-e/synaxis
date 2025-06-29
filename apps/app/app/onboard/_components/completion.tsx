@@ -2,13 +2,14 @@
 
 import { useFormStore } from '@/store/use-onboarding-store';
 import { motion } from 'motion/react';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { HelloEffect } from '../_animations/hello-effect';
 
 export function Completion() {
-  const username = useFormStore((state) => state.formData.username);
-  const firstName = useFormStore((state) => state.formData.firstName);
-
+  const formData = useFormStore((state) => state.formData);
+  const { username, firstName } = formData;
+  const router = useRouter();
   const [animationComplete, setAnimationComplete] = useState(false);
   const [showUsername, setShowUsername] = useState(false);
 
@@ -72,11 +73,19 @@ export function Completion() {
             ? { opacity: 1, y: 0, transition: { delay: 0.8, duration: 0.5 } }
             : {}
         }
-        whileHover={{ scale: 1.05 }}
+        whileHover={{
+          scale: 1.02,
+          boxShadow:
+            '0 20px 25px -5px rgba(0, 87, 255, 0.1), 0 10px 10px -5px rgba(0, 87, 255, 0.04)',
+        }}
         whileTap={{ scale: 0.98 }}
-        className="mt-8 rounded-lg bg-[#0057FF] px-6 py-3 text-white transition-colors hover:bg-[#0057FF]/90"
+        className="group relative mt-8 overflow-hidden rounded-xl bg-gradient-to-r from-[#0057FF] to-[#0041CC] px-8 py-4 text-white shadow-lg transition-all duration-300 hover:shadow-xl"
+        onClick={() => {
+          router.push('/');
+        }}
       >
-        Get Started
+        <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-in-out" />
+        <span className="relative z-10 font-semibold">Launch Experience</span>
       </motion.button>
     </div>
   );

@@ -27,80 +27,83 @@ function getStepIndex(sequence: string[], currentSubStep: string | undefined) {
   return sequence.indexOf(currentSubStep);
 }
 
+function getNextStepInSequence(
+  steps: string[],
+  currentStep: string
+): string | null {
+  const currentIndex = getStepIndex(steps, currentStep);
+  return currentIndex < steps.length - 1 ? steps[currentIndex + 1] : null;
+}
+
+function getPrevStepInSequence(
+  steps: string[],
+  currentStep: string
+): string | null {
+  const currentIndex = getStepIndex(steps, currentStep);
+  return currentIndex > 0 ? steps[currentIndex - 1] : null;
+}
+
 function getStepUrl(
   pathname: string,
   formData: FormData,
   direction: 'next' | 'prev'
 ): string | null {
   const pathSegments = pathname.split('/').filter(Boolean);
-  const steps = pathSegments.slice(1);
+  const [, stepType, subStep] = pathSegments;
 
-  // --- Handle navigation FROM initial step ---
-  if (pathname === onboardingSteps.initial && direction === 'next') {
-    if (formData.accountType === 'user') {
-      return `${onboardingSteps.initial}/user/identity`;
-    }
-    if (formData.accountType === 'brand') {
-      return `${onboardingSteps.initial}/brand/community`;
-    }
-    return null; // Cannot go next if type not selected
-  }
-  // --- End handle navigation FROM initial step ---
+  const routeConfig: Record<string, Record<string, () => string | null>> = {
+    next: {
+      initial: () =>
+        formData.accountType === 'user'
+          ? '/onboard/user/identity'
+          : formData.accountType === 'brand'
+            ? '/onboard/brand/community'
+            : null,
+      user: () => {
+        const nextStep = getNextStepInSequence(onboardingSteps.user, subStep);
+        return nextStep
+          ? `/onboard/user/${nextStep}`
+          : onboardingSteps.completion;
+      },
+      brand: () => {
+        const nextStep = getNextStepInSequence(onboardingSteps.brand, subStep);
+        return nextStep
+          ? `/onboard/brand/${nextStep}`
+          : onboardingSteps.completion;
+      },
+    },
+    prev: {
+      completion: () => {
+        const type = formData.accountType;
+        const lastStep =
+          type === 'user'
+            ? onboardingSteps.user.at(-1)
+            : type === 'brand'
+              ? onboardingSteps.brand.at(-1)
+              : null;
+        return lastStep
+          ? `/onboard/${type}/${lastStep}`
+          : onboardingSteps.initial;
+      },
+      user: () => {
+        const prevStep = getPrevStepInSequence(onboardingSteps.user, subStep);
+        return prevStep ? `/onboard/user/${prevStep}` : onboardingSteps.initial;
+      },
+      brand: () => onboardingSteps.initial,
+      initial: () => null,
+    },
+  };
 
-  if (direction === 'next') {
-    if (steps[0] === 'user') {
-      const currentSubStep = steps[1];
-      const currentIndex = getStepIndex(onboardingSteps.user, currentSubStep);
-      if (currentIndex < onboardingSteps.user.length - 1) {
-        const nextSubStep = onboardingSteps.user[currentIndex + 1];
-        return `${onboardingSteps.initial}/user/${nextSubStep}`;
-      }
-      return onboardingSteps.completion;
-    }
-    if (steps[0] === 'brand') {
-      const currentSubStep = steps[1];
-      const currentIndex = getStepIndex(onboardingSteps.brand, currentSubStep);
-      if (currentIndex < onboardingSteps.brand.length - 1) {
-        const nextSubStep = onboardingSteps.brand[currentIndex + 1];
-        return `${onboardingSteps.initial}/brand/${nextSubStep}`;
-      }
-      return onboardingSteps.completion;
-    }
-  } else {
-    // direction === 'prev'
-    if (pathname === onboardingSteps.completion) {
-      const accountType = formData?.accountType;
-      if (accountType === 'user') {
-        const lastUserStep = onboardingSteps.user.at(-1);
-        return `${onboardingSteps.initial}/user/${lastUserStep}`;
-      }
-      if (accountType === 'brand') {
-        const lastBrandStep = onboardingSteps.brand.at(-1);
-        return `${onboardingSteps.initial}/brand/${lastBrandStep}`;
-      }
-      return onboardingSteps.initial;
-    }
-    if (steps[0] === 'user') {
-      const currentSubStep = steps[1];
-      const currentIndex = getStepIndex(onboardingSteps.user, currentSubStep);
-      if (currentIndex > 0) {
-        const prevSubStep = onboardingSteps.user[currentIndex - 1];
-        return `${onboardingSteps.initial}/user/${prevSubStep}`;
-      }
-      // If on first user step (profile), go back to initial selection
-      return onboardingSteps.initial;
-    }
-    if (steps[0] === 'brand') {
-      // If on first brand step (profile), go back to initial selection
-      return onboardingSteps.initial;
-    }
-    // If somehow on '/onboard' and prev is clicked, stay there (or handle error)
-    if (pathname === onboardingSteps.initial) {
-      return null;
-    }
-  }
-  // Fallback should ideally not be reached with guarded logic
-  return onboardingSteps.initial;
+  const currentContext =
+    pathname === onboardingSteps.initial
+      ? 'initial'
+      : pathname === onboardingSteps.completion
+        ? 'completion'
+        : stepType;
+
+  return (
+    routeConfig[direction]?.[currentContext]?.() ?? onboardingSteps.initial
+  );
 }
 
 export function LayoutWrapper({ children }: { children: React.ReactNode }) {
@@ -214,12 +217,35 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
       edge={'0%'}
       className="min-h-screen w-full "
     >
-      {showIndicator && indicator.current !== -1 && (
-        <StepIndicator
-          currentStep={indicator.current}
-          totalSteps={indicator.total}
-        />
-      )}
+      <>
+        {showIndicator && indicator.current !== -1 && (
+          <StepIndicator
+            currentStep={indicator.current}
+            totalSteps={indicator.total}
+          />
+        )}
+
+        {pathname !== onboardingSteps.completion && (
+          <div className="absolute top-16 right-8">
+            <motion.button
+              aria-label="Skip onboarding process"
+              onClick={() => {
+                if (!isNavigating) {
+                  setIsNavigating(true);
+                  router.push(onboardingSteps.completion);
+                  setTimeout(() => setIsNavigating(false), 500);
+                }
+              }}
+              className="text-gray-500 hover:text-gray-700 text-sm font-medium transition-colors"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              disabled={isNavigating}
+            >
+              Skip
+            </motion.button>
+          </div>
+        )}
+      </>
 
       <div className="flex min-h-dvh w-full items-center justify-center">
         {children}

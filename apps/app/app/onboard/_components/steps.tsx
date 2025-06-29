@@ -3,30 +3,21 @@
 import { useFormStore } from '@/store/use-onboarding-store';
 import { clashDisplay } from '@repo/design-system/fonts';
 import { AnimatePresence, motion } from 'motion/react';
-import { notFound, useRouter } from 'next/navigation'; // Import hooks
+import { notFound } from 'next/navigation';
 import type React from 'react';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import { AccountTypeSelector } from './account-type-selector';
 import { CommunitySetupForm } from './community-setup-form';
-import { Completion } from './completion';
 import { IdentityForm } from './identity-form';
 import { InterestSelector } from './interest-selector';
+import { OnboardingFlow } from './onboarding-flow';
 import { ProfileForm } from './profile-form';
-
-// Define the starting points for the dynamic routes
-const onboardingStartPaths = {
-  user: '/onboard/user/identity',
-  brand: '/onboard/brand/community',
-};
 
 interface StepsProps {
   steps: string[];
 }
 
 export default function StepsComponent({ steps }: StepsProps) {
-  const router = useRouter(); // Add router
-  const [isNavigating, setIsNavigating] = useState(false); // Add navigation state
-
   // Fix: Access steps directly from params
 
   // --- Zustand Store Connection ---
@@ -128,7 +119,7 @@ export default function StepsComponent({ steps }: StepsProps) {
     currentStepComponent = <AccountTypeSelector isInitialStep={true} />;
   } else if (type === 'completion') {
     componentKey = 'completion';
-    currentStepComponent = <Completion />;
+    currentStepComponent = <OnboardingFlow />;
   } else if (type === 'user') {
     switch (subStep) {
       case 'identity': {
@@ -224,24 +215,13 @@ export default function StepsComponent({ steps }: StepsProps) {
     exit: { opacity: 0, scale: 0.98 },
   };
 
-  useEffect(() => {
-    if (isInitialStep && formData.accountType && !isNavigating) {
-      const nextUrl =
-        onboardingStartPaths[formData.accountType as 'user' | 'brand'];
-      if (nextUrl) {
-        setIsNavigating(true);
-        router.push(nextUrl);
-      }
-    }
-  }, [formData.accountType, isInitialStep, isNavigating, router]);
-
   return (
     <>
       {/* Background can be added here if needed */}
       <div className="inset-0 flex h-dvh items-center justify-center">
         <div className="w-full max-w-4xl px-6 md:px-0">
           {/* Adjusted min-height and padding */}
-          <div className="min-h-[400px] overflow-hidden rounded-xl bg-white/60 p-8 backdrop-blur-md md:min-h-[600px]">
+          <div className="min-h-[400px] overflow-hidden rounded-xl bg-white/60 px-2 py-4 sm:px-4 sm:py-6 md:px-8 md:py-8 backdrop-blur-md md:min-h-[600px]">
             <AnimatePresence mode="wait" initial={false}>
               <motion.div
                 key={componentKey}

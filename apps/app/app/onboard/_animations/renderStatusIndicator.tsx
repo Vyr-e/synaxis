@@ -1,162 +1,275 @@
-import { AnimatePresence, motion } from 'framer-motion';
+'use client';
 
-// Define SVG path data for check and X
-const checkPath = 'M 4 10 L 8 14 L 16 6'; // Adjusted for a ~20x20 viewbox
-const xPath = 'M 6 6 L 14 14 M 14 6 L 6 14'; // Adjusted for a ~20x20 viewbox
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 
-/**
- * Renders a status indicator SVG based on the provided username status.
- *
- * @param usernameStatus - The status of the username.
- * @param size - The size of the SVG.
- * @returns A React component that renders the status indicator.
- */
+type UsernameStatus = 'idle' | 'checking' | 'available' | 'taken' | 'error';
 
+interface StatusIndicatorProps {
+  usernameStatus: UsernameStatus;
+  size?: number;
+}
+
+export function AnimatedStatusIndicator({
+  usernameStatus,
+  size = 24,
+}: StatusIndicatorProps) {
+  const shouldReduceMotion = useReducedMotion();
+
+  const containerVariants = {
+    idle: { scale: 0, opacity: 0 },
+    checking: {
+      scale: 1,
+      opacity: 1,
+      transition: { duration: 0.3, ease: 'easeOut' },
+    },
+    available: {
+      scale: 1,
+      opacity: 1,
+      transition: { duration: 0.4, ease: 'backOut' },
+    },
+    taken: {
+      scale: 1,
+      opacity: 1,
+      transition: { duration: 0.4, ease: 'backOut' },
+    },
+    error: {
+      scale: 1,
+      opacity: 1,
+      transition: { duration: 0.4, ease: 'backOut' },
+    },
+  };
+
+  const pulseVariants = {
+    checking: {
+      scale: [1, 1.2, 1],
+      opacity: [0.3, 0.6, 0.3],
+      transition: {
+        duration: 1.5,
+        repeat: Number.POSITIVE_INFINITY,
+        ease: 'easeInOut',
+      },
+    },
+  };
+
+  const iconVariants = {
+    hidden: {
+      scale: 0,
+      rotate: -180,
+      opacity: 0,
+    },
+    visible: {
+      scale: 1,
+      rotate: 0,
+      opacity: 1,
+      transition: {
+        delay: 0.2,
+        duration: 0.5,
+        type: 'spring',
+        stiffness: 200,
+        damping: 15,
+      },
+    },
+  };
+
+  const getStatusConfig = () => {
+    switch (usernameStatus) {
+      case 'checking':
+        return {
+          bgColor: 'bg-gradient-to-r from-blue-400 to-purple-500',
+          iconColor: 'text-white',
+          icon: null,
+        };
+      case 'available':
+        return {
+          bgColor: 'bg-gradient-to-r from-emerald-400 to-green-500',
+          iconColor: 'text-white',
+          icon: (
+            <motion.svg
+              width={size * 0.6}
+              height={size * 0.6}
+              viewBox="0 0 24 24"
+              fill="none"
+              variants={iconVariants}
+              initial="hidden"
+              animate="visible"
+            >
+              <title>Available</title>
+              <motion.path
+                d="M5 13l4 4L19 7"
+                stroke="currentColor"
+                strokeWidth="3"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                initial={{ pathLength: 0 }}
+                animate={{ pathLength: 1 }}
+                transition={{ duration: 0.5, delay: 0.3 }}
+              />
+            </motion.svg>
+          ),
+        };
+      case 'taken':
+        return {
+          bgColor: 'bg-gradient-to-r from-red-400 to-pink-500',
+          iconColor: 'text-white',
+          icon: (
+            <motion.svg
+              width={size * 0.6}
+              height={size * 0.6}
+              viewBox="0 0 24 24"
+              fill="none"
+              variants={iconVariants}
+              initial="hidden"
+              animate="visible"
+            >
+              <title>Taken</title>
+              <motion.path
+                d="M18 6L6 18M6 6l12 12"
+                stroke="currentColor"
+                strokeWidth="3"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                initial={{ pathLength: 0 }}
+                animate={{ pathLength: 1 }}
+                transition={{ duration: 0.4, delay: 0.3 }}
+              />
+            </motion.svg>
+          ),
+        };
+      case 'error':
+        return {
+          bgColor: 'bg-gradient-to-r from-orange-400 to-yellow-500',
+          iconColor: 'text-white',
+          icon: (
+            <motion.svg
+              width={size * 0.6}
+              height={size * 0.6}
+              viewBox="0 0 24 24"
+              fill="none"
+              variants={iconVariants}
+              initial="hidden"
+              animate="visible"
+            >
+              <title>Error</title>
+              <motion.path
+                d="M12 9v4m0 4h.01"
+                stroke="currentColor"
+                strokeWidth="3"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                initial={{ pathLength: 0 }}
+                animate={{ pathLength: 1 }}
+                transition={{ duration: 0.4, delay: 0.3 }}
+              />
+              <motion.circle
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="2"
+                fill="none"
+                initial={{ pathLength: 0 }}
+                animate={{ pathLength: 1 }}
+                transition={{ duration: 0.6, delay: 0.1 }}
+              />
+            </motion.svg>
+          ),
+        };
+      default:
+        return { bgColor: '', iconColor: '', icon: null };
+    }
+  };
+
+  const config = getStatusConfig();
+
+  if (usernameStatus === 'idle') return null;
+
+  return (
+    <motion.div
+      className="relative flex items-center justify-center"
+      variants={containerVariants}
+      initial="idle"
+      animate={usernameStatus}
+      style={{ width: size, height: size }}
+    >
+      {/* Pulse background for checking state */}
+      {usernameStatus === 'checking' && (
+        <motion.div
+          className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-400 to-purple-500"
+          variants={pulseVariants}
+          animate="checking"
+        />
+      )}
+
+      {/* Main indicator */}
+      <motion.div
+        className={`relative flex items-center justify-center rounded-full shadow-lg ${config.bgColor} ${config.iconColor}`}
+        style={{ width: size, height: size }}
+      >
+        {usernameStatus === 'checking' ? (
+          <motion.div
+            className="h-3 w-3 rounded-full bg-white"
+            animate={{
+              scale: [1, 0.8, 1],
+              opacity: [1, 0.5, 1],
+            }}
+            transition={{
+              duration: 1,
+              repeat: Number.POSITIVE_INFINITY,
+              ease: 'easeInOut',
+            }}
+          />
+        ) : (
+          config.icon
+        )}
+      </motion.div>
+
+      {/* Success celebration particles */}
+      {usernameStatus === 'available' && !shouldReduceMotion && (
+        <AnimatePresence>
+          {[...Array(6)].map((_, i) => (
+            <motion.div
+              key={i}
+              className="absolute h-1 w-1 rounded-full bg-emerald-400"
+              initial={{
+                scale: 0,
+                x: 0,
+                y: 0,
+                opacity: 1,
+              }}
+              animate={{
+                scale: [0, 1, 0],
+                x: Math.cos((i * Math.PI * 2) / 6) * 20,
+                y: Math.sin((i * Math.PI * 2) / 6) * 20,
+                opacity: [1, 1, 0],
+              }}
+              transition={{
+                duration: 0.8,
+                delay: 0.5 + i * 0.1,
+                ease: 'easeOut',
+              }}
+            />
+          ))}
+        </AnimatePresence>
+      )}
+    </motion.div>
+  );
+}
+
+// old function for backward compatibility
 export const renderStatusIndicator = ({
   usernameStatus,
   size = 20,
 }: { usernameStatus: string; size?: number }) => {
-  const strokeWidth = 2;
-  const radius = (size - strokeWidth) / 2;
-  const circumference = radius * 2 * Math.PI;
+  const validStatuses: UsernameStatus[] = [
+    'idle',
+    'checking',
+    'available',
+    'taken',
+    'error',
+  ];
 
-  // Animation variants for the circle
-  const circleVariants = {
-    idle: {
-      pathLength: 0,
-      opacity: 0,
-    },
-    checking: {
-      pathLength: 0.75, // Part of the circle for spinner
-      opacity: 1,
-      rotate: [0, 360], // Rotation for spinner effect
-      transition: {
-        pathLength: { duration: 0.5, ease: 'easeInOut' },
-        opacity: { duration: 0.2 },
-        rotate: {
-          repeat: Number.POSITIVE_INFINITY,
-          duration: 1,
-          ease: 'linear',
-        },
-      },
-      stroke: '#9ca3af', // gray-400
-    },
-    available: {
-      pathLength: 1, // Full circle
-      opacity: 1,
-      rotate: 0,
-      stroke: '#22c55e', // green-500
-      transition: { duration: 0.5, ease: 'easeOut' },
-    },
-    taken: {
-      pathLength: 1,
-      opacity: 1,
-      rotate: 0,
-      stroke: '#ef4444', // red-500
-      transition: { duration: 0.5, ease: 'easeOut' },
-    },
-    error: {
-      pathLength: 1,
-      opacity: 1,
-      rotate: 0,
-      stroke: '#f59e0b', // yellow-500 (amber-500)
-      transition: { duration: 0.5, ease: 'easeOut' },
-    },
-  };
-
-  // Animation variants for the inner icon
-  const iconVariants = {
-    hidden: { scale: 0, opacity: 0 },
-    visible: {
-      scale: 1,
-      opacity: 1,
-      transition: { delay: 0.3, duration: 0.2 },
-    }, // Delay slightly after circle completes
-    exit: { scale: 0, opacity: 0, transition: { duration: 0.1 } },
-  };
-
-  return (
-    <div className="relative">
-      {/* Circle with animation */}
-      <motion.svg
-        width={size}
-        height={size}
-        viewBox={`0 0 ${size} ${size}`}
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        className="-rotate-90 transform" // Rotate so pathLength starts at the top
-      >
-        <title>{usernameStatus}</title>
-        {/* Optional background circle */}
-        <circle
-          cx={size / 2}
-          cy={size / 2}
-          r={radius}
-          stroke="#e5e7eb" // gray-200
-          strokeWidth={strokeWidth}
-        />
-        {/* Animated foreground circle */}
-        <motion.circle
-          cx={size / 2}
-          cy={size / 2}
-          r={radius}
-          strokeWidth={strokeWidth}
-          strokeLinecap="round"
-          variants={circleVariants}
-          initial="idle"
-          animate={usernameStatus} // Animate based on the status string
-          style={{ pathLength: 0 }} // Initial pathLength for animation
-        />
-      </motion.svg>
-
-      {/* Inner Icon - Separate SVG not affected by the circle rotation */}
-      <AnimatePresence mode="wait">
-        {(usernameStatus === 'available' ||
-          usernameStatus === 'taken' ||
-          usernameStatus === 'error') && (
-          <motion.svg
-            key={usernameStatus} // Key changes trigger AnimatePresence
-            width={size}
-            height={size}
-            viewBox="0 0 20 20"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            initial="hidden"
-            animate="visible"
-            exit="exit"
-            variants={iconVariants}
-            className="absolute top-0 left-0"
-          >
-            <title>{usernameStatus}</title>
-            {usernameStatus === 'available' && (
-              <path
-                d={checkPath}
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="text-green-500"
-              />
-            )}
-            {(usernameStatus === 'taken' || usernameStatus === 'error') && (
-              <path
-                d={xPath}
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className={
-                  usernameStatus === 'taken'
-                    ? 'text-red-500'
-                    : 'text-yellow-500'
-                }
-              />
-            )}
-          </motion.svg>
-        )}
-      </AnimatePresence>
-    </div>
-  );
+  const status = validStatuses.includes(usernameStatus as UsernameStatus)
+    ? (usernameStatus as UsernameStatus)
+    : 'idle';
+  return <AnimatedStatusIndicator usernameStatus={status} size={size} />;
 };
