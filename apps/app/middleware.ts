@@ -16,10 +16,7 @@ export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
   // Redirect root path to signup
-  //TODO: remove this when the home page is done
-  if (pathname === '/') {
-    return NextResponse.redirect(new URL('/auth/sign-up', request.url));
-  }
+
 
   try {
     await noseconeMiddleware(noseconeConfig)();
@@ -36,7 +33,8 @@ export async function middleware(request: NextRequest) {
     if (
       pathname === '/onboard' &&
       session &&
-      (session.user as unknown as { username: string })?.username
+      (session.user as unknown as { userProfileStep: string })
+        ?.userProfileStep === 'completed'
     ) {
       return NextResponse.redirect(new URL('/', request.url));
     }
@@ -51,7 +49,7 @@ export async function middleware(request: NextRequest) {
     if (!session.user?.emailVerified) {
       return NextResponse.redirect(new URL('/auth/verify-email', request.url));
     }
-    if ((session.user as unknown as { username: string })?.username) {
+    if ((session.user as unknown as { userProfileStep: string })?.userProfileStep === 'completed') {
       return NextResponse.redirect(new URL('/', request.url));
     }
   }
@@ -65,7 +63,7 @@ export const config = {
     '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
     '/(api|trpc)(.*)',
     '/((?!api|_next|ingest|.*\\..*).*)',
-    '/auth/setup-profile',
+    '/onboard',
   ],
   runtime: 'nodejs',
 };
