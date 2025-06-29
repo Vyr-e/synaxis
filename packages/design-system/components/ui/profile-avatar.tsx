@@ -7,11 +7,15 @@ import { hashCode, getUnit, getRandomColor, getBoolean, getContrast, generateCol
 export type AvatarStyle = "marble" | "beam" | "random"
 
 export interface ProfileAvatarProps {
-  username: string
+  username?: string
   avatarStyle?: AvatarStyle
   size?: number
   square?: boolean
+  avatarString?: string // The encoded format: username_variant_style_size_size_square_boolean
   onAvatarGenerated?: (svgString: string) => void
+  onMetaDataGenerated?: (metaData: string) => void // The encoded string
+  onAvatarSelected?: (avatarString: string) => void // Returns the encoded metadata
+  selectable?: boolean // Shows selection UI if needed
   className?: string
 }
 
@@ -20,16 +24,50 @@ const MARBLE_ELEMENTS = 3
 const MARBLE_SIZE = 80
 const BEAM_SIZE = 36
 
+// Parsing Logic
+const parseAvatarString = (str: string | undefined) => {
+  if (!str) return null
+  const parts = str.split("_")
+  if (parts.length < 7 || parts[1] !== "variant" || parts[3] !== "size" || parts[5] !== "square") {
+    return null
+  }
+  return {
+    username: parts[0],
+    avatarStyle: parts[2] as AvatarStyle,
+    size: parseInt(parts[4], 10),
+    square: parts[6] === "true",
+  }
+}
+
 // ProfileAvatar component
 export const ProfileAvatar: React.FC<ProfileAvatarProps> = ({
-  username,
-  avatarStyle = "random",
-  size = 80,
-  square = false,
+  username: initialUsername,
+  avatarStyle: initialAvatarStyle = "random",
+  size: initialSize = 80,
+  square: initialSquare = false,
+  avatarString,
   onAvatarGenerated,
+  onMetaDataGenerated,
+  onAvatarSelected,
+  selectable = false,
   className = "",
 }) => {
-  // Use a default username if none is provided
+  const parsedProps = useMemo(() => parseAvatarString(avatarString), [avatarString])
+
+  // Priority: avatarString > individual props
+  const finalProps = useMemo(() => {
+    if (parsedProps) {
+      return parsedProps
+    }
+    return { 
+      username: initialUsername || "default_user",
+      avatarStyle: initialAvatarStyle,
+      size: initialSize,
+      square: initialSquare
+    }
+  }, [parsedProps, initialUsername, initialAvatarStyle, initialSize, initialSquare])
+
+  const { username, avatarStyle, size, square } = finalProps
   const safeUsername = username || "default_user"
 
   // Create a ref for the SVG element
@@ -95,13 +133,25 @@ export const ProfileAvatar: React.FC<ProfileAvatarProps> = ({
     }
   }, [style, safeUsername, colors])
 
-  // Call onAvatarGenerated callback when the SVG is rendered
+  // Call callbacks when the SVG is rendered
   useEffect(() => {
-    if (svgRef.current && onAvatarGenerated) {
-      const svgString = new XMLSerializer().serializeToString(svgRef.current)
-      onAvatarGenerated(svgString)
+    if (svgRef.current) {
+      const metaData = `${safeUsername}_variant_${style}_size_${size}_square_${square}`
+      
+      if (onAvatarGenerated) {
+        const svgString = new XMLSerializer().serializeToString(svgRef.current)
+        onAvatarGenerated(svgString)
+      }
+      
+      if (onMetaDataGenerated) {
+        onMetaDataGenerated(metaData)
+      }
+      
+      if (onAvatarSelected && selectable) {
+        onAvatarSelected(metaData)
+      }
     }
-  }, [style, safeUsername, size, square, onAvatarGenerated])
+  }, [style, safeUsername, size, square, onAvatarGenerated, onMetaDataGenerated, onAvatarSelected, selectable])
 
   // Render the marble avatar
   if (style === "marble" && marbleProperties) {
