@@ -102,27 +102,39 @@ export function SignUpForm() {
       setFormStatus('idle');
       setApiError(null);
 
+      const baseUsername = `${_values.firstName} ${_values.lastName}`
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9\s-]/g, '') // Remove invalid chars
+        .replace(/\s+/g, '-'); // Replace spaces with -
+
       await signUp.email(
         {
           email: _values.email,
           password: _values.password,
           firstName: _values.firstName,
           lastName: _values.lastName,
-          username: '',
+          // Guarantees uniqueness & keeps slug friendly
+          username: `${baseUsername}-${crypto.randomUUID().slice(0, 4)}`,
           name: `${_values.firstName} ${_values.lastName}`,
-          /***
-           * INFO: the idea is if a usr is successfullyy signed up and better auth sends
+          /***           * INFO: the idea is if a usr is successfullyy signed up and better auth sends
            *  verification token to thier mail,
            *  we redirect them to the verified page cause of course its verified
            */
           callbackURL: '/auth/verified',
         },
         {
-          onSuccess: (ctx) => {
+          onSuccess: () => {
             onboardingSetField('firstName', _values.firstName);
             onboardingSetField('lastName', _values.lastName);
 
             setNewUserInfo();
+            setMethod('email');
+
+            /***
+             * Only redirect on successful sign up
+             */
+            router.push('/auth/verify-email');
           },
           onError: (error) => {
             console.error('Sign up error:', error);
@@ -134,13 +146,6 @@ export function SignUpForm() {
           },
         }
       );
-      setMethod('email');
-      if (!apiError) {
-        /***
-         * If theres no error from the api we redirect the user to the verify email page
-         */
-        router.push('/auth/verify-email');
-      }
     } catch (error) {
       setFormStatus('error');
 
