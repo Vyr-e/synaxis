@@ -106,6 +106,41 @@
       "when": 1750704773373,
       "tag": "0014_exotic_captain_britain",
       "breakpoints": true
+    },
+    {
+      "idx": 15,
+      "version": "7",
+      "when": 1751164571247,
+      "tag": "0015_next_harpoon",
+      "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "7",
+      "when": 1751166523769,
+      "tag": "0016_cold_morph",
+      "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1751197015891,
+      "tag": "0017_spicy_silverclaw",
+      "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1751198026331,
+      "tag": "0018_perpetual_next_avengers",
+      "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1751207796240,
+      "tag": "0019_silky_skaar",
+      "breakpoints": true
     }
   ]
 }

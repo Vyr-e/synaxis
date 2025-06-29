@@ -22,6 +22,15 @@ export const USER_ROLES = {
 
 export type UserRole = (typeof USER_ROLES)[keyof typeof USER_ROLES];
 
+export const USER_PROFILE_STEPS = {
+  SIGNUP: 'signup',
+  ONBOARD: 'onboard',
+  COMPLETED: 'completed',
+} as const;
+
+export type UserProfileStep =
+  (typeof USER_PROFILE_STEPS)[keyof typeof USER_PROFILE_STEPS];
+
 // Define preference types for type safety
 export type UserPreferences = {
   theme?: 'light' | 'dark' | 'system';
@@ -45,8 +54,8 @@ export const users = pgTable(
   'users',
   {
     id: uuid('id').defaultRandom().primaryKey(),
-    
-					name: text('name').notNull(),
+
+    name: text('name').notNull(),
     firstName: varchar('first_name', { length: 256 }),
     lastName: varchar('last_name', { length: 256 }),
     username: varchar('username', { length: 256 }).unique(),
@@ -77,6 +86,7 @@ export const users = pgTable(
 
     // Interests and customization
     interests: jsonb('interests').$type<string[]>().default([]),
+    bannerImage: text('banner_image'),
     bannerColor: varchar('banner_color', { length: 7 }).default('#0057FF'),
 
     preferences: jsonb('preferences').$type<UserPreferences>().default({}),
@@ -96,6 +106,12 @@ export const users = pgTable(
     banned: boolean('banned').default(false),
     banReason: text('ban_reason'),
     banExpires: timestamp('ban_expires'),
+
+    // User profile step
+    userProfileStep: varchar('user_profile_step', { length: 50 })
+      .$type<UserProfileStep>()
+      .default(USER_PROFILE_STEPS.SIGNUP)
+      .notNull(),
   },
   (table) => ({
     emailIdx: index('email_idx').on(table.email),

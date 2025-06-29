@@ -1,5 +1,5 @@
 import type { InferInsertModel, InferSelectModel } from 'drizzle-orm';
-import type { USER_ROLES } from './schema';
+import type { USER_PROFILE_STEPS, USER_ROLES } from './schema';
 import type {
   events,
   accounts,
@@ -16,7 +16,6 @@ import type {
   invitations,
   members,
   notifications,
-  organizations,
   referrals,
   sessions,
   ticketDiscounts,
@@ -40,6 +39,8 @@ export type NewCommunityMember = InferInsertModel<typeof communityMembers>;
 export type User = InferSelectModel<typeof users>;
 export type NewUser = InferInsertModel<typeof users>;
 export type UserRole = (typeof USER_ROLES)[keyof typeof USER_ROLES];
+export type UserProfileStep =
+  (typeof USER_PROFILE_STEPS)[keyof typeof USER_PROFILE_STEPS];
 
 export type Session = InferSelectModel<typeof sessions>;
 export type NewSession = InferInsertModel<typeof sessions>;
@@ -103,9 +104,6 @@ export type NewMembers = InferInsertModel<typeof members>;
 export type Invitations = InferSelectModel<typeof invitations>;
 export type NewInvitations = InferInsertModel<typeof invitations>;
 
-export type Organizations = InferSelectModel<typeof organizations>;
-export type NewOrganizations = InferInsertModel<typeof organizations>;
-
 // Utility Types
 export type WithTimestamps = {
   createdAt: Date;
@@ -150,7 +148,6 @@ export type {
   invitations,
   members,
   notifications,
-  organizations,
   referrals,
   sessions,
   ticketDiscounts,

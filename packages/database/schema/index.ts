@@ -1,7 +1,7 @@
 // Auth
 export { accounts } from '../models/accounts';
 export { sessions } from '../models/sessions';
-export { users, USER_ROLES } from '../models/users';
+export { users, USER_ROLES, USER_PROFILE_STEPS } from '../models/users';
 export { verifications } from '../models/verifications';
 
 // Events
@@ -27,8 +27,6 @@ export {
 
 // Media & Content
 export { default as eventMedia } from '../models/media';
-
-export { organizations } from '../models/organization';
 
 // Analytics & Tracking
 export { default as eventMetrics } from '../models/analytics';
