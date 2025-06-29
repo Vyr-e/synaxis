@@ -13,7 +13,7 @@ export function initializeSentry() {
   init({
     dsn: SENTRY_DSN,
     environment: env.NODE_ENV,
-    tracesSampleRate: 1.0,
+    tracesSampleRate: env.NODE_ENV === 'production' ? 0.1 : 1.0,
     debug: false,
     replaysOnErrorSampleRate: 1.0,
     replaysSessionSampleRate: 0.1,
