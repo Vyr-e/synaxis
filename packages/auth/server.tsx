@@ -20,24 +20,18 @@ import {
 } from 'better-auth/plugins';
 import { getUserProfileById } from './user';
 
+const regex = /^[a-zA-Z0-9_.#]{3,30}$/;
+
 const auth = betterAuth({
   database: drizzleAdapter(drizzle, {
     provider: 'pg',
     schema: {
       ...schema,
-      users: {
-        ...schema.users,
-        username: {
-          type: 'string',
-          required: false,
-          input: true,
-          unique: true,
-        },
-      },
+      users: schema.users,
       accounts: schema.accounts,
       sessions: schema.sessions,
       verifications: schema.verifications,
-      organization: schema.organizations,
+      organization: schema.brands,
       invitation: schema.invitations,
     },
 
@@ -197,6 +191,7 @@ const auth = betterAuth({
       bio: 'bio',
       deletedAt: 'deletedAt',
       banReason: 'banReason',
+      userProfileStep: 'userProfileStep',
       createdAt: 'createdAt',
       updatedAt: 'updatedAt',
     },
@@ -217,6 +212,12 @@ const auth = betterAuth({
         type: 'string',
         required: true,
         defaultValue: 'user',
+        input: false,
+      },
+      userProfileStep: {
+        type: 'string',
+        required: true,
+        defaultValue: 'signup',
         input: false,
       },
     },
@@ -303,6 +304,7 @@ const auth = betterAuth({
           emailVerified: userProfile.emailVerified,
           createdAt: userProfile.createdAt,
           updatedAt: userProfile.updatedAt,
+          userProfileStep: userProfile.userProfileStep,
         },
         session,
       };
@@ -322,12 +324,17 @@ const auth = betterAuth({
             image: user.image,
             username: user.username,
             emailVerified: user.emailVerified,
+            profileStep: user.userProfileStep,
           };
         },
       },
     }),
     nextCookies(),
-    username(),
+    username({
+      usernameValidator: (username) => {
+        return regex.test(username);
+      },
+    }),
     admin({
       defaultRole: 'user',
       adminRole: ['admin', 'brand'],
@@ -337,6 +344,18 @@ const auth = betterAuth({
     organization({
       creatorRole: 'brand',
       memberRole: ['user', 'brand', 'admin'],
+      schema: {
+        organization: {
+          fields: {
+            name: 'name',
+            slug: 'slug',
+            logo: 'logo',
+            createdAt: 'createdAt',
+            updatedAt: 'updatedAt',
+            metadata: 'metadata',
+          },
+        },
+      },
       allowUserToCreateOrganization: async (user: { id: string }) => {
         const userProfile = await getUserProfileById(user.id);
         if (!userProfile) {
