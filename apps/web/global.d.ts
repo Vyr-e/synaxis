@@ -1,14 +1,14 @@
 // Import all language message types
-type EnMessages = typeof import("./messages/en.json")
-type EsMessages = typeof import("./messages/es.json")
-type FrMessages = typeof import("./messages/fr.json")
-type DeMessages = typeof import("./messages/de.json")
-type JpMessages = typeof import("./messages/jp.json")
+type EnMessages = typeof import('./messages/en.json');
+type EsMessages = typeof import('./messages/es.json');
+type FrMessages = typeof import('./messages/fr.json');
+type DeMessages = typeof import('./messages/de.json');
+type JpMessages = typeof import('./messages/jp.json');
 
 // Verify all messages match the English structure
-type VerifyMessages<T> = {
-  [P in keyof EnMessages]: P extends keyof T 
-    ? T[P] extends Record<string, any>
+export type VerifyMessages<T> = {
+  [P in keyof EnMessages]: P extends keyof T
+    ? T[P] extends Record<string, unknown>
       ? VerifyMessages<T[P]>
       : string
     : never;
