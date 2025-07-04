@@ -3,13 +3,15 @@
 import { motion } from 'framer-motion';
 import { usePathname, useRouter } from 'next/navigation';
 import type React from 'react';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { toast } from 'sonner';
 
 // Import shared components
 import { AuthBackground } from '@/components/auth-background';
 import { NavigationButtons } from './navigation-buttons';
 import { StepIndicator } from './step-indicator';
 
+import { skipOnboarding } from '@/actions/onboarding';
 import { type FormData, useFormStore } from '@/store/use-onboarding-store';
 
 const onboardingSteps = {
@@ -110,11 +112,23 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
   const [isNavigating, setIsNavigating] = useState(false);
+  const [isHydrated, setIsHydrated] = useState(false);
+  const [isSkipping, setIsSkipping] = useState(false);
 
   const formData = useFormStore((state) => state.formData);
   const getStepValidation = useFormStore((state) => state.getStepValidation);
 
+  // Ensure we only compute validation after hydration to prevent mismatch
+  useEffect(() => {
+    setIsHydrated(true);
+  }, []);
+
   const isCurrentStepValid = useMemo(() => {
+    // Return false during SSR/before hydration to prevent mismatch
+    if (!isHydrated) {
+      return false;
+    }
+
     if (pathname === onboardingSteps.initial) {
       return !!formData.accountType;
     }
@@ -131,7 +145,7 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
     }
 
     return false;
-  }, [pathname, formData, getStepValidation]);
+  }, [pathname, formData, getStepValidation, isHydrated]);
 
   // Rest of your component logic remains the same...
   const showNavButtons = useMemo(() => {
@@ -178,6 +192,22 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
       setTimeout(() => setIsNavigating(false), 500);
     } else {
       console.warn('Could not determine previous step from:', pathname);
+    }
+  };
+
+  const handleSkip = async () => {
+    if (isNavigating || isSkipping) return;
+
+    try {
+      setIsSkipping(true);
+      await skipOnboarding();
+      toast.success('Profile setup completed with guest settings');
+      router.push('/');
+    } catch (error) {
+      console.error('Skip onboarding error:', error);
+      toast.error('Failed to skip onboarding');
+    } finally {
+      setIsSkipping(false);
     }
   };
 
@@ -229,19 +259,13 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
           <div className="absolute top-16 right-8">
             <motion.button
               aria-label="Skip onboarding process"
-              onClick={() => {
-                if (!isNavigating) {
-                  setIsNavigating(true);
-                  router.push(onboardingSteps.completion);
-                  setTimeout(() => setIsNavigating(false), 500);
-                }
-              }}
-              className="text-gray-500 hover:text-gray-700 text-sm font-medium transition-colors"
+              onClick={handleSkip}
+              className="text-gray-500 hover:text-gray-700 text-sm font-medium transition-colors disabled:opacity-50"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              disabled={isNavigating}
+              disabled={isNavigating || isSkipping}
             >
-              Skip
+              {isSkipping ? 'Skipping...' : 'Skip'}
             </motion.button>
           </div>
         )}
