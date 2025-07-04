@@ -8,7 +8,7 @@ import {
   VerificationTemplate,
 } from '@repo/email/templates';
 import { env } from '@repo/env';
-import { betterAuth } from 'better-auth';
+import { type BetterAuthOptions, betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { nextCookies } from 'better-auth/next-js';
 import {
@@ -22,7 +22,7 @@ import { getUserProfileById } from './user';
 
 const regex = /^[a-zA-Z0-9_.#]{3,30}$/;
 
-const auth = betterAuth({
+const authConfig: BetterAuthOptions = {
   database: drizzleAdapter(drizzle, {
     provider: 'pg',
     schema: {
@@ -64,63 +64,47 @@ const auth = betterAuth({
     google: {
       clientId: env.GOOGLE_ID,
       clientSecret: env.GOOGLE_SECRET,
-      profile(profile: {
-        sub: string;
-        email: string;
-        given_name: string;
-        family_name: string;
-        picture: string;
-        username: string;
-      }) {
+      mapProfileToUser(profile) {
         return {
           id: profile.sub,
           email: profile.email,
           firstName: profile.given_name,
           lastName: profile.family_name,
           image: profile.picture,
-          username: profile.username || profile.email.split('@')[0],
+          username: profile.email.split('@')[0],
+          emailVerified: profile.email_verified,
         };
       },
     },
     facebook: {
       clientId: env.FACEBOOK_ID,
       clientSecret: env.FACEBOOK_SECRET,
-      profile(profile: {
-        id: string;
-        email: string;
-        first_name: string;
-        last_name: string;
-        picture: { data: { url: string } };
-        username: string;
-      }) {
+      mapProfileToUser(profile) {
+        const [firstName, ...lastName] = profile.name.split(' ');
         return {
           id: profile.id,
           email: profile.email,
-          firstName: profile.first_name,
-          lastName: profile.last_name,
+          firstName,
+          lastName: lastName.join(' '),
           image: profile.picture?.data?.url,
-          username: profile.username || profile.email.split('@')[0],
+          username: profile.email.split('@')[0],
+          emailVerified: profile.email_verified,
         };
       },
     },
     twitter: {
       clientId: env.X_ID,
       clientSecret: env.X_SECRET,
-      profile(profile: {
-        id: string;
-        email: string;
-        name: string;
-        profile_image_url: string;
-        username: string;
-      }) {
-        const nameParts = profile.name?.split(' ') || ['', ''];
+      mapProfileToUser: (profile) => {
+        const nameParts = profile.data.name?.split(' ') || ['', ''];
         return {
-          id: profile.id,
-          email: profile.email,
+          id: profile.data.id,
+          email: profile.data.email,
           firstName: nameParts[0] || '',
           lastName: nameParts.slice(1).join(' ') || '',
-          image: profile.profile_image_url,
-          username: profile.username || profile.email.split('@')[0],
+          image: profile.data.profile_image_url,
+          username: profile.data.username || profile.data.email?.split('@')[0],
+          emailVerified: !!profile.data.email,
         };
       },
     },
@@ -134,8 +118,6 @@ const auth = betterAuth({
 
   emailVerification: {
     sendOnSignUp: true,
-    sendOnChangeEmail: true,
-    sendOnDeleteAccount: true,
     autoSignInAfterVerification: true,
     expiresIn: 15 * 60,
     sendVerificationEmail: async ({ user, url }) => {
@@ -162,12 +144,7 @@ const auth = betterAuth({
     autoSignIn: true,
     maxPasswordLength: 18,
     minPasswordLength: 8,
-    onSignUp: async (data) => {
-      return {
-        email: await data.email,
-        username: null,
-      };
-    },
+    revokeSessionsOnPasswordReset: true,
 
     sendResetPassword: async ({ user, url }) => {
       await resend.emails.send({
@@ -181,17 +158,9 @@ const auth = betterAuth({
   user: {
     fields: {
       email: 'email',
-      firstName: 'firstName',
-      username: 'username',
-      displayUsername: 'display_username',
-      lastName: 'lastName',
-      role: 'role',
+      name: 'name',
       image: 'image',
       emailVerified: 'emailVerified',
-      bio: 'bio',
-      deletedAt: 'deletedAt',
-      banReason: 'banReason',
-      userProfileStep: 'userProfileStep',
       createdAt: 'createdAt',
       updatedAt: 'updatedAt',
     },
@@ -212,6 +181,24 @@ const auth = betterAuth({
         type: 'string',
         required: true,
         defaultValue: 'user',
+        input: false,
+      },
+      bio: {
+        type: 'string',
+        required: true,
+        defaultValue: '',
+        input: false,
+      },
+      deletedAt: {
+        type: 'string',
+        required: true,
+        defaultValue: '',
+        input: false,
+      },
+      banReason: {
+        type: 'string',
+        required: true,
+        defaultValue: '',
         input: false,
       },
       userProfileStep: {
@@ -245,32 +232,6 @@ const auth = betterAuth({
                 (user as unknown as { firstName: string }).firstName || 'there'
               }
               deleteLink={url}
-            />
-          ),
-        });
-      },
-    },
-    organization: {
-      //@ts-ignore
-      sendInvitationEmail: async (data: {
-        id: string;
-        email: string;
-        organization: { id: string; name: string; slug: string };
-        inviter: { user: { firstName: string } };
-      }) => {
-        const { id, email, organization, inviter } = data;
-        // TODO: Make a catch all route that captures and verifies these details before verifying a user has access to the correct invite info!
-        const inviteLink = `${env.NEXT_PUBLIC_APP_URL}/auth/invite?user_id=${id}&brand_id=${organization.id}&brand_slug=${organization.slug}&created_at=${new Date().toISOString()}`;
-
-        await resend.emails.send({
-          from: env.RESEND_FROM,
-          to: email,
-          subject: 'Invitation to join organization',
-          react: (
-            <InviteTemplate
-              name={organization.name}
-              inviter={inviter.user.firstName}
-              inviteLink={inviteLink}
             />
           ),
         });
@@ -351,7 +312,6 @@ const auth = betterAuth({
             slug: 'slug',
             logo: 'logo',
             createdAt: 'createdAt',
-            updatedAt: 'updatedAt',
             metadata: 'metadata',
           },
         },
@@ -374,6 +334,26 @@ const auth = betterAuth({
         const isAllowed = !!userProfile.role;
         return isAllowed;
       },
+      sendInvitationEmail: async (data) => {
+        const { id, email, organization, inviter } = data;
+        // TODO: Make a catch all route that captures and verifies these details before verifying a user has access to the correct invite info!
+        const inviteLink = `${env.NEXT_PUBLIC_APP_URL}/auth/invite?user_id=${id}&brand_id=${organization.id}&brand_slug=${organization.slug}&created_at=${new Date().toISOString()}`;
+
+        await resend.emails.send({
+          from: env.RESEND_FROM,
+          to: email,
+          subject: 'Invitation to join organization',
+          react: (
+            <InviteTemplate
+              name={organization.name}
+              inviter={
+                (inviter.user as unknown as { firstName: string }).firstName
+              }
+              inviteLink={inviteLink}
+            />
+          ),
+        });
+      },
     }),
   ],
   databaseHooks: {
@@ -392,5 +372,8 @@ const auth = betterAuth({
       },
     },
   },
-});
+};
+
+const auth = betterAuth(authConfig);
 export { auth };
+export type Auth = typeof auth;
