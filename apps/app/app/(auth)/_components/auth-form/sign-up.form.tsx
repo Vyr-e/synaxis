@@ -31,7 +31,7 @@ const signUpSchema = z.object({
   firstName: z.string().min(2, 'First name must be at least 2 characters'),
   lastName: z.string().min(2, 'Last name must be at least 2 characters'),
   email: z.string().email('Invalid email address'),
-  password: z.string().min(1, 'Password is required'),
+  password: z.string().min(8, 'Password must be at least 8 characters'),
 });
 
 type SignUpFormValues = z.infer<typeof signUpSchema>;
@@ -102,20 +102,18 @@ export function SignUpForm() {
       setFormStatus('idle');
       setApiError(null);
 
-      const baseUsername = `${_values.firstName} ${_values.lastName}`
-        .toLowerCase()
-        .trim()
-        .replace(/[^a-z0-9\s-]/g, '') // Remove invalid chars
-        .replace(/\s+/g, '-'); // Replace spaces with -
+      // Generate a guest username to prompt profile completion during onboarding
+      const randomHex = crypto.randomUUID().slice(0, 4);
+      const discriminator = (Number.parseInt(randomHex, 16) % 9000) + 1000;
 
+      const username = `guest#${discriminator}`;
       await signUp.email(
         {
           email: _values.email,
           password: _values.password,
           firstName: _values.firstName,
           lastName: _values.lastName,
-          // Guarantees uniqueness & keeps slug friendly
-          username: `${baseUsername}-${crypto.randomUUID().slice(0, 4)}`,
+          username: username,
           name: `${_values.firstName} ${_values.lastName}`,
           /***           * INFO: the idea is if a usr is successfullyy signed up and better auth sends
            *  verification token to thier mail,
