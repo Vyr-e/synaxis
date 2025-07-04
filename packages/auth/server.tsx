@@ -336,7 +336,10 @@ const authConfig: BetterAuthOptions = {
       },
       sendInvitationEmail: async (data) => {
         const { id, email, organization, inviter } = data;
-        // TODO: Make a catch all route that captures and verifies these details before verifying a user has access to the correct invite info!
+        // TODO: Implement multi-tenant invitation URLs.
+        // The final URL structure should be: `https://{brand_slug}.synaxis.community/invites/{invitation_id}`
+        // This will require DNS configuration for wildcard subdomains and middleware in Next.js to handle them.
+        // The current URL is a temporary placeholder.
         const inviteLink = `${env.NEXT_PUBLIC_APP_URL}/auth/invite?user_id=${id}&brand_id=${organization.id}&brand_slug=${organization.slug}&created_at=${new Date().toISOString()}`;
 
         await resend.emails.send({
@@ -361,11 +364,12 @@ const authConfig: BetterAuthOptions = {
       create: {
         // biome-ignore lint/suspicious/useAwait: we only need it to be async
         before: async (user, _ctx) => {
+          const [firstName, ...lastNameParts] = user.name.split(' ');
           return {
             data: {
               ...user,
-              firstName: user.name.split(' ')[0],
-              lastName: user.name.split(' ')[1],
+              firstName: firstName ?? '',
+              lastName: lastNameParts.join(' '),
             },
           };
         },
