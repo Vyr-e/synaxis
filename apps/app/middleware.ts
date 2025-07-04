@@ -7,18 +7,29 @@ import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 
 const isPublicRoute = (pathname: string) => {
-  return PUBLIC_ROUTES.some((route) => pathname.startsWith(route));
+  if (pathname === '/') return true;
+  return PUBLIC_ROUTES.some(
+    (route) => route !== '/' && pathname.startsWith(route)
+  );
 };
 
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
+  try {
+    await noseconeMiddleware(noseconeConfig)();
+  } catch (error) {
+    console.error('Nosecone Middleware Error:', error as Error);
+    // return NextResponse.redirect(new URL('/error', request.url));
+  }
+
   const session = await auth.api.getSession({
     headers: await headers(),
   });
 
-  const userOnboardingStep = (session?.user as { userProfileStep: string })
-    ?.userProfileStep;
+  const userOnboardingStep = (
+    session?.user as unknown as { userProfileStep: string }
+  )?.userProfileStep;
 
   if (pathname.startsWith('/onboard')) {
     if (session) {
@@ -45,13 +56,6 @@ export async function middleware(request: NextRequest) {
 
   if (!session) {
     return NextResponse.redirect(new URL('/auth/sign-in', request.url));
-  }
-
-  try {
-    await noseconeMiddleware(noseconeConfig)();
-  } catch (error) {
-    console.error('Nosecone Middleware Error:', error as Error);
-    // return NextResponse.redirect(new URL('/error', request.url));
   }
 
   return NextResponse.next();
