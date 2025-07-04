@@ -34,6 +34,7 @@ export function ProfilePhotoSection() {
     profilePicturePreview,
     profilePictureUrl,
     brandName,
+    generatedAvatarMetadata,
   } = formData;
 
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -45,8 +46,8 @@ export function ProfilePhotoSection() {
     'imageUploader',
     {
       onClientUploadComplete: (res) => {
-        if (res?.[0]?.url || res?.[0]?.ufsUrl) {
-          setProfilePictureAction(null, res[0].url || res[0].ufsUrl);
+        if (res?.[0]?.ufsUrl) {
+          setProfilePictureAction(null, res[0].ufsUrl);
           toast.success('Profile picture uploaded successfully!');
           setUploadProgress(100);
         } else {
@@ -88,9 +89,34 @@ export function ProfilePhotoSection() {
     setSelectedAvatarIndex(index);
     const avatarUsername = formData.username || brandName || 'User';
     const option = avatarOptions[index];
-    const metaData = `${avatarUsername}${option.seed}-${option.style}`;
+    const metaData = `${avatarUsername}${option.seed}_variant_${option.style}_size_60_square_false`;
     setGeneratedAvatar(metaData);
   };
+
+  // Generate default avatar if none exists
+  const generateDefaultAvatar = () => {
+    const avatarUsername = formData.username || brandName || 'User';
+    // Create a consistent seed based on available user data
+    const seed =
+      formData.firstName ||
+      formData.lastName ||
+      avatarUsername ||
+      crypto.randomUUID().slice(0, 8);
+    const defaultStyle = 'beam'; // Default style
+    const metadata = `${avatarUsername}${seed}_variant_${defaultStyle}_size_60_square_false`;
+    setGeneratedAvatar(metadata);
+    return metadata;
+  };
+
+  // Check if we need to show a default avatar
+  const hasNoAvatar =
+    !profilePicturePreview &&
+    !profilePictureUrl &&
+    !generatedAvatarMetadata &&
+    selectedAvatarIndex === null;
+  const currentAvatarMetadata = hasNoAvatar
+    ? generateDefaultAvatar()
+    : generatedAvatarMetadata;
 
   const displayImageUrl = profilePicturePreview || profilePictureUrl || '';
   const fileUploadValue = profilePicture ? [profilePicture] : [];
@@ -101,9 +127,33 @@ export function ProfilePhotoSection() {
       <div className="flex items-center p-3 sm:p-5 bg-gray-50/50">
         <Camera className="h-5 w-5 text-gray-500 mr-2" />
         <h3 className="font-medium text-gray-700">Profile Photo</h3>
+        {hasNoAvatar && (
+          <span className="ml-auto text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded-full">
+            Default generated
+          </span>
+        )}
       </div>
 
       <div className="p-3 sm:p-6">
+        {/* Show default avatar preview if no custom selection */}
+        {hasNoAvatar && (
+          <div className="mb-6 text-center">
+            <div className="inline-flex flex-col items-center p-4 bg-blue-50/50 rounded-xl border border-blue-200/50">
+              <ProfileAvatar
+                avatarString={currentAvatarMetadata || ''}
+                size={60}
+                className="mb-2"
+              />
+              <p className="text-xs text-blue-700 font-medium">
+                Your default avatar
+              </p>
+              <p className="text-xs text-blue-600">
+                You can customize it below or upload a photo
+              </p>
+            </div>
+          </div>
+        )}
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div className="space-y-4">
             <h4 className="text-sm font-medium text-gray-700">
