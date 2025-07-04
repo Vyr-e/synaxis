@@ -59,9 +59,9 @@ export function CommunitySetupForm() {
     'imageUploader',
     {
       onClientUploadComplete: (res) => {
-        if (res?.[0]?.url) {
-          setField('logo', res[0].url);
-          setLogoPreview(res[0].url);
+        if (res?.[0]?.ufsUrl) {
+          setField('logo', res[0].ufsUrl);
+          setLogoPreview(res[0].ufsUrl);
           toast.success('Logo uploaded successfully!');
           setUploadProgress(100);
         } else {
