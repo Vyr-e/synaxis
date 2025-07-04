@@ -4,7 +4,6 @@ import { completeOnboarding } from '@/actions/onboarding';
 import { useFormStore } from '@/store/use-onboarding-store';
 import { updateUser } from '@repo/auth/client';
 import { AnimatePresence, motion } from 'motion/react';
-import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState, useTransition } from 'react';
 import { toast } from 'sonner';
 
@@ -22,9 +21,14 @@ const progressSteps = [
 ];
 
 export function OnboardingFlow() {
-  const router = useRouter();
-  const { formData, isSubmitting, isComplete, setSubmitting, setComplete } =
-    useFormStore();
+  const {
+    formData,
+    isSubmitting,
+    isComplete,
+    setSubmitting,
+    setComplete,
+    clear,
+  } = useFormStore();
   const [isPending, startTransition] = useTransition();
 
   const [progress, setProgress] = useState(0);
@@ -64,7 +68,7 @@ export function OnboardingFlow() {
       setTimeout(() => {
         setSubmitting(false);
         setComplete(true);
-        router.push('/');
+        clear(); // Clear sensitive data from localStorage
       }, 1000);
     } catch (error) {
       // Log to Sentry if available
@@ -82,7 +86,7 @@ export function OnboardingFlow() {
       toast.error(errorMessage);
       setSubmitting(false);
     }
-  }, [formData, router, setSubmitting, setComplete]);
+  }, [formData, setSubmitting, setComplete, clear]);
 
   // Handle step progression
   useEffect(() => {
@@ -139,7 +143,7 @@ export function OnboardingFlow() {
     return () => clearTimeout(timer);
   }, [setSubmitting]);
 
-  if (isComplete) {
+  if (!isComplete) {
     return <Completion />;
   }
 
