@@ -53,7 +53,7 @@ export function InterestSelector() {
         transition={transitionProps}
       >
         {interests.map((interest) => {
-          const isSelected = selectedInterests.includes(interest);
+          const isSelected = selectedInterests?.includes(interest);
           return (
             <motion.button
               key={interest}
