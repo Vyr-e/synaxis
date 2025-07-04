@@ -221,7 +221,7 @@ export default function StepsComponent({ steps }: StepsProps) {
       <div className="inset-0 flex h-dvh items-center justify-center">
         <div className="w-full max-w-4xl px-6 md:px-0">
           {/* Adjusted min-height and padding */}
-          <div className="min-h-[400px] overflow-hidden rounded-xl bg-white/60 px-2 py-4 sm:px-4 sm:py-6 md:px-8 md:py-8 backdrop-blur-md md:min-h-[600px]">
+          <div className="min-h-[400px] overflow-hidden rounded-xl px-2 py-4 sm:px-4 sm:py-6 md:px-8 md:py-8 backdrop-blur-md md:min-h-[600px]">
             <AnimatePresence mode="wait" initial={false}>
               <motion.div
                 key={componentKey}
