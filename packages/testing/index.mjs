@@ -1,6 +1,9 @@
-const path = require('node:path');
-const react = require('@vitejs/plugin-react');
-const { defineConfig } = require('vitest/config');
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import react from '@vitejs/plugin-react';
+import { defineConfig } from 'vitest/config';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const config = defineConfig({
   plugins: [react()],
@@ -19,4 +22,4 @@ const config = defineConfig({
   },
 });
 
-module.exports = config;
+export default config;
