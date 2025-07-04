@@ -4,6 +4,5 @@ export const PUBLIC_ROUTES = [
   '/waitlist',
   'icon.ico',
   '/og',
-  '/',
   '/onboard',
 ];
