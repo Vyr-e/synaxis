@@ -111,8 +111,6 @@ export function SignUpForm() {
         {
           email: _values.email,
           password: _values.password,
-          firstName: _values.firstName,
-          lastName: _values.lastName,
           username: username,
           name: `${_values.firstName} ${_values.lastName}`,
           /***           * INFO: the idea is if a usr is successfullyy signed up and better auth sends
