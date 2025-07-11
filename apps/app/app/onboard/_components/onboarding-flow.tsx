@@ -78,13 +78,18 @@ export function OnboardingFlow() {
           formData,
         },
       });
+      console.error(error);
+      setSubmitting(false);
+      setProgress(0);
+      setCurrentStepIndex(0);
+      setAnimationCycles(0);
+      setActionCompleted(false);
 
       const errorMessage =
         error instanceof Error
           ? `Failed to complete profile setup: ${error.message}`
           : 'Failed to complete profile setup. Please try again.';
       toast.error(errorMessage);
-      setSubmitting(false);
     }
   }, [formData, setSubmitting, setComplete, clear]);
 
