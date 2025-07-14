@@ -4,7 +4,7 @@ import { PasswordStrengthChecker } from '@/app/(auth)/_components/password-stren
 import { handleBackendError } from '@/app/(auth)/auth.util';
 import { captureException } from '@/sentry/utils';
 import { useFormStore } from '@/store/use-onboarding-store';
-import { useAuthStore } from '@/stores/useAuthStore';
+import { useAuthStore } from '@/store/useAuthStore';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { signIn, signUp } from '@repo/auth/client';
 import { cn } from '@repo/design-system';
@@ -113,10 +113,6 @@ export function SignUpForm() {
           password: _values.password,
           username: username,
           name: `${_values.firstName} ${_values.lastName}`,
-          /***           * INFO: the idea is if a usr is successfullyy signed up and better auth sends
-           *  verification token to thier mail,
-           *  we redirect them to the verified page cause of course its verified
-           */
           callbackURL: '/auth/verified',
         },
         {

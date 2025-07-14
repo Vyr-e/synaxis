@@ -1,5 +1,9 @@
 import { env } from '@repo/env';
-import { config as baseConfig, withAnalyzer, withSentry } from '@repo/next-config';
+import {
+  config as baseConfig,
+  withAnalyzer,
+  withSentry,
+} from '@repo/next-config';
 import type { NextConfig } from 'next';
 
 // Wrap config logic in an async function
@@ -12,6 +16,11 @@ const createNextConfig = async (): Promise<NextConfig> => {
       nodeMiddleware: true,
       ...(config.experimental || {}),
     },
+    serverExternalPackages: [
+      '@react-email/components',
+      '@react-email/render',
+      '@react-email/tailwind',
+    ],
   };
 
   if (env.VERCEL) {

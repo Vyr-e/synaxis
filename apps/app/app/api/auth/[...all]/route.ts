@@ -3,7 +3,6 @@ import arcjet, {
   type ArcjetDecision,
   type ArcjetEmailType,
   type ArcjetMode,
-  detectBot,
   protectSignup,
   shield,
 } from '@arcjet/next';
@@ -70,23 +69,27 @@ async function protect(req: NextRequest): Promise<ArcjetDecision> {
   const requestIp = ip(req);
   const body = await req.clone().json();
 
+  const { pathname } = req.nextUrl;
   const userId =
     sessionId ??
     (typeof requestIp === 'string' && requestIp !== ''
       ? requestIp
       : 'unknown_user_or_ip');
 
-  if (isPublicRoute(req)) {
-    return typeof body.email === 'string'
-      ? aj.protect(req, { email: body.email, userId })
-      : aj
-          .withRule(detectBot({ mode: ARCJET_MODE, allow: [] }))
-          .protect(req, { userId, email: body.email });
+  let emailForValidation: string | undefined;
+  if (
+    pathname.includes('/sign-up') ||
+    pathname.includes('/resend-verification')
+  ) {
+    emailForValidation = body.email;
+  } else if (pathname.includes('/change-email')) {
+    emailForValidation = body.newEmail; // Use newEmail for this route
   }
 
-  return aj
-    .withRule(detectBot({ mode: ARCJET_MODE, allow: [] }))
-    .protect(req, { userId, email: body.email });
+  if (emailForValidation) {
+    return aj.protect(req, { userId, email: emailForValidation });
+  }
+  return aj.protect(req, { userId, email: '' });
 }
 
 // Initialize auth handlers
@@ -127,7 +130,6 @@ export const POST = async (req: NextRequest) => {
         const message = decision.reason.emailTypes.map(
           (type) => EMAIL_ERRORS[type] ?? 'Invalid email.'
         )[0];
-        console.log('Debug: Email error message:', message);
         return NextResponse.json({ message }, { status: 400 });
       }
 

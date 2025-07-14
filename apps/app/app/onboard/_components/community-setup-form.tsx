@@ -31,12 +31,17 @@ import {
   X,
 } from 'lucide-react';
 import Image from 'next/image';
+import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
 export function CommunitySetupForm() {
   const formData = useFormStore((state) => state.formData);
   const setField = useFormStore((state) => state.setField);
+  const pathname = usePathname();
+  const validateCurrentStep = useFormStore(
+    (state) => state.validateCurrentStep
+  );
 
   const [brandName, setBrandName] = useState(formData.brandName || '');
   const [brandSlug, setBrandSlug] = useState(
@@ -86,6 +91,24 @@ export function CommunitySetupForm() {
 
   // Determine the username for the avatar based on brandName
   const avatarUsername = brandName || 'Brand';
+
+  // Auto-validate when brand form data changes
+  useEffect(() => {
+    if (
+      formData.brandName &&
+      formData.brandDescription &&
+      formData.slug &&
+      pathname?.includes('/brand/community')
+    ) {
+      validateCurrentStep('brand', 'community');
+    }
+  }, [
+    formData.brandName,
+    formData.brandDescription,
+    formData.slug,
+    validateCurrentStep,
+    pathname,
+  ]);
 
   useEffect(() => {
     if (brandName) {

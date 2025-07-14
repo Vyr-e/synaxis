@@ -11,7 +11,7 @@ import { AuthBackground } from '@/components/auth-background';
 import { NavigationButtons } from './navigation-buttons';
 import { StepIndicator } from './step-indicator';
 
-import { skipOnboarding } from '@/actions/onboarding';
+import { skipOnboarding } from '@/actions/onboarding/onboarding';
 import { type FormData, useFormStore } from '@/store/use-onboarding-store';
 
 const onboardingSteps = {

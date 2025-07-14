@@ -2,7 +2,7 @@
 
 import { handleBackendError } from '@/app/(auth)/auth.util';
 import { captureException } from '@/sentry/utils';
-import { useAuthStore } from '@/stores/useAuthStore';
+import { useAuthStore } from '@/store/useAuthStore';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { signIn } from '@repo/auth/client';
 import { cn } from '@repo/design-system';

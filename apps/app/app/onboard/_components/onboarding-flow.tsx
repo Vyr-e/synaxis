@@ -1,6 +1,6 @@
 'use client';
 
-import { completeOnboarding } from '@/actions/onboarding';
+import { completeOnboarding } from '@/actions/onboarding/onboarding';
 import { useFormStore } from '@/store/use-onboarding-store';
 import { updateUser } from '@repo/auth/client';
 import { AnimatePresence, motion } from 'motion/react';

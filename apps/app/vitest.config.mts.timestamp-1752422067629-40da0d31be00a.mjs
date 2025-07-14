@@ -1,0 +1,16 @@
+// vitest.config.mts
+import baseConfig from "file:///D:/synaxis/packages/testing/index.mjs";
+import { defineConfig, mergeConfig } from "file:///D:/synaxis/node_modules/.pnpm/vitest@2.1.9_@types+node@22.10.1_jsdom@25.0.1_terser@5.43.1/node_modules/vitest/dist/config.js";
+var vitest_config_default = mergeConfig(
+  baseConfig,
+  defineConfig({
+    test: {
+      globals: true,
+      setupFiles: ["./vitest.setup.ts"]
+    }
+  })
+);
+export {
+  vitest_config_default as default
+};
+//# sourceMappingURL=data:application/json;base64,ewogICJ2ZXJzaW9uIjogMywKICAic291cmNlcyI6IFsidml0ZXN0LmNvbmZpZy5tdHMiXSwKICAic291cmNlc0NvbnRlbnQiOiBbImNvbnN0IF9fdml0ZV9pbmplY3RlZF9vcmlnaW5hbF9kaXJuYW1lID0gXCJEOlxcXFxzeW5heGlzXFxcXGFwcHNcXFxcYXBwXCI7Y29uc3QgX192aXRlX2luamVjdGVkX29yaWdpbmFsX2ZpbGVuYW1lID0gXCJEOlxcXFxzeW5heGlzXFxcXGFwcHNcXFxcYXBwXFxcXHZpdGVzdC5jb25maWcubXRzXCI7Y29uc3QgX192aXRlX2luamVjdGVkX29yaWdpbmFsX2ltcG9ydF9tZXRhX3VybCA9IFwiZmlsZTovLy9EOi9zeW5heGlzL2FwcHMvYXBwL3ZpdGVzdC5jb25maWcubXRzXCI7aW1wb3J0IGJhc2VDb25maWcgZnJvbSAnQHJlcG8vdGVzdGluZy9pbmRleC5tanMnO1xyXG5pbXBvcnQgeyBkZWZpbmVDb25maWcsIG1lcmdlQ29uZmlnIH0gZnJvbSAndml0ZXN0L2NvbmZpZyc7XHJcblxyXG5leHBvcnQgZGVmYXVsdCBtZXJnZUNvbmZpZyhcclxuICBiYXNlQ29uZmlnLFxyXG4gIGRlZmluZUNvbmZpZyh7XHJcbiAgICB0ZXN0OiB7XHJcbiAgICAgIGdsb2JhbHM6IHRydWUsXHJcbiAgICAgIHNldHVwRmlsZXM6IFsnLi92aXRlc3Quc2V0dXAudHMnXSxcclxuICAgIH0sXHJcbiAgfSlcclxuKTtcclxuIl0sCiAgIm1hcHBpbmdzIjogIjtBQUF5UCxPQUFPLGdCQUFnQjtBQUNoUixTQUFTLGNBQWMsbUJBQW1CO0FBRTFDLElBQU8sd0JBQVE7QUFBQSxFQUNiO0FBQUEsRUFDQSxhQUFhO0FBQUEsSUFDWCxNQUFNO0FBQUEsTUFDSixTQUFTO0FBQUEsTUFDVCxZQUFZLENBQUMsbUJBQW1CO0FBQUEsSUFDbEM7QUFBQSxFQUNGLENBQUM7QUFDSDsiLAogICJuYW1lcyI6IFtdCn0K

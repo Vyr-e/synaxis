@@ -217,15 +217,18 @@ export const useFormStore = create<FormStore>()(
             interests: () => (formData.interests?.length ?? 0) > 0,
           },
           brand: {
-            profile: () =>
-              Boolean(
+            community: () => {
+              const isValid = Boolean(
                 formData.brandName &&
                   formData.brandName.trim().length >= 2 &&
                   formData.brandDescription &&
                   formData.brandDescription.trim().length >= 10 &&
                   formData.slug &&
                   formData.slug.trim().length >= 3
-              ),
+              );
+              console.log('brand/community -> is valid:', isValid);
+              return isValid;
+            },
           },
         };
 
