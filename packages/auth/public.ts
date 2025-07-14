@@ -5,4 +5,5 @@ export const PUBLIC_ROUTES = [
   'icon.ico',
   '/og',
   '/onboard',
+  '/api/auth',
 ];

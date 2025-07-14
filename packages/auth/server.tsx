@@ -121,20 +121,26 @@ const authConfig: BetterAuthOptions = {
     autoSignInAfterVerification: true,
     expiresIn: 15 * 60,
     sendVerificationEmail: async ({ user, url }) => {
-      await resend.emails.send({
-        from: env.RESEND_FROM,
-        to: [user.email],
-        subject: 'Verify your email',
-        react: (
-          <>
-            {VerificationTemplate({
-              name:
-                (user as unknown as { firstName: string }).firstName || 'there',
-              verificationLink: url,
-            })}
-          </>
-        ),
-      });
+      try {
+        await resend.emails.send({
+          from: env.RESEND_FROM,
+          to: [user.email],
+          subject: 'Verify your email',
+          react: (
+            <>
+              {VerificationTemplate({
+                name:
+                  (user as unknown as { firstName: string }).firstName ||
+                  'there',
+                verificationLink: url,
+              })}
+            </>
+          ),
+        });
+      } catch (error) {
+        console.error('Error sending verification email:', error);
+        throw error;
+      }
     },
   },
   emailAndPassword: {
@@ -171,11 +177,13 @@ const authConfig: BetterAuthOptions = {
       },
       firstName: {
         type: 'string',
-        required: true,
+        required: false,
+        defaultValue: '',
       },
       lastName: {
         type: 'string',
-        required: true,
+        required: false,
+        defaultValue: '',
       },
       role: {
         type: 'string',
@@ -185,19 +193,19 @@ const authConfig: BetterAuthOptions = {
       },
       bio: {
         type: 'string',
-        required: true,
+        required: false,
         defaultValue: '',
         input: false,
       },
       deletedAt: {
         type: 'string',
-        required: true,
+        required: false,
         defaultValue: '',
         input: false,
       },
       banReason: {
         type: 'string',
-        required: true,
+        required: false,
         defaultValue: '',
         input: false,
       },
@@ -211,12 +219,17 @@ const authConfig: BetterAuthOptions = {
     changeEmail: {
       enabled: true,
       sendChangeEmailVerification: async ({ newEmail, url }) => {
-        await resend.emails.send({
-          from: env.RESEND_FROM,
-          to: newEmail,
-          subject: 'Verify email change',
-          react: <>{ChangeEmailTemplate({ changeLink: url })}</>,
-        });
+        try {
+          await resend.emails.send({
+            from: env.RESEND_FROM,
+            to: newEmail,
+            subject: 'Verify email change',
+            react: <>{ChangeEmailTemplate({ changeLink: url })}</>,
+          });
+        } catch (error) {
+          console.error('Error sending verification email:', error);
+          throw error;
+        }
       },
     },
     deleteUser: {
@@ -365,6 +378,7 @@ const authConfig: BetterAuthOptions = {
         // biome-ignore lint/suspicious/useAwait: we only need it to be async
         before: async (user, _ctx) => {
           const [firstName, ...lastNameParts] = user.name.split(' ');
+
           return {
             data: {
               ...user,
