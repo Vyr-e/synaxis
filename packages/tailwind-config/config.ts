@@ -35,6 +35,13 @@ export const config: Config = {
         ring: 'hsl(var(--ring) / <alpha-value>)',
         background: 'hsl(var(--background) / <alpha-value>)',
         foreground: 'hsl(var(--foreground) / <alpha-value>)',
+        'midnight-blue': {
+          DEFAULT: '#1e40af',
+          50: '#eff6ff',
+          500: '#1e40af',
+          600: '#1d4ed8',
+          700: '#1e3a8a',
+        },
         primary: {
           DEFAULT: 'hsl(var(--primary) / <alpha-value>)',
           foreground: 'hsl(var(--primary-foreground) / <alpha-value>)',
