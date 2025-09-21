@@ -12,14 +12,16 @@ const createNextConfig = async (): Promise<NextConfig> => {
 
   let nextConfig: NextConfig = {
     ...config,
+    // Enable typed routes (now stable in Next.js 15.5)
+    typedRoutes: true,
     experimental: {
-      nodeMiddleware: true,
+      // nodeMiddleware is now stable, no longer needed in experimental
+      // Enable view transitions
+      viewTransition: true,
       ...(config.experimental || {}),
     },
     serverExternalPackages: [
-      '@react-email/components',
-      '@react-email/render',
-      '@react-email/tailwind',
+      // Remove React Email packages since they're not installed in this app
     ],
   };
 

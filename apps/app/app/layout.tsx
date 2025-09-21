@@ -58,7 +58,7 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body>
-        <DesignSystemProvider defaultTheme="light">
+        <DesignSystemProvider defaultTheme="dark">
           <QueryProvider>
             {children}
             <CookieConsent />

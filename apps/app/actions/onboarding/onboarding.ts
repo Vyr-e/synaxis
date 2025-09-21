@@ -1,5 +1,6 @@
 'use server';
 
+import { captureException } from '@/sentry/utils';
 import type { FormData } from '@/store/use-onboarding-store';
 import { auth } from '@repo/auth/server';
 import { drizzle } from '@repo/database';
@@ -10,7 +11,6 @@ import {
   users,
   type users as usersTable,
 } from '@repo/database/schema';
-import { captureException } from '@sentry/nextjs';
 import { eq } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 import { headers } from 'next/headers';
@@ -76,33 +76,32 @@ async function handleBrandOnboarding(
     throw new Error('Brand name and slug are required for brand accounts.');
   }
 
-  await drizzle.transaction(async (tx) => {
-    const [brand] = await tx
-      .insert(brands)
-      .values({
-        name: brandName, // Now guaranteed to be string
-        slug: slug, // Now guaranteed to be string
-        description: formData.brandDescription?.trim() || null,
-        logo: formData.logo?.trim() || null,
-        website: formData.website?.trim() || null,
-        ownerId: userId,
-      })
-      .returning();
+  //Drizzle Neon doesn't support transactions!
+  const [brand] = await drizzle
+    .insert(brands)
+    .values({
+      name: brandName,
+      slug: slug,
+      description: formData.brandDescription?.trim() || null,
+      logo: formData.logo?.trim() || null,
+      website: formData.website?.trim() || null,
+      ownerId: userId,
+    })
+    .returning();
 
-    if (!brand?.id) {
-      throw new Error('Failed to create brand');
-    }
+  if (!brand?.id) {
+    throw new Error('Failed to create brand');
+  }
 
-    await tx
-      .update(users)
-      .set({
-        ...payload,
-        brandId: brand.id,
-        role: USER_ROLES.BRAND_OWNER,
-        userProfileStep: USER_PROFILE_STEPS.COMPLETED,
-      })
-      .where(eq(users.id, userId));
-  });
+  await drizzle
+    .update(users)
+    .set({
+      ...payload,
+      brandId: brand.id,
+      role: USER_ROLES.BRAND_OWNER,
+      userProfileStep: USER_PROFILE_STEPS.COMPLETED,
+    })
+    .where(eq(users.id, userId));
 }
 
 export async function completeOnboarding(formData: FormData) {
@@ -123,10 +122,10 @@ export async function completeOnboarding(formData: FormData) {
       await handleBrandOnboarding(formData, session.user.id, userUpdatePayload);
     }
 
-    revalidatePath('/dashboard');
+    revalidatePath('/');
     return { success: true };
   } catch (error) {
-    captureException(error, {
+    captureException(error as Error, {
       tags: {
         action: 'completeOnboarding',
       },
@@ -183,7 +182,7 @@ export async function skipOnboarding() {
     revalidatePath('/');
     return { success: true };
   } catch (error) {
-    captureException(error, {
+    captureException(error as Error, {
       tags: {
         action: 'skipOnboarding',
       },
