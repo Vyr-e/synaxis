@@ -103,15 +103,15 @@ export default function ResetPasswordPage() {
 
   return (
     <div className="flex min-h-screen flex-col">
-      <main className="flex flex-1 flex-col items-center justify-center bg-white p-4">
+      <main className="flex flex-1 flex-col items-center justify-center bg-background p-4">
         <button
           type="button"
           onClick={handleGoBack}
           className="group absolute top-4 left-4 flex items-center"
         >
-          <div className="relative flex items-center gap-2 rounded-full bg-black/5 px-3 py-1.5 transition-all duration-300 hover:bg-black/10">
-            <ChevronLeft className="size-4 text-black/60" />
-            <span className="font-medium text-black/60 text-sm">Go back</span>
+          <div className="relative flex items-center gap-2 rounded-full bg-white/5 px-3 py-1.5 transition-all duration-300 hover:bg-white/10">
+            <ChevronLeft className="size-4 text-white/60" />
+            <span className="font-medium text-white/60 text-sm">Go back</span>
           </div>
         </button>
 
@@ -122,19 +122,19 @@ export default function ResetPasswordPage() {
         >
           <div className="space-y-2 text-center">
             <div className="mb-6 flex justify-center">
-              <div className="relative rounded-full bg-quantum-blue/10 p-3">
-                <KeyRound className="h-8 w-8 text-quantum-blue" />
+              <div className="relative rounded-full bg-primary/10 p-3">
+                <KeyRound className="h-8 w-8 text-primary" />
               </div>
             </div>
             <h1
               className={cn(
-                'font-bold text-4xl text-zinc-950 tracking-tight dark:text-zinc-50',
+                'font-bold text-4xl text-foreground tracking-tight',
                 clashDisplay.className
               )}
             >
               Reset Password
             </h1>
-            <p className="text-zinc-500">Enter your new password below</p>
+            <p className="text-muted-foreground">Enter your new password below</p>
           </div>
 
           <Form {...form}>
@@ -148,7 +148,7 @@ export default function ResetPasswordPage() {
                       <PasswordStrengthChecker
                         placeholder="New password"
                         autoComplete="new-password"
-                        className="h-12 w-full rounded-xl border-2 bg-white/80 px-4 text-base text-black transition-all ease-in-out placeholder:text-zinc-500 focus-visible:ring-2 focus-visible:ring-quantum-blue"
+                        className="h-12 w-full rounded-xl border-2 bg-input px-4 text-base text-foreground transition-all ease-in-out placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-primary"
                         error={!!form.formState.errors.password}
                         {...field}
                       />
@@ -167,7 +167,7 @@ export default function ResetPasswordPage() {
                         placeholder="Confirm password"
                         type="password"
                         autoComplete="new-password"
-                        className="h-12 w-full rounded-xl border-2 bg-white/80 px-4 text-base text-black transition-all ease-in-out placeholder:text-zinc-500 focus-visible:ring-2 focus-visible:ring-quantum-blue"
+                        className="h-12 w-full rounded-xl border-2 bg-input px-4 text-base text-foreground transition-all ease-in-out placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-primary"
                         {...field}
                       />
                     </FormControl>
@@ -177,7 +177,7 @@ export default function ResetPasswordPage() {
               />
               <Button
                 type="submit"
-                className="relative h-12 w-full overflow-hidden rounded-xl px-4 py-2 font-medium text-sm transition-all hover:scale-[1.02] hover:bg-quantum-blue/80"
+                className="relative h-12 w-full overflow-hidden rounded-xl bg-neutral-700/10 px-4 py-2 font-medium text-sm text-white transition-all hover:scale-[1.02] hover:bg-neutral-600/10 hover:border-2"
                 disabled={isSubmitting || !token}
               >
                 {isSubmitting && (
@@ -188,12 +188,12 @@ export default function ResetPasswordPage() {
             </form>
           </Form>
 
-          <div className="text-center text-sm text-zinc-500">
+          <div className="text-center text-sm text-muted-foreground">
             <p>
               Remember your password?{' '}
               <Button
                 variant="link"
-                className="p-0 text-quantum-blue hover:text-quantum-blue/80"
+                className="p-0 text-primary hover:text-primary/80"
                 onClick={() => router.push('/auth/sign-in')}
               >
                 Back to sign in
