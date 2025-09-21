@@ -75,8 +75,8 @@ export function AnimatedStatusIndicator({
     switch (usernameStatus) {
       case 'checking':
         return {
-          bgColor: 'bg-gradient-to-r from-blue-400 to-purple-500',
-          iconColor: 'text-white',
+          bgColor: 'bg-neutral-800 dark:bg-neutral-200',
+          iconColor: 'text-white dark:text-black',
           icon: null,
         };
       case 'available':
@@ -191,36 +191,13 @@ export function AnimatedStatusIndicator({
       animate={usernameStatus}
       style={{ width: size, height: size }}
     >
-      {/* Pulse background for checking state */}
-      {usernameStatus === 'checking' && (
-        <motion.div
-          className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-400 to-purple-500"
-          variants={pulseVariants}
-          animate="checking"
-        />
-      )}
 
       {/* Main indicator */}
       <motion.div
         className={`relative flex items-center justify-center rounded-full shadow-lg ${config.bgColor} ${config.iconColor}`}
         style={{ width: size, height: size }}
       >
-        {usernameStatus === 'checking' ? (
-          <motion.div
-            className="h-3 w-3 rounded-full bg-white"
-            animate={{
-              scale: [1, 0.8, 1],
-              opacity: [1, 0.5, 1],
-            }}
-            transition={{
-              duration: 1,
-              repeat: Number.POSITIVE_INFINITY,
-              ease: 'easeInOut',
-            }}
-          />
-        ) : (
-          config.icon
-        )}
+        {config.icon}
       </motion.div>
 
       {/* Success celebration particles */}
