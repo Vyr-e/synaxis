@@ -1,3 +1,15 @@
 packages:
-  - "apps/*"
-  - "packages/*"
+  - apps/*
+  - packages/*
+
+onlyBuiltDependencies:
+  - '@biomejs/biome'
+  - '@prisma/client'
+  - '@sentry/cli'
+  - core-js
+  - core-js-pure
+  - es5-ext
+  - esbuild
+  - msgpackr-extract
+  - sharp
+  - workerd
