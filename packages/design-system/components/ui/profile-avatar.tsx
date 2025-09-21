@@ -144,7 +144,6 @@
         }
         
         if (onMetaDataGenerated) {
-          console.log('metaData', metaData)
           onMetaDataGenerated(metaData)
         }
         
