@@ -17,7 +17,7 @@ export default function Layout({
   children: ReactNode;
 }) {
   return (
-    <div className="flex min-h-dvh items-center justify-center overflow-y-hidden">
+    <div className="flex min-h-dvh items-center justify-center overflow-y-hidden bg-black/50">
       <div className="w-full">
         <AuthLayoutWrapper>{children}</AuthLayoutWrapper>
       </div>

@@ -66,17 +66,17 @@ const PasswordStrengthChecker = forwardRef<
       if (index < 4) {
         switch (index) {
           case 1:
-            return 'bg-orange-300';
+            return 'bg-orange-300 dark:bg-orange-400';
           case 2:
-            return 'bg-orange-400';
+            return 'bg-orange-400 dark:bg-orange-500';
           case 3:
-            return 'bg-orange-500';
+            return 'bg-orange-500 dark:bg-orange-600';
           default:
-            return 'bg-gray-300';
+            return 'bg-muted';
         }
       }
     }
-    return 'bg-gray-300';
+    return 'bg-muted';
   };
 
   return (
@@ -139,7 +139,7 @@ const PasswordStrengthChecker = forwardRef<
                     className={cn(
                       'h-2 flex-1 rounded-full transition-colors duration-300',
                       getColor(index, strengthScore),
-                      index === 5 && strengthScore === 5 ? 'bg-violet-500' : ''
+                      index === 5 && strengthScore === 5 ? 'bg-violet-500 dark:bg-violet-600' : ''
                     )}
                     initial={{ scale: 0.8, opacity: 0 }}
                     animate={{
@@ -168,10 +168,10 @@ const PasswordStrengthChecker = forwardRef<
                       <>
                         <X
                           size={16}
-                          className="flex-shrink-0 text-muted-foreground/80" // Sorted classes
+                          className="flex-shrink-0 text-muted-foreground"
                           aria-hidden="true"
                         />
-                        <span className="text-muted-foreground text-xs">
+                        <span className="text-xs text-muted-foreground">
                           {requirements[strengthScore].text}
                         </span>
                       </>
@@ -193,14 +193,10 @@ const PasswordStrengthChecker = forwardRef<
                   <div className="flex items-center gap-2">
                     <Check
                       size={16}
-                      className="flex-shrink-0 text-emerald-500" // Sorted classes
+                      className="flex-shrink-0 text-emerald-500 dark:text-emerald-400"
                       aria-hidden="true"
                     />
-                    <span
-                      className={
-                        'text-emerald-600 text-xs dark:text-emerald-400' // Sorted classes
-                      }
-                    >
+                    <span className="text-xs text-emerald-600 dark:text-emerald-400">
                       {requirements[4].text}
                     </span>
                   </div>
@@ -209,13 +205,13 @@ const PasswordStrengthChecker = forwardRef<
                     {strength[5].met ? (
                       <Check
                         size={16}
-                        className="flex-shrink-0 text-violet-500" // Sorted classes
+                        className="flex-shrink-0 text-violet-500 dark:text-violet-400"
                         aria-hidden="true"
                       />
                     ) : (
                       <X
                         size={16}
-                        className="flex-shrink-0 text-muted-foreground/50" // Sorted classes
+                        className="flex-shrink-0 text-muted-foreground/50"
                         aria-hidden="true"
                       />
                     )}
@@ -223,7 +219,7 @@ const PasswordStrengthChecker = forwardRef<
                       className={cn(
                         'text-xs',
                         strength[5].met
-                          ? 'text-violet-500'
+                          ? 'text-violet-500 dark:text-violet-400'
                           : 'text-muted-foreground/50'
                       )}
                     >
