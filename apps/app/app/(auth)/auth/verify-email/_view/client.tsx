@@ -24,6 +24,8 @@ import { Fragment, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
+import type { Route } from 'next';
+
 const verifyEmailSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
 });
@@ -54,7 +56,7 @@ export default function VerifyEmailPage() {
   useEffect(() => {
     const checkVerification = async () => {
       if (await user?.emailVerified) {
-        router.push('/onboard');
+        router.push("/onboard" as Route);
       }
     };
 
@@ -150,15 +152,15 @@ export default function VerifyEmailPage() {
 
   return (
     <div className="flex min-h-screen flex-col">
-      <main className="relative flex flex-1 flex-col items-center justify-center bg-white p-4">
+      <main className="relative flex flex-1 flex-col items-center justify-center bg-background p-4">
         <button
           type="button"
           onClick={handleGoBack}
           className="group absolute top-4 left-4 flex items-center"
         >
-          <div className="relative flex items-center gap-2 rounded-full bg-black/5 px-3 py-1.5 transition-all duration-300 hover:bg-black/10">
-            <ChevronLeft className="size-4 text-black/60" />
-            <span className="font-medium text-black/60 text-sm">Go back</span>
+          <div className="relative flex items-center gap-2 rounded-full bg-white/5 px-3 py-1.5 transition-all duration-300 hover:bg-white/10">
+            <ChevronLeft className="size-4 text-white/60" />
+            <span className="font-medium text-white/60 text-sm">Go back</span>
           </div>
         </button>
 
@@ -171,8 +173,8 @@ export default function VerifyEmailPage() {
             <div className="mb-6 flex justify-center">
               <div
                 className={cn(
-                  'relative rounded-full bg-quantum-blue/10 p-3 text-quantum-blue',
-                  isRateLimited && 'bg-red-500/10 text-red-500',
+                  'relative rounded-full bg-primary/10 p-3',
+                  isRateLimited ? 'bg-red-500/10 text-red-500' : 'text-primary',
                   'transition-all'
                 )}
               >
@@ -202,7 +204,7 @@ export default function VerifyEmailPage() {
                         return (
                           <circle
                             key={index}
-                            className="origin-center text-quantum-blue transition-all duration-300 ease-in-out"
+                            className="origin-center text-white transition-all duration-300 ease-in-out"
                             strokeWidth="4"
                             strokeDasharray={`${length} ${360}`}
                             strokeLinecap="round"
@@ -231,13 +233,13 @@ export default function VerifyEmailPage() {
             </div>
             <h1
               className={cn(
-                'font-bold text-4xl text-zinc-950 tracking-tight dark:text-zinc-50',
+                'font-bold text-4xl text-foreground tracking-tight',
                 clashDisplay.className
               )}
             >
               Check your email
             </h1>
-            <p className="text-zinc-500">
+            <p className="text-muted-foreground">
               We sent you a verification link. Please check your email to verify
               your account.
             </p>
@@ -264,21 +266,22 @@ export default function VerifyEmailPage() {
                               {...field}
                               type="email"
                               placeholder="Enter your email"
-                              className="h-12 rounded-xl border-2 bg-white/80 px-4 text-base text-black transition-all ease-in-out placeholder:text-zinc-500 focus-visible:ring-2 focus-visible:ring-quantum-blue"
+                              className="h-12 rounded-xl border-2 bg-input px-4 text-base text-foreground transition-all ease-in-out placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-primary"
                             />
                           </FormControl>
                         )}
                       />
                     )}
+                    {/* relative h-12 w-full overflow-hidden rounded-xl bg-neutral-700/10 px-4 py-2 font-medium text-sm text-white transition-all hover:scale-[1.02] hover:bg-neutral-600/10 hover:border-2  */}
                     <Button
                       type="button"
                       className={cn(
-                        'relative h-12 w-full overflow-hidden rounded-xl px-4 py-2 font-medium text-sm transition-all hover:scale-[1.02] hover:bg-quantum-blue/80',
+                        'relative h-12 w-full overflow-hidden rounded-xl px-4 py-2 font-medium text-sm transition-all hover:scale-[1.02] hover:bg-primary/80',
                         isResending && 'bg-gray-500 text-white',
                         isRateLimited && 'bg-red-500/10 text-red-500',
                         !isResending &&
                           !isRateLimited &&
-                          'bg-quantum-blue text-white'
+                          'bg-neutral-700/10 text-white'
                       )}
                       onClick={handleResendVerification}
                       disabled={isResending || countdown > 0}
@@ -302,13 +305,13 @@ export default function VerifyEmailPage() {
           )}
 
           {/* Help Text with Try Another Email Link */}
-          <div className="text-center text-sm text-zinc-500">
+          <div className="text-center text-sm text-muted-foreground">
             <p>
               Didn't receive the email? Check your spam folder or{' '}
               <button
                 type="button"
                 onClick={handleTryAnotherEmail}
-                className="text-quantum-blue underline hover:text-quantum-blue/80"
+                className="text-primary underline hover:text-primary/80"
               >
                 try another email
               </button>
