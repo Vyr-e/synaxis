@@ -56,15 +56,12 @@ export function AccountTypeSelector({
                 key={type.id}
                 onClick={() => handleChange(type.id as 'user' | 'brand')}
                 layout
-                className={`group relative flex cursor-pointer flex-col items-center overflow-hidden rounded-2xl p-8 shadow-sm transition-shadow duration-300 ${
+                className={`group relative flex cursor-pointer flex-col items-center overflow-hidden rounded-2xl p-8 shadow-sm transition-all duration-300 border ${
                   isSelected
-                    ? 'shadow-[#0057FF]/20 shadow-lg'
-                    : 'border border-gray-200 bg-white hover:border-gray-300 hover:shadow-md'
+                    ? 'border-primary bg-primary shadow-lg shadow-primary/20'
+                    : 'border-border bg-card hover:border-primary/50 hover:shadow-md'
                 }`}
                 animate={{
-                  backgroundColor: isSelected ? '#0057FF' : '#FFFFFF',
-                  borderColor: isSelected ? '#0057FF' : '#E5E7EB',
-                  color: isSelected ? '#FFFFFF' : '#374151',
                   scale: isSelected ? 1.02 : 1,
                 }}
                 transition={{ duration: 0.3, ease: 'easeInOut' }}
@@ -72,31 +69,25 @@ export function AccountTypeSelector({
                 whileTap={{ y: 0, scale: 1 }}
               >
                 <motion.div
-                  animate={{
-                    backgroundColor: isSelected
-                      ? 'rgba(255, 255, 255, 0.2)'
-                      : 'rgba(0, 87, 255, 0.05)',
-                  }}
-                  transition={{ duration: 0.3, ease: 'easeInOut' }}
-                  className="mb-4 flex h-20 w-20 items-center justify-center rounded-full"
+                  className={`mb-4 flex h-20 w-20 items-center justify-center rounded-full transition-colors duration-300 ${
+                    isSelected ? 'bg-primary-foreground/20' : 'bg-primary/5'
+                  }`}
                 >
                   <Icon
                     className={`h-10 w-10 transition-colors duration-300 ${
-                      isSelected ? 'text-white' : 'text-[#0057FF]'
+                      isSelected ? 'text-primary-foreground' : 'text-primary'
                     }`}
                   />
                 </motion.div>
 
-                <h3 className="mb-1 font-semibold text-lg">{type.label}</h3>
-                <motion.p
-                  animate={{
-                    color: isSelected ? 'rgba(255, 255, 255, 0.8)' : '#6B7280',
-                  }}
-                  transition={{ duration: 0.3, ease: 'easeInOut' }}
-                  className="text-center text-sm"
-                >
+                <h3 className={`mb-1 font-semibold text-lg transition-colors duration-300 ${
+                  isSelected ? 'text-primary-foreground' : 'text-foreground'
+                }`}>{type.label}</h3>
+                <p className={`text-center text-sm transition-colors duration-300 ${
+                  isSelected ? 'text-primary-foreground/80' : 'text-muted-foreground'
+                }`}>
                   {type.description}
-                </motion.p>
+                </p>
 
                 {isSelected && (
                   <motion.div   
@@ -105,8 +96,8 @@ export function AccountTypeSelector({
                     animate={{ scale: 1 }}
                     transition={{ type: 'spring', stiffness: 500, damping: 30 }}
                   >
-                    <div className="rounded-full bg-white p-1">
-                      <Check className="h-4 w-4 text-[#0057FF]" />
+                    <div className="rounded-full bg-primary-foreground p-1">
+                      <Check className="h-4 w-4 text-primary" />
                     </div>
                   </motion.div>
                 )}
@@ -136,26 +127,14 @@ export function AccountTypeSelector({
               onClick={() => handleChange(type.id as 'user' | 'brand')}
               layout
               initial={false}
-              animate={{
-                backgroundColor: isSelected
-                  ? 'rgba(0, 87, 255, 0.1)'
-                  : 'rgba(229, 231, 235, 0.5)',
-              }}
-              whileHover={{
-                backgroundColor: isSelected
-                  ? 'rgba(0, 87, 255, 0.15)'
-                  : 'rgba(229, 231, 235, 0.8)',
-              }}
-              whileTap={{
-                backgroundColor: isSelected
-                  ? 'rgba(0, 87, 255, 0.2)'
-                  : 'rgba(229, 231, 235, 0.9)',
-              }}
-              className={`relative flex flex-1 flex-col items-center justify-center overflow-hidden whitespace-nowrap rounded-lg px-6 py-4 font-medium text-base ring-1 ring-inset ${isSelected ? 'text-[#0057FF] ring-[#0057FF]' : 'text-gray-600 ring-gray-300'}
-              `}
+              className={`relative flex flex-1 flex-col items-center justify-center overflow-hidden whitespace-nowrap rounded-lg px-6 py-4 font-medium text-base border transition-all duration-200 ${
+                isSelected
+                  ? 'bg-primary/10 text-primary border-primary'
+                  : 'bg-card text-muted-foreground border-border hover:bg-muted hover:border-primary/50'
+              }`}
             >
               <Icon
-                className={`mb-2 h-5 w-5 ${isSelected ? 'text-[#0057FF]' : 'text-gray-500'}`}
+                className={`mb-2 h-5 w-5 ${isSelected ? 'text-primary' : 'text-muted-foreground'}`}
               />
               <span className="font-semibold text-lg">{type.label}</span>
               <span className="mt-1 text-center text-xs">
@@ -169,8 +148,8 @@ export function AccountTypeSelector({
                   exit={{ scale: 0, opacity: 0 }}
                   className="absolute top-2 right-2"
                 >
-                  <div className="flex h-5 w-5 items-center justify-center rounded-full bg-[#0057FF]">
-                    <Check className="h-3 w-3 text-white" strokeWidth={1.5} />
+                  <div className="flex h-5 w-5 items-center justify-center rounded-full bg-primary">
+                    <Check className="h-3 w-3 text-primary-foreground" strokeWidth={1.5} />
                   </div>
                 </motion.div>
               )}
