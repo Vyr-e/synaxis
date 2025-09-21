@@ -22,6 +22,7 @@ export type FormData = {
   slug?: string;
   logo?: string;
   isPrivate?: boolean;
+  isPublic?: boolean; // New field for brand profile visibility
   brandColor?: string;
   location?: string;
   linkedin?: string;
@@ -79,6 +80,7 @@ const initialFormData: FormData = {
   slug: '',
   logo: '',
   isPrivate: false,
+  isPublic: true, // Default to public for brands
   brandColor: '#0057FF',
   location: '',
   linkedin: '',
@@ -207,13 +209,23 @@ export const useFormStore = create<FormStore>()(
                   formData.lastName &&
                   formData.lastName.trim().length >= 2
               ),
-            profile: () =>
-              Boolean(
+            profile: () => {
+              const hasBasicInfo = Boolean(
                 formData.username &&
-                  formData.firstName &&
-                  formData.lastName &&
-                  formData.bio
-              ),
+                formData.firstName &&
+                formData.lastName
+              );
+
+              // For brands, also check brand-specific fields
+              if (formData.accountType === 'brand') {
+                return hasBasicInfo && Boolean(
+                  formData.brandDescription &&
+                  formData.isPublic !== undefined
+                );
+              }
+
+              return hasBasicInfo;
+            },
             interests: () => (formData.interests?.length ?? 0) > 0,
           },
           brand: {
@@ -226,7 +238,6 @@ export const useFormStore = create<FormStore>()(
                   formData.slug &&
                   formData.slug.trim().length >= 3
               );
-              console.log('brand/community -> is valid:', isValid);
               return isValid;
             },
           },
