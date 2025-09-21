@@ -27,7 +27,6 @@ export const config: Config = {
       colors: {
         'onyx-mirage': '#0b0c10',
         'platinum-glint': '#B0B4B9',
-        'quantum-blue': '#0077FF',
         'vital-burst': '#FF3D00',
         'background-accent': 'var(--accent)',
         border: 'hsl(var(--border) / <alpha-value>)',
@@ -96,6 +95,12 @@ export const config: Config = {
       backgroundImage: {
         'custom-gradient':
           'linear-gradient(to right, #ffffff, #f3f4f6, #ffffff)',
+        'quantum-gradient':
+          'linear-gradient(135deg, #0077FF 0%, #0066DD 50%, #005CBB 100%)',
+        'quantum-gradient-hover':
+          'linear-gradient(135deg, #0066DD 0%, #005CBB 50%, #0051A5 100%)',
+        'dark-gradient':
+          'linear-gradient(to right, #000000, #0f0f0f, #1a1a1a)',
       },
       fontFamily: {
         sans: ['var(--font-geist-sans)', ...defaultTheme.fontFamily.sans],
