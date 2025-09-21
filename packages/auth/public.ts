@@ -6,4 +6,5 @@ export const PUBLIC_ROUTES = [
   '/og',
   '/onboard',
   '/api/auth',
+  '/api/check-username',
 ];
