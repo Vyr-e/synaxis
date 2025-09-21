@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:better-auth.com)",
+      "WebFetch(domain:www.better-auth.com)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
