@@ -9,12 +9,12 @@ interface StepIndicatorProps {
 
 export function StepIndicator({ currentStep, totalSteps }: StepIndicatorProps) {
   return (
-    <div className="fixed top-16 left-8 z-10 flex items-center gap-2">
+    <div className="fixed top-4 left-4 z-10 flex items-center gap-2 h-[34px]">
       {Array.from({ length: totalSteps }).map((_, index) => (
         <motion.div
           key={index}
           className={`h-2 rounded-full transition-all duration-300 ${
-            index === currentStep ? 'bg-[#0057FF]' : 'bg-gray-400'
+            index === currentStep ? 'bg-white' : 'bg-white/30'
           }`}
           animate={{
             width: currentStep === index ? 16 : 8,

@@ -2,11 +2,6 @@
 
 import { useUploadThing } from '@/lib/uploadthing';
 import { useFormStore } from '@/store/use-onboarding-store';
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from '@repo/design-system/components/ui/avatar';
 import { Button } from '@repo/design-system/components/ui/button';
 import {
   FileUpload,
@@ -14,25 +9,29 @@ import {
 } from '@repo/design-system/components/ui/file-upload';
 import { Input } from '@repo/design-system/components/ui/input';
 import { ProfileAvatar } from '@repo/design-system/components/ui/profile-avatar';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@repo/design-system/components/ui/tabs';
 import { Textarea } from '@repo/design-system/components/ui/textarea';
 import { cn } from '@repo/design-system/lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
-  ArrowRight,
-  Building2,
   Camera,
   Check,
   Facebook,
   Globe,
   Instagram,
-  Sparkles,
+  Lock,
+  Plus,
   Twitter,
-  Users,
   X,
 } from 'lucide-react';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useId } from 'react';
 import { toast } from 'sonner';
 
 export function CommunitySetupForm() {
@@ -55,11 +54,10 @@ export function CommunitySetupForm() {
   const [logoPreview, setLogoPreview] = useState<string | null>(
     formData.logo || null
   );
-  const [isPrivate, setIsPrivate] = useState(formData.isPrivate || false);
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [uploadProgress, setUploadProgress] = useState(0);
 
-  // --- UploadThing Hook for Logo ---
+  // UploadThing Hook for Logo
   const { startUpload, isUploading: uploadThingIsUploading } = useUploadThing(
     'imageUploader',
     {
@@ -89,7 +87,6 @@ export function CommunitySetupForm() {
     }
   );
 
-  // Determine the username for the avatar based on brandName
   const avatarUsername = brandName || 'Brand';
 
   // Auto-validate when brand form data changes
@@ -144,91 +141,168 @@ export function CommunitySetupForm() {
     setUploadProgress(0);
   };
 
-  const handlePrivacyChange = (isPrivate: boolean) => {
-    setIsPrivate(isPrivate);
-    setField('isPrivate', isPrivate);
-  };
-
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setField(name as keyof typeof formData, value);
   };
 
+  const handlePrivacyToggle = (isPublic: boolean) => {
+    setField('isPublic', isPublic);
+  };
+
+  const urlInputId = useId();
+
   return (
-    <div className="w-full max-w-4xl h-[calc(100dvh-200px)] flex flex-col md:flex-row gap-6 overflow-hidden">
-      {/* Left side - Form fields */}
-      <div className="flex-1 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 hover:scrollbar-thumb-gray-400">
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
-          className="space-y-6"
-        >
-          {/* Brand Identity Card */}
-          <div className="bg-white rounded-2xl shadow-sm ring-1 ring-gray-100 overflow-hidden">
-            <div className="flex items-center p-5 bg-gray-50/50">
-              <Building2 className="h-5 w-5 text-gray-500 mr-2" />
-              <h3 className="font-medium text-gray-700">Brand Identity</h3>
+    <div className="w-full max-w-2xl mx-auto pb-24">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="space-y-6 px-4 md:px-6"
+      >
+        <Tabs defaultValue="basics" className="w-full">
+          <TabsList className="grid w-full grid-cols-4 bg-neutral-900/50 border border-neutral-800">
+            <TabsTrigger value="basics" className="data-[state=active]:bg-neutral-700/50 data-[state=active]:text-white text-white/60">
+              Basics
+            </TabsTrigger>
+            <TabsTrigger value="profile" className="data-[state=active]:bg-neutral-700/50 data-[state=active]:text-white text-white/60">
+              Profile
+            </TabsTrigger>
+            <TabsTrigger value="social" className="data-[state=active]:bg-neutral-700/50 data-[state=active]:text-white text-white/60">
+              Social
+            </TabsTrigger>
+            <TabsTrigger value="settings" className="data-[state=active]:bg-neutral-700/50 data-[state=active]:text-white text-white/60">
+              Privacy
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="basics" className="mt-6">
+            <div className="bg-neutral-900/30 rounded-2xl shadow-sm ring-1 ring-neutral-800 overflow-hidden">
+              <div className="p-6 space-y-6">
+                {/* Brand Name */}
+                <div>
+                  <label className="block text-sm font-medium text-white mb-2">
+                    Brand Name <span className="text-red-400">*</span>
+                  </label>
+                  <Input
+                    value={brandName}
+                    onChange={(e) => setBrandName(e.target.value)}
+                    placeholder="Enter your brand name"
+                    className="bg-neutral-800/50 border-neutral-700 text-white placeholder:text-white/40 focus:border-white/50"
+                  />
+                </div>
+
+                {/* Brand URL */}
+                <div>
+                  <label htmlFor={urlInputId} className="block text-sm font-medium text-white mb-2">
+                    Brand URL <span className="text-red-400">*</span>
+                  </label>
+                  <div className="relative">
+                    <Input
+                      id={urlInputId}
+                      value={brandSlug}
+                      onChange={(e) => {
+                        setBrandSlug(e.target.value);
+                        setField('slug', e.target.value);
+                      }}
+                      placeholder="your-brand"
+                      className="peer pl-28 bg-neutral-800/50 border-neutral-700 text-white placeholder:text-white/40 focus:border-white/50"
+                    />
+                    <span className="text-white/60 pointer-events-none absolute inset-y-0 left-0 flex items-center justify-center pl-3 text-sm peer-disabled:opacity-50">
+                      synaxis.com/
+                    </span>
+                  </div>
+                </div>
+
+                {/* Brand Description */}
+                <div>
+                  <label className="block text-sm font-medium text-white mb-2">
+                    Brand Description <span className="text-red-400">*</span>
+                  </label>
+                  <Textarea
+                    value={formData.brandDescription || ''}
+                    onChange={(e) => setField('brandDescription', e.target.value)}
+                    placeholder="Tell potential members about your brand..."
+                    className="min-h-[100px] bg-neutral-800/50 border-neutral-700 text-white placeholder:text-white/40 focus:border-white/50 resize-none"
+                    maxLength={300}
+                  />
+                  <div className="flex justify-between items-center mt-2">
+                    <p className="text-xs text-white/60">
+                      Describe what your brand offers and what makes it unique
+                    </p>
+                    <span className="text-xs text-white/40">
+                      {(formData.brandDescription || '').length}/300
+                    </span>
+                  </div>
+                </div>
+              </div>
             </div>
+          </TabsContent>
 
-            <div className="p-6 space-y-5">
-              {/* Logo Upload - Enhanced */}
-              <div className="flex flex-col items-center mb-2">
-                <label
-                  htmlFor="logo-upload-input"
-                  className="block text-sm font-medium text-gray-700 mb-3 self-start"
-                >
-                  Brand Logo{' '}
-                  <span className="text-gray-500 text-xs">
-                    (Recommended, or we'll generate an icon)
-                  </span>
-                </label>
+          <TabsContent value="profile" className="mt-6">
+            <div className="bg-neutral-900/30 rounded-2xl shadow-sm ring-1 ring-neutral-800 overflow-hidden">
+              <div className="p-6 space-y-6">
+                {/* Logo Upload Section */}
+                <div className="space-y-4">
+                  <label className="block text-sm font-medium text-white mb-3">
+                    Brand Logo{' '}
+                    <span className="text-white/60 text-xs">
+                      (Optional)
+                    </span>
+                  </label>
 
-                <FileUpload
-                  value={logoFile ? [logoFile] : []}
-                  onValueChange={handleLogoFileChange}
-                  maxFiles={1}
-                  maxSize={2 * 1024 * 1024}
-                  accept="image/png, image/jpeg, image/jpg"
-                  className="w-full"
-                  id="logo-upload-input"
-                >
-                  <FileUploadDropzone
-                    className={cn(
-                      'group relative flex flex-col items-center justify-center p-6 rounded-xl transition-all cursor-pointer border-2 border-dashed min-h-[180px] w-full',
-                      logoPreview && !uploadThingIsUploading
-                        ? 'border-[#0057FF] bg-blue-50/20'
-                        : 'border-gray-300 bg-gray-50/50 hover:border-[#0057FF] hover:bg-blue-50/30',
-                      uploadThingIsUploading && 'cursor-not-allowed opacity-70'
-                    )}
-                  >
-                    {!uploadThingIsUploading && logoPreview && (
-                      <div className="relative w-24 h-24 rounded-lg overflow-hidden">
-                        <Image
-                          src={logoPreview}
-                          alt="Brand logo preview"
-                          fill
-                          className="object-contain"
-                        />
-                        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-0 transition-all group-hover:bg-opacity-40">
-                          <Camera className="text-white opacity-0 group-hover:opacity-100 h-6 w-6" />
+                  <div className="flex flex-col items-center">
+                    {logoPreview && !uploadThingIsUploading ? (
+                      <>
+                        <div className="relative h-20 w-20 overflow-hidden rounded-lg border-2 border-white">
+                          <Image
+                            src={logoPreview}
+                            alt="Brand logo preview"
+                            fill
+                            className="object-cover"
+                            sizes="80px"
+                          />
                         </div>
-                      </div>
-                    )}
-                    {!uploadThingIsUploading && !logoPreview && (
-                      <div className="flex flex-col items-center justify-center text-center">
-                        <ProfileAvatar
-                          username={avatarUsername}
-                          avatarStyle="marble"
-                          size={64}
-                          className="mb-3 opacity-80 group-hover:opacity-100 transition-opacity"
-                        />
-                        <span className="text-sm font-medium text-gray-700 group-hover:text-[#0057FF] transition-colors">
-                          Click to upload Logo
-                        </span>
-                        <span className="mt-1 block text-xs text-gray-500">
-                          or drag and drop
-                        </span>
+                        <Button
+                          type="button"
+                          onClick={removeLogo}
+                          className="mt-3 h-8 w-8 p-0 rounded-full bg-neutral-700/50 hover:bg-neutral-600/50"
+                        >
+                          <X className="h-4 w-4 text-white" />
+                        </Button>
+                      </>
+                    ) : (
+                      <div className="grid grid-cols-2 gap-4 w-fit mx-auto">
+                        <FileUpload
+                          value={logoFile ? [logoFile] : []}
+                          onValueChange={handleLogoFileChange}
+                          maxFiles={1}
+                          maxSize={2 * 1024 * 1024}
+                          accept="image/*"
+                          disabled={uploadThingIsUploading}
+                        >
+                          <FileUploadDropzone className="cursor-pointer p-0 m-3">
+                            <div className="flex size-28 items-center justify-center overflow-hidden rounded-lg bg-neutral-800/50 transition-colors hover:bg-neutral-700/50">
+                              <div className="flex flex-col items-center space-y-1">
+                                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-white">
+                                  <Plus className="h-3 w-3 text-black" />
+                                </div>
+                                <span className="text-[10px] font-medium text-white">
+                                  Upload
+                                </span>
+                              </div>
+                            </div>
+                          </FileUploadDropzone>
+                        </FileUpload>
+
+                        <div className="flex size-28 items-center justify-center overflow-hidden rounded-lg bg-neutral-800/30 ring-1 ring-neutral-600 m-3">
+                          <ProfileAvatar
+                            username={avatarUsername}
+                            avatarStyle="marble"
+                            size={88}
+                            className="rounded-lg"
+                          />
+                        </div>
                       </div>
                     )}
 
@@ -238,13 +312,10 @@ export function CommunitySetupForm() {
                           initial={{ opacity: 0 }}
                           animate={{ opacity: 1 }}
                           exit={{ opacity: 0 }}
-                          className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-60 rounded-xl"
+                          className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-60"
                         >
                           <div className="relative h-16 w-16">
-                            <svg
-                              className="h-full w-full"
-                              viewBox="0 0 100 100"
-                            >
+                            <svg className="h-full w-full" viewBox="0 0 100 100">
                               <title>Upload progress</title>
                               <circle
                                 className="stroke-current text-gray-700"
@@ -267,435 +338,168 @@ export function CommunitySetupForm() {
                                 animate={{
                                   strokeDashoffset: `calc(251.2 - (251.2 * ${uploadProgress}) / 100)`,
                                 }}
-                                transition={{
-                                  ease: 'linear',
-                                  duration: 0.1,
-                                }}
+                                transition={{ ease: 'linear', duration: 0.1 }}
                                 transform="rotate(-90 50 50)"
                               />
                             </svg>
                             {uploadProgress === 100 && (
-                              <Check className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-6 w-6 text-white" />
+                              <Check className="absolute top-1/2 left-1/2 h-6 w-6 -translate-x-1/2 -translate-y-1/2 text-white" />
                             )}
                           </div>
                         </motion.div>
                       )}
                     </AnimatePresence>
-                  </FileUploadDropzone>
-                </FileUpload>
-
-                {logoPreview && !uploadThingIsUploading && (
-                  <div className="flex justify-center mt-3">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={removeLogo}
-                      className="rounded-full text-xs"
-                    >
-                      <X className="mr-1 h-3 w-3" />
-                      Remove logo
-                    </Button>
                   </div>
-                )}
-
-                <p className="mt-3 text-xs text-gray-500 text-center">
-                  Upload a square logo (PNG, JPG). Max 2MB.
-                  <br />
-                  Recommended size: 500x500px.
-                </p>
+                </div>
               </div>
+            </div>
+          </TabsContent>
 
-              <div>
-                <label
-                  htmlFor="brandName"
-                  className="block text-sm font-medium text-gray-700 mb-1.5"
-                >
-                  Brand Name <span className="text-red-500">*</span>
-                </label>
-                <Input
-                  id="brandName"
-                  value={brandName}
-                  onChange={(e) => setBrandName(e.target.value)}
-                  placeholder="Enter your brand name"
-                  className="w-full rounded-xl ring-1 ring-gray-200 focus:ring-2 focus:ring-[#0057FF] border-0"
-                />
-              </div>
-
-              <div>
-                <label
-                  htmlFor="brandSlug"
-                  className="block text-sm font-medium text-gray-700 mb-1.5"
-                >
-                  Brand URL <span className="text-red-500">*</span>
-                </label>
-                <div className="flex rounded-xl ring-1 ring-gray-200 focus-within:ring-2 focus-within:ring-[#0057FF] border-0 overflow-hidden">
-                  <span className="inline-flex items-center border-r border-gray-200 bg-gray-50 px-3 text-sm text-gray-500">
-                    synaxis.com/
-                  </span>
+          <TabsContent value="social" className="mt-6">
+            <div className="bg-neutral-900/30 rounded-2xl shadow-sm ring-1 ring-neutral-800 overflow-hidden">
+              <div className="p-6 space-y-6">
+                {/* Website */}
+                <div>
+                  <label className="block text-sm font-medium text-white mb-2">
+                    Website URL
+                  </label>
                   <Input
-                    id="brandSlug"
-                    value={brandSlug}
-                    onChange={(e) => {
-                      setBrandSlug(e.target.value);
-                      setField('slug', e.target.value);
-                    }}
-                    placeholder="your-brand"
-                    className="rounded-l-none flex-1 border-0 ring-0 focus:ring-0 min-w-0"
+                    name="website"
+                    value={formData.website || ''}
+                    onChange={handleInputChange}
+                    placeholder="https://example.com"
+                    className="bg-neutral-800/50 border-neutral-700 text-white placeholder:text-white/40 focus:border-white/50"
                   />
                 </div>
-                <p className="mt-1.5 text-xs text-gray-500">
-                  This will be your unique URL on Synaxis
-                </p>
-              </div>
 
-              <div>
-                <label
-                  htmlFor="description"
-                  className="block text-sm font-medium text-gray-700 mb-1.5"
-                >
-                  Brand Description <span className="text-red-500">*</span>
-                </label>
-                <Textarea
-                  id="description"
-                  value={formData.brandDescription || ''}
-                  onChange={(e) => setField('brandDescription', e.target.value)}
-                  placeholder="Tell potential members about your brand..."
-                  className="w-full resize-none rounded-xl ring-1 ring-gray-200 focus:ring-2 focus:ring-[#0057FF] border-0"
-                  rows={3}
-                />
-                <p className="mt-1.5 text-xs text-gray-500">
-                  Describe what your brand offers and what makes it unique
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Online Presence Card */}
-          <div className="bg-white rounded-2xl shadow-sm ring-1 ring-gray-100 overflow-hidden">
-            <div className="flex items-center p-5 bg-gray-50/50">
-              <Globe className="h-5 w-5 text-gray-500 mr-2" />
-              <h3 className="font-medium text-gray-700">Online Presence</h3>
-            </div>
-
-            <div className="p-6 space-y-5">
-              <div>
-                <label
-                  htmlFor="website"
-                  className="block text-sm font-medium text-gray-700 mb-1.5"
-                >
-                  Website URL
-                </label>
-                <Input
-                  id="website"
-                  name="website"
-                  value={formData.website || ''}
-                  onChange={handleInputChange}
-                  placeholder="https://example.com"
-                  className="w-full rounded-xl ring-1 ring-gray-200 focus:ring-2 focus:ring-[#0057FF] border-0"
-                />
-              </div>
-
-              <div className="space-y-4 pt-2">
-                <h4 className="text-sm font-medium text-gray-700">
-                  Social Media
-                </h4>
-
-                <div className="flex items-center">
+                {/* Instagram */}
+                <div className="flex items-center space-x-4">
                   <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-purple-500 to-pink-500">
                     <Instagram className="h-5 w-5 text-white" />
                   </div>
-                  <div className="ml-3 flex-1">
-                    <label
-                      htmlFor="instagram"
-                      className="block text-xs font-medium text-gray-700 mb-1"
-                    >
+                  <div className="flex-1">
+                    <label className="block text-sm font-medium text-white mb-2">
                       Instagram
                     </label>
-                    <div className="relative mt-1 rounded-xl ring-1 ring-gray-200 focus-within:ring-2 focus-within:ring-[#0057FF] border-0 overflow-hidden">
+                    <div className="relative">
                       <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                        <span className="text-gray-500 sm:text-sm">@</span>
+                        <span className="text-white/60 text-sm">@</span>
                       </div>
                       <Input
-                        type="text"
                         name="instagram"
-                        id="instagram"
-                        className="pl-7 w-full border-0 ring-0 focus:ring-0"
                         placeholder="username"
                         value={formData.instagram || ''}
                         onChange={handleInputChange}
+                        className="pl-7 bg-neutral-800/50 border-neutral-700 text-white placeholder:text-white/40 focus:border-white/50"
                       />
                     </div>
                   </div>
                 </div>
 
-                <div className="flex items-center">
+                {/* Twitter */}
+                <div className="flex items-center space-x-4">
                   <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-blue-400 to-blue-600">
                     <Twitter className="h-5 w-5 text-white" />
                   </div>
-                  <div className="ml-3 flex-1">
-                    <label
-                      htmlFor="twitter"
-                      className="block text-xs font-medium text-gray-700 mb-1"
-                    >
+                  <div className="flex-1">
+                    <label className="block text-sm font-medium text-white mb-2">
                       Twitter
                     </label>
-                    <div className="relative mt-1 rounded-xl ring-1 ring-gray-200 focus-within:ring-2 focus-within:ring-[#0057FF] border-0 overflow-hidden">
+                    <div className="relative">
                       <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                        <span className="text-gray-500 sm:text-sm">@</span>
+                        <span className="text-white/60 text-sm">@</span>
                       </div>
                       <Input
-                        type="text"
                         name="twitter"
-                        id="twitter"
-                        className="pl-7 w-full border-0 ring-0 focus:ring-0"
                         placeholder="username"
                         value={formData.twitter || ''}
                         onChange={handleInputChange}
+                        className="pl-7 bg-neutral-800/50 border-neutral-700 text-white placeholder:text-white/40 focus:border-white/50"
                       />
                     </div>
                   </div>
                 </div>
 
-                <div className="flex items-center">
+                {/* Facebook */}
+                <div className="flex items-center space-x-4">
                   <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-blue-600 to-blue-800">
                     <Facebook className="h-5 w-5 text-white" />
                   </div>
-                  <div className="ml-3 flex-1">
-                    <label
-                      htmlFor="facebook"
-                      className="block text-xs font-medium text-gray-700 mb-1"
-                    >
+                  <div className="flex-1">
+                    <label className="block text-sm font-medium text-white mb-2">
                       Facebook
                     </label>
                     <Input
-                      type="text"
                       name="facebook"
-                      id="facebook"
                       placeholder="username or page URL"
                       value={formData.facebook || ''}
                       onChange={handleInputChange}
-                      className="mt-1 w-full rounded-xl ring-1 ring-gray-200 focus:ring-2 focus:ring-[#0057FF] border-0"
+                      className="bg-neutral-800/50 border-neutral-700 text-white placeholder:text-white/40 focus:border-white/50"
                     />
                   </div>
                 </div>
               </div>
             </div>
-          </div>
+          </TabsContent>
 
-          {/* Settings Card */}
-          <div className="bg-white rounded-2xl shadow-sm ring-1 ring-gray-100 overflow-hidden">
-            <div className="flex items-center p-5 bg-gray-50/50">
-              <Users className="h-5 w-5 text-gray-500 mr-2" />
-              <h3 className="font-medium text-gray-700">Privacy Settings</h3>
-            </div>
-
-            <div className="p-6">
-              <div>
-                <div
-                  id="privacy-setting-label"
-                  className="text-sm font-medium text-gray-700 mb-3"
-                >
-                  Brand Visibility
-                </div>
-                <div
-                  aria-labelledby="privacy-setting-label"
-                  className="grid grid-cols-2 gap-3"
-                >
+          <TabsContent value="settings" className="mt-6">
+            <div className="bg-neutral-900/30 rounded-2xl shadow-sm ring-1 ring-neutral-800 overflow-hidden">
+              <div className="p-6">
+                <div className="space-y-3">
                   <button
-                    type="button"
-                    onClick={() => handlePrivacyChange(false)}
+                    onClick={() => handlePrivacyToggle(true)}
                     className={cn(
-                      'flex flex-col items-center p-4 rounded-xl border transition-all duration-150 ease-in-out',
-                      isPrivate
-                        ? 'ring-1 ring-gray-200 hover:ring-gray-300 bg-white hover:bg-gray-50/50'
-                        : 'ring-2 ring-[#0057FF] bg-blue-50/70 border-transparent'
+                      "w-full p-4 rounded-xl border transition-all text-left",
+                      formData.isPublic
+                        ? "border-white bg-neutral-700/50 text-white"
+                        : "border-neutral-600 bg-neutral-800/30 text-white/60 hover:border-neutral-500"
                     )}
                   >
-                    <Globe className="h-5 w-5 mb-1.5" />
-                    <span className="font-medium text-sm">Public</span>
-                    <span className="text-xs text-gray-500 mt-1 text-center">
-                      Anyone can discover your brand
-                    </span>
+                    <div className="flex items-center">
+                      <Globe className="h-5 w-5 mr-3" />
+                      <div>
+                        <h4 className="font-medium">Public Brand</h4>
+                        <p className="text-sm text-white/60">Anyone can discover and view your brand</p>
+                      </div>
+                      {formData.isPublic && (
+                        <div className="ml-auto w-2 h-2 bg-white rounded-full" />
+                      )}
+                    </div>
                   </button>
 
                   <button
-                    type="button"
-                    onClick={() => handlePrivacyChange(true)}
+                    onClick={() => handlePrivacyToggle(false)}
                     className={cn(
-                      'flex flex-col items-center p-4 rounded-xl border transition-all duration-150 ease-in-out',
-                      isPrivate
-                        ? 'ring-2 ring-[#0057FF] bg-blue-50/70 border-transparent'
-                        : 'ring-1 ring-gray-200 hover:ring-gray-300 bg-white hover:bg-gray-50/50'
+                      "w-full p-4 rounded-xl border transition-all text-left",
+                      !formData.isPublic
+                        ? "border-white bg-neutral-700/50 text-white"
+                        : "border-neutral-600 bg-neutral-800/30 text-white/60 hover:border-neutral-500"
                     )}
                   >
-                    <Users className="h-5 w-5 mb-1.5" />
-                    <span className="font-medium text-sm">Private</span>
-                    <span className="text-xs text-gray-500 mt-1 text-center">
-                      By invitation only
-                    </span>
+                    <div className="flex items-center">
+                      <Lock className="h-5 w-5 mr-3" />
+                      <div>
+                        <h4 className="font-medium">Private Brand</h4>
+                        <p className="text-sm text-white/60">Only you control who can see your brand</p>
+                      </div>
+                      {!formData.isPublic && (
+                        <div className="ml-auto w-2 h-2 bg-white rounded-full" />
+                      )}
+                    </div>
                   </button>
                 </div>
               </div>
             </div>
-          </div>
-        </motion.div>
-      </div>
+          </TabsContent>
+        </Tabs>
 
-      {/* Right side - Preview */}
-      <div className="hidden md:block w-80 bg-white rounded-2xl shadow-sm ring-1 ring-gray-100 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
-        <div className="sticky top-0 z-10 p-5 bg-gray-50/80 rounded-t-2xl backdrop-blur-sm flex items-center border-b border-gray-100">
-          <Sparkles className="h-5 w-5 mr-2 text-[#0057FF]" />
-          <h3 className="font-medium text-gray-800">Brand Preview</h3>
+        {/* Footer */}
+        <div className="bg-neutral-900/30 rounded-2xl shadow-sm ring-1 ring-neutral-800 p-3 sm:p-6">
+          <p className="text-center text-sm text-white/60">
+            You can always update your brand information later in settings
+          </p>
         </div>
-
-        <div className="p-6 space-y-5 rounded-2xl">
-          <div className="w-full aspect-video rounded-xl mb-4 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 flex items-center justify-center overflow-hidden ring-1 ring-gray-200">
-            <AnimatePresence>
-              <motion.div
-                key={logoPreview || 'fallback'}
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.3 }}
-              >
-                <Avatar className="h-24 w-24 rounded-lg shadow-md bg-white border border-gray-200">
-                  <AvatarImage
-                    src={formData.logo || undefined}
-                    alt={brandName || 'Brand Logo'}
-                    className="object-contain h-full w-full"
-                  />
-                  <AvatarFallback className="flex items-center justify-center h-full w-full bg-transparent">
-                    {logoPreview && !formData.logo ? (
-                      <Image
-                        src={logoPreview}
-                        alt="Preview"
-                        fill
-                        className="object-contain rounded-lg"
-                      />
-                    ) : (
-                      <ProfileAvatar
-                        username={avatarUsername}
-                        avatarStyle="marble"
-                        size={80}
-                      />
-                    )}
-                  </AvatarFallback>
-                </Avatar>
-              </motion.div>
-            </AnimatePresence>
-          </div>
-
-          <div className="text-center">
-            <AnimatePresence mode="wait">
-              <motion.h3
-                key={brandName || 'Your Brand Name'}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.2 }}
-                className="font-semibold text-xl text-gray-800 mb-1.5 truncate"
-              >
-                {brandName || 'Your Brand Name'}
-              </motion.h3>
-            </AnimatePresence>
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={isPrivate ? 'private' : 'public'}
-                initial={{ opacity: 0, y: 5 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -5 }}
-                transition={{ duration: 0.2 }}
-                className="text-sm text-gray-500 mb-3 flex items-center justify-center"
-              >
-                {isPrivate ? (
-                  <span className="flex items-center">
-                    <Users className="h-4 w-4 mr-1.5" /> Private Brand
-                  </span>
-                ) : (
-                  <span className="flex items-center">
-                    <Globe className="h-4 w-4 mr-1.5" /> Public Brand
-                  </span>
-                )}
-              </motion.div>
-            </AnimatePresence>
-          </div>
-          <AnimatePresence mode="wait">
-            <motion.p
-              key={formData.brandDescription || '...'}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.3, delay: 0.1 }}
-              className="text-sm text-gray-600 line-clamp-4 mb-4 text-center leading-relaxed"
-            >
-              {formData.brandDescription ||
-                'Your brand description will appear here. Be concise and clear about what your brand offers. This preview shows how your core identity might look.'}
-            </motion.p>
-          </AnimatePresence>
-
-          <div className="w-full h-px bg-gray-200 my-4" />
-
-          <div className="flex justify-center items-center p-2 bg-gray-50 rounded-lg ring-1 ring-gray-200 hover:ring-gray-300 transition-all">
-            <AnimatePresence mode="wait">
-              <motion.span
-                key={brandSlug || 'your-brand'}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.2 }}
-                className="text-sm text-gray-600 truncate"
-              >
-                synaxis.com/{brandSlug || 'your-brand'}
-              </motion.span>
-            </AnimatePresence>
-            <ArrowRight className="h-4 w-4 text-gray-400 ml-2 flex-shrink-0" />
-          </div>
-
-          {/* Social Preview */}
-          <AnimatePresence>
-            {(formData.instagram || formData.twitter || formData.facebook) && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.3 }}
-                className="mt-5 pt-4 border-t border-gray-200 overflow-hidden"
-              >
-                <h4 className="text-xs font-medium text-gray-500 mb-3 text-center uppercase tracking-wider">
-                  Connect
-                </h4>
-                <div className="flex gap-4 items-center justify-center">
-                  {formData.instagram && (
-                    <a
-                      href={formData.instagram}
-                      className="text-gray-400 hover:text-purple-500 transition-colors"
-                      title="Instagram"
-                    >
-                      <Instagram className="h-6 w-6" />
-                    </a>
-                  )}
-                  {formData.twitter && (
-                    <a
-                      href={formData.twitter}
-                      className="text-gray-400 hover:text-blue-500 transition-colors"
-                      title="Twitter"
-                    >
-                      <Twitter className="h-6 w-6" />
-                    </a>
-                  )}
-                  {formData.facebook && (
-                    <a
-                      href={formData.facebook}
-                      className="text-gray-400 hover:text-blue-700 transition-colors"
-                      title="Facebook"
-                    >
-                      <Facebook className="h-6 w-6" />
-                    </a>
-                  )}
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-      </div>
+      </motion.div>
     </div>
   );
 }

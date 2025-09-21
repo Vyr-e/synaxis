@@ -62,24 +62,24 @@ export function InterestSelector() {
               initial={false}
               animate={{
                 backgroundColor: isSelected
-                  ? 'rgba(0, 87, 255, 0.1)'
-                  : 'rgba(229, 231, 235, 0.5)',
+                  ? 'rgba(255, 255, 255, 0.1)'
+                  : 'rgba(64, 64, 64, 0.5)',
               }}
               whileHover={{
                 backgroundColor: isSelected
-                  ? 'rgba(0, 87, 255, 0.15)'
-                  : 'rgba(229, 231, 235, 0.8)',
+                  ? 'rgba(255, 255, 255, 0.15)'
+                  : 'rgba(64, 64, 64, 0.8)',
               }}
               whileTap={{
                 backgroundColor: isSelected
-                  ? 'rgba(0, 87, 255, 0.2)'
-                  : 'rgba(229, 231, 235, 0.9)',
+                  ? 'rgba(255, 255, 255, 0.2)'
+                  : 'rgba(64, 64, 64, 0.9)',
               }}
               transition={{
                 ...transitionProps,
                 backgroundColor: { duration: 0.1 },
               }}
-              className={`inline-flex h-10 items-center overflow-hidden whitespace-nowrap rounded-full px-4 py-2 font-medium text-base ring-1 ring-inset ${isSelected ? 'text-[#0057FF] ring-[#0057FF]' : 'text-gray-600 ring-gray-300'}
+              className={`inline-flex h-10 items-center overflow-hidden whitespace-nowrap rounded-full px-4 py-2 font-medium text-base ring-1 ring-inset ${isSelected ? 'text-white ring-white' : 'text-white/60 ring-neutral-600'}
               `}
             >
               <motion.div
@@ -103,9 +103,9 @@ export function InterestSelector() {
                       transition={transitionProps}
                       className="absolute right-0"
                     >
-                      <div className="flex h-4 w-4 items-center justify-center rounded-full bg-[#0057FF]">
+                      <div className="flex h-4 w-4 items-center justify-center rounded-full bg-white">
                         <Check
-                          className="h-3 w-3 text-white"
+                          className="h-3 w-3 text-black"
                           strokeWidth={1.5}
                         />
                       </div>
@@ -117,7 +117,7 @@ export function InterestSelector() {
           );
         })}
       </motion.div>
-      <p className="mt-4 text-gray-500 text-xs">
+      <p className="mt-4 text-white/60 text-xs">
         Select at least one interest or skip this step.
       </p>
     </div>

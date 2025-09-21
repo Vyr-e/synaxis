@@ -1,11 +1,11 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { usePathname, useRouter } from 'next/navigation';
+import type { Route } from 'next';
 import type React from 'react';
 import { useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
-
 // Import shared components
 import { AuthBackground } from '@/components/auth-background';
 import { NavigationButtons } from './navigation-buttons';
@@ -171,7 +171,7 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
     const nextUrl = getStepUrl(pathname, formData, 'next');
     if (nextUrl) {
       setIsNavigating(true);
-      router.push(nextUrl);
+      router.push(nextUrl as Route);
       setTimeout(() => setIsNavigating(false), 500);
     } else {
       console.warn(
@@ -188,7 +188,7 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
     const prevUrl = getStepUrl(pathname, formData, 'prev');
     if (prevUrl) {
       setIsNavigating(true);
-      router.push(prevUrl);
+      router.push(prevUrl as Route);
       setTimeout(() => setIsNavigating(false), 500);
     } else {
       console.warn('Could not determine previous step from:', pathname);
@@ -202,7 +202,7 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
       setIsSkipping(true);
       await skipOnboarding();
       toast.success('Profile setup completed with guest settings');
-      router.push('/');
+      router.push('/' as Route);
     } catch (error) {
       console.error('Skip onboarding error:', error);
       toast.error('Failed to skip onboarding');
@@ -239,10 +239,10 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
 
   return (
     <AuthBackground
-      colors1={'#ffffff'}
-      colors2={'#f8fafc'}
-      colors3={'#f1f5f9'}
-      colors4={'#e2e8f0'}
+      colors1={'#000000'}
+      colors2={'#0f0f0f'}
+      colors3={'#1a1a1a'}
+      colors4={'#2a2a2a'}
       speed={0.3}
       edge={'0%'}
       className="min-h-screen w-full "
@@ -256,18 +256,21 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
         )}
 
         {pathname !== onboardingSteps.completion && (
-          <div className="absolute top-16 right-8">
-            <motion.button
-              aria-label="Skip onboarding process"
-              onClick={handleSkip}
-              className="text-gray-500 hover:text-gray-700 text-sm font-medium transition-colors disabled:opacity-50"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              disabled={isNavigating || isSkipping}
-            >
-              {isSkipping ? 'Skipping...' : 'Skip'}
-            </motion.button>
-          </div>
+          <motion.button
+            type="button"
+            aria-label="Skip onboarding process"
+            onClick={handleSkip}
+            className="group absolute top-4 right-4 flex items-center"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            disabled={isNavigating || isSkipping}
+          >
+            <div className="relative flex items-center gap-2 rounded-full bg-white/5 px-3 py-1.5 transition-all duration-300 hover:bg-white/10 disabled:opacity-50">
+              <span className="font-medium text-white/60 text-sm">
+                {isSkipping ? 'Skipping...' : 'Skip'}
+              </span>
+            </div>
+          </motion.button>
         )}
       </>
 

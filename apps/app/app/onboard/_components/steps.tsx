@@ -241,11 +241,11 @@ export default function StepsComponent({ steps }: StepsProps) {
                   {showContentHeaders && (
                     <>
                       <h1
-                        className={`mb-4 font-bold ${clashDisplay.className} text-2xl text-gray-900 `}
+                        className={`mb-4 font-bold ${clashDisplay.className} text-2xl text-foreground `}
                       >
                         {title}
                       </h1>
-                      <p className="mb-8 max-w-lg text-center font-inter text-gray-700">
+                      <p className="mb-8 max-w-lg text-center font-inter text-muted-foreground">
                         {description}
                       </p>
                     </>

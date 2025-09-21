@@ -7,6 +7,8 @@ import {
 import { Button } from '@repo/design-system/components/ui/button';
 import { Input } from '@repo/design-system/components/ui/input';
 import { Label } from '@repo/design-system/components/ui/label';
+import { useSession } from '@repo/auth/client';
+import '@repo/auth/types';
 import { Loader2, Sparkles } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import { usePathname } from 'next/navigation';
@@ -18,8 +20,10 @@ import { generateSuggestions } from '../_utils/generateSuggestions';
 type UsernameStatus = 'idle' | 'checking' | 'available' | 'taken' | 'error';
 
 export function IdentityForm() {
+  const { data: session } = useSession();
   const username = useFormStore((state) => state.formData.username);
   const setField = useFormStore((state) => state.setField);
+  const setFormData = useFormStore((state) => state.setFormData);
   const validateCurrentStep = useFormStore(
     (state) => state.validateCurrentStep
   );
@@ -32,6 +36,21 @@ export function IdentityForm() {
     useState<boolean>(false);
   const [isTyping, setIsTyping] = useState<boolean>(false);
   const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Populate form data from session
+  useEffect(() => {
+    if (session?.user) {
+      const user = session.user as any; // Cast to access additional fields
+      // TODO: Better accessor pattern for firstName/lastName
+      const nameParts = user.name?.split(' ') || [];
+
+      setFormData({
+        firstName: user.firstName ?? nameParts[0] ?? '',
+        lastName: user.lastName ?? nameParts.slice(1).join(' ') ?? '',
+        username: user.username || username,
+      });
+    }
+  }, [session, setFormData, username]);
 
   useEffect(() => {
     if (username && username.length >= 3 && pathname?.includes('/identity')) {
@@ -56,10 +75,18 @@ export function IdentityForm() {
           `/api/check-username?username=${encodeURIComponent(nameToCheck)}`
         );
         if (!response.ok) {
-          throw new Error('Network response was not ok');
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
-        const data: { available: boolean; error?: string } =
-          await response.json();
+
+        const text = await response.text();
+        let data: { available: boolean; error?: string };
+
+        try {
+          data = JSON.parse(text);
+        } catch (parseError) {
+          console.error('Failed to parse JSON response:', text);
+          throw new Error('Invalid JSON response from server');
+        }
 
         if (data.error) {
           setUsernameStatus('error');
@@ -103,7 +130,16 @@ export function IdentityForm() {
             if (!response.ok) {
               return;
             }
-            const data: { available: boolean } = await response.json();
+
+            const text = await response.text();
+            let data: { available: boolean };
+
+            try {
+              data = JSON.parse(text);
+            } catch (parseError) {
+              console.error('Failed to parse suggestion response:', text);
+              return;
+            }
             if (data.available) {
               availableSuggestions.push(suggestion);
             }
@@ -164,14 +200,14 @@ export function IdentityForm() {
   const getInputBorderClass = () => {
     switch (usernameStatus) {
       case 'available':
-        return 'border-emerald-400 shadow-emerald-100 shadow-sm';
+        return 'border-emerald-500 focus-visible:ring-emerald-500';
       case 'taken':
       case 'error':
-        return 'border-red-400 shadow-red-100 shadow-sm';
+        return 'border-rose-500 focus-visible:ring-rose-500';
       case 'checking':
-        return 'border-blue-400 shadow-blue-100 shadow-sm';
+        return 'border-neutral-800 dark:border-neutral-200 focus-visible:ring-neutral-800 dark:focus-visible:ring-neutral-200';
       default:
-        return 'border-gray-200 focus:border-blue-400';
+        return 'border-2 focus-visible:ring-2 focus-visible:ring-primary';
     }
   };
 
@@ -185,12 +221,7 @@ export function IdentityForm() {
       >
         {/* Input Field */}
         <div className="space-y-2">
-          <Label
-            htmlFor="username"
-            className="text-sm font-medium text-gray-700"
-          >
-            Username
-          </Label>
+          <h2 className="text-sm font-medium text-foreground">Username</h2>
           <div className="relative">
             <motion.div
               className="relative"
@@ -205,16 +236,13 @@ export function IdentityForm() {
                 onChange={handleInputChange}
                 name="username"
                 maxLength={20}
-                className={`h-14 pl-12 pr-14 text-lg rounded-2xl border-2 transition-all duration-300 ${getInputBorderClass()}`}
+                className={`px-12 h-12 text-base text-foreground rounded-xl bg-input placeholder:text-muted-foreground transition-all ease-in-out ${getInputBorderClass()}`}
               />
 
               {/* @ Symbol */}
-              <motion.div
-                className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg font-medium"
-                animate={username ? { color: '#6366f1' } : {}}
-              >
+              <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground text-base font-medium">
                 @
-              </motion.div>
+              </div>
 
               {/* Status Indicator */}
               <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
@@ -232,35 +260,9 @@ export function IdentityForm() {
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
-                  className="absolute -bottom-8 left-0 flex items-center space-x-1 text-xs text-blue-500"
+                  className="absolute -bottom-8 left-0 flex items-center space-x-2 text-xs text-muted-foreground"
                 >
-                  <motion.div
-                    animate={{ scale: [1, 1.2, 1] }}
-                    transition={{
-                      duration: 0.6,
-                      repeat: Number.POSITIVE_INFINITY,
-                    }}
-                    className="w-1 h-1 bg-blue-500 rounded-full"
-                  />
-                  <motion.div
-                    animate={{ scale: [1, 1.2, 1] }}
-                    transition={{
-                      duration: 0.6,
-                      repeat: Number.POSITIVE_INFINITY,
-                      delay: 0.2,
-                    }}
-                    className="w-1 h-1 bg-blue-500 rounded-full"
-                  />
-                  <motion.div
-                    animate={{ scale: [1, 1.2, 1] }}
-                    transition={{
-                      duration: 0.6,
-                      repeat: Number.POSITIVE_INFINITY,
-                      delay: 0.4,
-                    }}
-                    className="w-1 h-1 bg-blue-500 rounded-full"
-                  />
-                  <span className="ml-2">Checking availability...</span>
+                  <span>Checking availability...</span>
                 </motion.div>
               )}
             </AnimatePresence>
@@ -275,7 +277,7 @@ export function IdentityForm() {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
-              className="flex items-center space-x-2 text-emerald-600 bg-emerald-50 p-3 rounded-xl border border-emerald-200"
+              className="flex items-center space-x-2 text-emerald-600 bg-emerald-50 dark:bg-emerald-950 p-3 rounded-xl border border-emerald-200 dark:border-emerald-800"
             >
               <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
               <span className="text-sm font-medium">
@@ -292,8 +294,8 @@ export function IdentityForm() {
               exit={{ opacity: 0, scale: 0.9 }}
               className="space-y-3"
             >
-              <div className="flex items-center space-x-2 text-red-600 bg-red-50 p-3 rounded-xl border border-red-200">
-                <div className="w-2 h-2 bg-red-500 rounded-full" />
+              <div className="flex items-center space-x-2 text-rose-600 bg-rose-50 dark:bg-rose-950 p-3 rounded-xl border border-rose-200 dark:border-rose-800">
+                <div className="w-2 h-2 bg-rose-500 rounded-full" />
                 <span className="text-sm font-medium">
                   This username is already taken
                 </span>
@@ -307,9 +309,9 @@ export function IdentityForm() {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
-              className="flex items-center space-x-2 text-orange-600 bg-orange-50 p-3 rounded-xl border border-orange-200"
+              className="flex items-center space-x-2 text-amber-600 bg-amber-50 dark:bg-amber-950 p-3 rounded-xl border border-amber-200 dark:border-amber-800"
             >
-              <div className="w-2 h-2 bg-orange-500 rounded-full" />
+              <div className="w-2 h-2 bg-amber-500 rounded-full" />
               <span className="text-sm font-medium">
                 Username must be at least 3 characters
               </span>
@@ -328,8 +330,8 @@ export function IdentityForm() {
                 transition={{ duration: 0.3 }}
                 className="space-y-3 overflow-hidden"
               >
-                <div className="flex items-center space-x-2 text-sm text-gray-600">
-                  <Sparkles className="w-4 h-4 text-yellow-500" />
+                <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                  <Sparkles className="w-4 h-4 text-violet-500" />
                   <span>Try these available alternatives:</span>
                 </div>
 
@@ -351,7 +353,7 @@ export function IdentityForm() {
                           variant="outline"
                           size="sm"
                           onClick={() => handleSuggestionClick(suggestion)}
-                          className="w-full h-10 rounded-xl border-2 border-gray-200 transition-all duration-200 text-sm"
+                          className="w-full h-10 rounded-xl border-2 border-border bg-card text-foreground hover:bg-muted transition-all duration-200 text-sm"
                         >
                           @{suggestion}
                         </Button>
@@ -368,7 +370,7 @@ export function IdentityForm() {
         </AnimatePresence>
 
         {/* Character count */}
-        <div className="flex justify-between items-center text-xs text-gray-400">
+        <div className="flex justify-between items-center text-xs text-muted-foreground min-h-[1rem]">
           <span>Minimum 3 characters</span>
           <span>{username.length}/20</span>
         </div>

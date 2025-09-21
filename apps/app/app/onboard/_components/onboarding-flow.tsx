@@ -10,7 +10,6 @@ import { toast } from 'sonner';
 import { Progress } from '@repo/design-system/components/ui/progress';
 import { captureException } from '@sentry/nextjs';
 import { TextShimmerWave } from '../_animations/text-shimmer-wave';
-import { Completion } from './completion';
 
 const progressSteps = [
   { text: 'Validating your profile information' },
@@ -46,7 +45,6 @@ export function OnboardingFlow() {
     try {
       // First update user with Better Auth client (for immediate UI updates)
       await updateUser({
-        displayUsername: formData.username,
         username: formData.username,
         name: `${formData.firstName} ${formData.lastName}`,
         image:
@@ -148,10 +146,6 @@ export function OnboardingFlow() {
     return () => clearTimeout(timer);
   }, [setSubmitting]);
 
-  if (!isComplete) {
-    return <Completion />;
-  }
-
   const currentStep = progressSteps[currentStepIndex];
   const shimmerDuration = currentStep
     ? getShimmerDuration(currentStep.text)
@@ -160,10 +154,10 @@ export function OnboardingFlow() {
   return (
     <div className="flex min-h-[400px] w-full max-w-lg flex-col items-center justify-center space-y-8">
       <div className="w-full space-y-4">
-        <h2 className="text-center text-2xl font-semibold text-gray-900">
+        <h2 className="text-center text-2xl font-semibold text-foreground">
           Almost there!
         </h2>
-        <p className="text-center text-gray-600">
+        <p className="text-center text-muted-foreground">
           We're setting up your personalized experience
         </p>
       </div>
@@ -173,7 +167,7 @@ export function OnboardingFlow() {
           value={progress}
           className="w-full transition-all duration-500"
         />
-        <p className="text-center text-sm text-gray-500">
+        <p className="text-center text-sm text-muted-foreground">
           {progress}% complete
         </p>
       </div>
@@ -189,7 +183,7 @@ export function OnboardingFlow() {
               transition={{ duration: 0.5, ease: 'easeInOut' }}
             >
               <TextShimmerWave
-                className="text-sm text-gray-600 [--base-color:#6b7280] [--base-gradient-color:#0057FF]"
+                className="text-sm text-muted-foreground"
                 duration={shimmerDuration}
                 spread={0.8}
                 transition={{
@@ -207,7 +201,7 @@ export function OnboardingFlow() {
       )}
 
       {isPending && (
-        <div className="text-xs text-gray-400">
+        <div className="text-xs text-muted-foreground">
           Processing your information...
         </div>
       )}
