@@ -26,6 +26,7 @@ import { useState } from 'react';
 import { type UseFormReturn, useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { LastUsedWrapper } from './last-used-wrapper';
+import type {Route} from 'next'
 
 const signInSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -113,7 +114,7 @@ export function SignInForm() {
         {
           onSuccess: (ctx) => {
             if (ctx.data.emailVerified) {
-              router.push('/onboard');
+              router.push('/onboard' as Route);
             } else {
               router.push('/auth/verify-email');
             }
@@ -192,7 +193,7 @@ export function SignInForm() {
               <Button
                 key={provider.id}
                 onClick={() => handleSocialSignIn(provider.id)}
-                className="flex gap-2 justify-center items-center h-10 rounded-lg border transition-colors w-fit border-black/10 bg-white/5 text-black/80 hover:bg-white/10"
+                className="flex gap-2 justify-center items-center h-10 rounded-lg border transition-colors w-fit border-border bg-card text-foreground hover:bg-muted"
               >
                 <provider.icon
                   className={cn(
@@ -208,10 +209,10 @@ export function SignInForm() {
           {/* Divider */}
           <div className="relative">
             <div className="flex absolute inset-0 items-center">
-              <div className="w-full border-t border-black/10" />
+              <div className="w-full border-t border-border" />
             </div>
             <div className="flex relative justify-center text-sm">
-              <span className="px-2 bg-white rounded-full border text-zinc-500">
+              <span className="px-2 bg-background rounded-full border border-border text-muted-foreground">
                 Or
               </span>
             </div>
@@ -223,7 +224,7 @@ export function SignInForm() {
               className="space-y-6 transition-all duration-200"
             >
               <div className="space-y-2">
-                <h2 className="text-sm font-medium text-black">Email</h2>
+                <h2 className="text-sm font-medium text-foreground">Email</h2>
                 <LastUsedWrapper type="form" show={method === 'email'}>
                   <FormField
                     control={form.control}
@@ -236,7 +237,7 @@ export function SignInForm() {
                               placeholder="eg. johnfran@gmail.com"
                               type="email"
                               className={cn(
-                                'h-12 rounded-xl border-2 bg-white/80 px-4 text-base text-black transition-all ease-in-out placeholder:text-zinc-500 focus-visible:ring-2 focus-visible:ring-quantum-blue',
+                                'px-4 h-12 text-base text-foreground rounded-xl border-2 transition-all ease-in-out bg-input placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-primary',
                                 formStatus === 'error' &&
                                   'ring-2 ring-red-500/50'
                               )}
@@ -265,11 +266,11 @@ export function SignInForm() {
 
               <div className="space-y-2">
                 <div className="flex justify-between items-center">
-                  <h2 className="text-sm font-medium text-black">Password</h2>
+                  <h2 className="text-sm font-medium text-foreground">Password</h2>
                   <Button
                     type="button"
                     variant="link"
-                    className="p-0 h-auto text-xs text-zinc-400 hover:text-black"
+                    className="p-0 h-auto text-xs text-zinc-400 hover:text-zing-500"
                     onClick={handleForgotPassword}
                   >
                     Forgot password?
@@ -286,7 +287,7 @@ export function SignInForm() {
                             placeholder="Enter your password"
                             type={showPassword ? 'text' : 'password'}
                             className={cn(
-                              'h-12 rounded-xl border-2 bg-white/80 px-4 text-base text-black transition-all ease-in-out placeholder:text-zinc-500 focus-visible:ring-2 focus-visible:ring-quantum-blue',
+                              'px-4 h-12 text-base text-foreground rounded-xl border-2 transition-all ease-in-out bg-input placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-primary',
                               formStatus === 'error' && 'ring-2 ring-red-500/90'
                             )}
                             {...field}
@@ -327,7 +328,7 @@ export function SignInForm() {
                 <Checkbox
                   checked={rememberMe}
                   onCheckedChange={(checked) => setRememberMe(!!checked)}
-                  className="h-4 w-4 rounded-sm border-zinc-600 data-[state=checked]:border-none data-[state=checked]:bg-quantum-blue"
+                  className="h-4 w-4 rounded-sm border-zinc-600 data-[state=checked]:border-none data-[state=checked]:bg-primary"
                 />
                 <Label className="text-sm text-zinc-400">Remember me</Label>
               </div>
@@ -341,9 +342,8 @@ export function SignInForm() {
                 <Button
                   type="submit"
                   className={cn(
-                    'relative h-12 w-full overflow-hidden rounded-xl bg-secondary px-4 py-2 font-medium text-sm transition-all hover:scale-[1.02] hover:bg-quantum-blue/80',
-                    isLoading && 'bg-gray-500 text-white',
-                    'bg-quantum-blue text-white'
+                    'relative h-12 w-full overflow-hidden rounded-xl bg-neutral-700/10 px-4 py-2 font-medium text-sm text-white transition-all hover:scale-[1.02] hover:bg-neutral-600/10 hover:border-2',
+                    isLoading && 'bg-gray-500 text-white'
                   )}
                   disabled={isLoading}
                 >

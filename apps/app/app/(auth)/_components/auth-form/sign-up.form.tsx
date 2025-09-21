@@ -182,8 +182,8 @@ export function SignUpForm() {
     >
       <div className="space-y-6">
         <div className="mt-8 mb-4 space-y-2 text-center">
-          <h1 className="text-3xl font-bold">Join Synaxis</h1>
-          <p className="text-gray-500">Create an account to get started</p>
+          <h1 className="text-3xl font-bold text-white">Join Synaxis</h1>
+          <p className="text-muted-foreground">Create an account to get started</p>
         </div>
 
         <div className="mx-auto space-y-4 w-full max-w-sm">
@@ -197,12 +197,12 @@ export function SignUpForm() {
                 <Button
                   onClick={() => handleSocialSignUp(provider.id)}
                   className={cn(
-                    'flex gap-2 justify-center items-center h-10 rounded-lg border transition-colors w-fit border-black/10 bg-white/5 text-black/80 hover:bg-white/10',
+                    'flex gap-2 justify-center items-center h-10 rounded-lg border transition-colors w-fit border-border bg-card text-foreground hover:bg-muted',
                     'relative'
                   )}
                 >
                   {method === provider.id && (
-                    <span className="absolute -top-1 -right-1 w-2 h-2 bg-blue-500 rounded-full animate-ping" />
+                    <span className="absolute -top-1 -right-1 w-2 h-2 bg-primary rounded-full animate-ping" />
                   )}
                   <provider.icon className="w-5 h-5" />
                   <span>{provider.label}</span>
@@ -214,10 +214,10 @@ export function SignUpForm() {
           {/* Divider */}
           <div className="relative">
             <div className="flex absolute inset-0 items-center">
-              <div className="w-full border-t border-black/10" />
+              <div className="w-full border-t border-border" />
             </div>
             <div className="flex relative justify-center text-sm">
-              <span className="px-2 bg-white rounded-full border text-zinc-500">
+              <span className="px-2 bg-background rounded-full border border-border text-muted-foreground">
                 Or
               </span>
             </div>
@@ -230,7 +230,7 @@ export function SignUpForm() {
             >
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div className="space-y-2">
-                  <h2 className="text-sm font-medium text-black">First Name</h2>
+                  <h2 className="text-sm font-medium text-foreground">First Name</h2>
                   <FormField
                     control={form.control}
                     name="firstName"
@@ -239,7 +239,7 @@ export function SignUpForm() {
                         <FormControl>
                           <Input
                             placeholder="John"
-                            className="px-4 h-12 text-base text-black rounded-xl border-2 transition-all ease-in-out bg-white/80 placeholder:text-zinc-500 focus-visible:ring-2 focus-visible:ring-quantum-blue"
+                            className="px-4 h-12 text-base text-foreground rounded-xl border-2 transition-all ease-in-out bg-input placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-primary"
                             {...field}
                           />
                         </FormControl>
@@ -249,7 +249,7 @@ export function SignUpForm() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <h2 className="text-sm font-medium text-black">Last Name</h2>
+                  <h2 className="text-sm font-medium text-foreground">Last Name</h2>
                   <FormField
                     control={form.control}
                     name="lastName"
@@ -258,7 +258,7 @@ export function SignUpForm() {
                         <FormControl>
                           <Input
                             placeholder="Doe"
-                            className="px-4 h-12 text-base text-black rounded-xl border-2 transition-all ease-in-out bg-white/80 placeholder:text-zinc-500 focus-visible:ring-2 focus-visible:ring-quantum-blue"
+                            className="px-4 h-12 text-base text-foreground rounded-xl border-2 transition-all ease-in-out bg-input placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-primary"
                             {...field}
                           />
                         </FormControl>
@@ -270,7 +270,7 @@ export function SignUpForm() {
               </div>
 
               <div className="space-y-2">
-                <h2 className="text-sm font-medium text-black">Email</h2>
+                <h2 className="text-sm font-medium text-foreground">Email</h2>
                 <FormField
                   control={form.control}
                   name="email"
@@ -281,10 +281,10 @@ export function SignUpForm() {
                           <Input
                             placeholder="eg. johnfran@gmail.com"
                             type="email"
-                            className="px-4 h-12 text-base text-black rounded-xl border-2 transition-all ease-in-out bg-white/80 placeholder:text-zinc-500 focus-visible:ring-2 focus-visible:ring-quantum-blue"
+                            className="px-4 h-12 text-base text-foreground rounded-xl border-2 transition-all ease-in-out bg-input placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-primary"
                             {...field}
                           />
-                          <div className="flex absolute inset-y-0 justify-center items-center pointer-events-none end-0 pe-3 text-zinc-500">
+                          <div className="flex absolute inset-y-0 justify-center items-center pointer-events-none end-0 pe-3 text-muted-foreground">
                             <Mail
                               size={20}
                               strokeWidth={1.5}
@@ -300,7 +300,7 @@ export function SignUpForm() {
               </div>
 
               <div className="space-y-2">
-                <h2 className="text-sm font-medium text-black">Password</h2>
+                <h2 className="text-sm font-medium text-foreground">Password</h2>
                 <FormField
                   control={form.control}
                   name="password"
@@ -309,7 +309,7 @@ export function SignUpForm() {
                       <FormControl>
                         <PasswordStrengthChecker
                           placeholder="Create a password"
-                          className="px-4 w-full h-12 text-base text-black rounded-xl border-2 transition-all ease-in-out bg-white/80 placeholder:text-zinc-500 focus-visible:ring-2 focus-visible:ring-quantum-blue"
+                          className="px-4 w-full h-12 text-base text-foreground rounded-xl border-2 transition-all ease-in-out bg-input placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-primary"
                           autoComplete="new-password"
                           error={!!form.formState.errors.password}
                           {...field}
@@ -330,7 +330,7 @@ export function SignUpForm() {
                 <Button
                   type="submit"
                   className={cn(
-                    'relative h-12 w-full overflow-hidden rounded-xl bg-quantum-blue px-4 py-2 font-medium text-sm text-white transition-all hover:scale-[1.02] hover:bg-quantum-blue/80',
+                    'relative h-12 w-full overflow-hidden rounded-xl bg-neutral-700/10 px-4 py-2 font-medium text-sm text-white transition-all hover:scale-[1.02] hover:bg-neutral-600/10 hover:border-2 ',
                     isLoading && 'bg-gray-500 text-white'
                   )}
                   disabled={isLoading}
@@ -349,14 +349,14 @@ export function SignUpForm() {
                 <p>
                   By continuing, you agree to our{' '}
                   <Link
-                    href="/legal/terms"
+                    href={"/legal/terms" as any}
                     className="underline hover:text-foreground"
                   >
                     Terms of Service
                   </Link>{' '}
                   and{' '}
                   <Link
-                    href="/legal/privacy"
+                    href={"/legal/privacy" as any}
                     className="underline hover:text-foreground"
                   >
                     Privacy Policy
