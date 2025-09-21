@@ -14,16 +14,16 @@ export default function SignUpPage() {
       <div className="absolute inset-0 z-10 md:relative md:z-20 md:w-[55%]">
         <AuthBackground
           className="w-full h-full"
-          colors1={'#ffffff'}
-          colors2={'#f8fafc'}
-          colors3={'#f1f5f9'}
-          colors4={'#e2e8f0'}
+          colors1={'#000000'}
+          colors2={'#0f0f0f'}
+          colors3={'#1a1a1a'}
+          colors4={'#2a2a2a'}
           speed={0.3}
           edge={'0%'}
         >
           {/* Glass overlay */}
           <div
-            className="absolute inset-0 bg-white/40 backdrop-blur-[2px]"
+            className="absolute inset-0 bg-black/40 backdrop-blur-[2px]"
             style={{ borderRadius: '0%' }}
           />
 
@@ -36,12 +36,12 @@ export default function SignUpPage() {
               animate={{ opacity: 1, y: 0 }}
             >
               <div className="relative">
-                <div className="absolute inset-0 rounded-full blur-xl bg-black/5" />
+                <div className="absolute inset-0 rounded-full blur-xl bg-white/5" />
                 <AnimatedIcon className="relative" />
               </div>
               <span
                 className={cn(
-                  'font-semibold text-2xl text-black drop-shadow-2xl',
+                  'font-semibold text-2xl text-white drop-shadow-2xl',
                   clashDisplay.className
                 )}
               >
@@ -57,17 +57,17 @@ export default function SignUpPage() {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.2 }}
               >
-                <div className="absolute -inset-4 bg-gradient-to-r rounded-3xl blur-3xl from-black/5 to-black/10" />
+                <div className="absolute -inset-4 bg-gradient-to-r rounded-3xl blur-3xl from-white/5 to-white/10" />
                 <div className="relative p-8 space-y-6">
                   <h2
                     className={cn(
-                      'bg-gradient-to-r from-gray-800/90 via-gray-600/80 to-gray-800/90 bg-clip-text font-bold text-5xl text-transparent backdrop-blur-sm',
+                      'bg-gradient-to-r from-gray-100/90 via-gray-300/80 to-gray-100/90 bg-clip-text font-bold text-5xl text-transparent backdrop-blur-sm',
                       clashDisplay.className
                     )}
                   >
                     Join Your Digital Space
                   </h2>
-                  <p className="text-lg leading-relaxed text-zinc-600">
+                  <p className="text-lg leading-relaxed text-zinc-300">
                     Start building your community and engage with your audience
                   </p>
 
@@ -76,7 +76,7 @@ export default function SignUpPage() {
                     {['Real-time', 'Secure', 'Scalable'].map((badge, i) => (
                       <motion.span
                         key={badge}
-                        className="px-4 py-1 text-sm rounded-full border shadow-sm backdrop-blur-sm border-black/10 bg-white/50 text-black/70"
+                        className="px-4 py-1 text-sm rounded-full border shadow-sm backdrop-blur-sm border-white/10 bg-black/50 text-white/70"
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.4 + i * 0.1 }}
@@ -96,11 +96,11 @@ export default function SignUpPage() {
               animate={{ opacity: 1 }}
               transition={{ delay: 0.6 }}
             >
-              <div className="h-[1px] w-12 bg-gradient-to-r from-transparent via-zinc-400 to-transparent" />
-              <span className="text-sm text-zinc-500">
+              <div className="h-[1px] w-12 bg-gradient-to-r from-transparent via-zinc-600 to-transparent" />
+              <span className="text-sm text-zinc-400">
                 Trusted by industry leaders
               </span>
-              <div className="h-[1px] w-12 bg-gradient-to-r from-transparent via-zinc-400 to-transparent" />
+              <div className="h-[1px] w-12 bg-gradient-to-r from-transparent via-zinc-600 to-transparent" />
             </motion.div>
           </div>
         </AuthBackground>
@@ -109,14 +109,14 @@ export default function SignUpPage() {
       <div
         className={cn(
           'relative z-20 flex min-h-screen w-full flex-col md:h-dvh md:min-h-0 md:w-[45%]',
-          'bg-gradient-to-t from-white via-white/90 to-transparent md:bg-white'
+          'bg-gradient-to-b from-background from-25% to-transparent md:bg-black/70'
         )}
       >
         <div className="flex flex-1 justify-center items-center px-4 py-8">
           <AuthForm type="sign-up" />
         </div>
 
-        <footer className="p-4 w-full text-sm text-center border-t border-gray-100 text-muted-foreground">
+        <footer className="p-4 w-full text-sm text-center border-t border-border text-muted-foreground">
           © {new Date().getFullYear()} Synaxis. All rights reserved.
         </footer>
       </div>
