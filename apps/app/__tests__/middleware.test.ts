@@ -11,7 +11,7 @@ vi.mock('@repo/auth/server', () => ({
 }));
 
 vi.mock('@repo/security/middleware', () => ({
-  noseconeMiddleware: vi.fn(() => vi.fn()),
+  noseconeMiddleware: vi.fn(() => vi.fn(() => Promise.resolve())),
   noseconeConfig: {},
 }));
 
@@ -130,8 +130,8 @@ describe('Middleware', () => {
     });
   });
 
-  describe('Production environment', () => {
-    test('should redirect unauthenticated users to sign-in for non-root path', async () => {
+  describe('Environment consistency', () => {
+    test('should redirect unauthenticated users to sign-in for protected routes regardless of environment', async () => {
       // @ts-expect-error - We are mutating the env for test purposes
       env.NODE_ENV = 'production';
       // @ts-expect-error - We are mocking the session for test purposes
@@ -144,15 +144,18 @@ describe('Middleware', () => {
       );
     });
 
-    // test('should allow access to root path for unauthenticated users in production', async () => {
-    //   // @ts-expect-error - We are mutating the env for test purposes
-    //   env.NODE_ENV = 'production';
-    //   // @ts-expect-error - We are mocking the session for test purposes
-    //   auth.api.getSession.mockResolvedValue(null);
-    //   const request = createRequest('/');
-    //   const response = await middleware(request);
-    //   expect(response.status).toBe(NextResponse.next().status);
-    // });
+    test('should redirect unauthenticated users from root to sign-up in production', async () => {
+      // @ts-expect-error - We are mutating the env for test purposes
+      env.NODE_ENV = 'production';
+      // @ts-expect-error - We are mocking the session for test purposes
+      auth.api.getSession.mockResolvedValue(null);
+      const request = createRequest('/');
+      const response = await middleware(request);
+      expect(response.status).toBe(307);
+      expect(response.headers.get('location')).toBe(
+        'http://localhost:3000/auth/sign-up'
+      );
+    });
   });
 
   describe('Security Middleware', () => {
@@ -164,7 +167,7 @@ describe('Middleware', () => {
       const mockError = new Error('Nosecone failed');
       // @ts-expect-error - We are mocking the implementation for test purposes
       noseconeMiddleware.mockImplementation(() => {
-        return vi.fn().mockRejectedValue(mockError);
+        return vi.fn(() => Promise.reject(mockError));
       });
 
       // @ts-expect-error - We are mocking the session for test purposes
@@ -176,9 +179,33 @@ describe('Middleware', () => {
         'Nosecone Middleware Error:',
         mockError
       );
-      expect(response.status).toBe(NextResponse.next().status);
+      expect(response.status).toBe(307);
+      expect(response.headers.get('location')).toBe('http://localhost:3000/auth/sign-up');
 
       consoleErrorSpy.mockRestore();
+    });
+  });
+
+  describe('Root Path Redirection', () => {
+    test('should redirect unauthenticated users from root to sign-up', async () => {
+      // @ts-expect-error - We are mocking the session for test purposes
+      auth.api.getSession.mockResolvedValue(null);
+      const request = createRequest('/');
+      const response = await middleware(request);
+      expect(response.status).toBe(307);
+      expect(response.headers.get('location')).toBe(
+        'http://localhost:3000/auth/sign-up'
+      );
+    });
+
+    test('should allow authenticated users to access root path', async () => {
+      // @ts-expect-error - We are mocking the session for test purposes
+      auth.api.getSession.mockResolvedValue({
+        user: { emailVerified: true, userProfileStep: 'completed' },
+      });
+      const request = createRequest('/');
+      const response = await middleware(request);
+      expect(response.status).toBe(NextResponse.next().status);
     });
   });
 
