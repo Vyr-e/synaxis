@@ -14,7 +14,7 @@ export function SignOutButton() {
     startTransition(async () => {
       await signOut({
         fetchOptions: {
-          onSuccess: () => router.push('/login'),
+          onSuccess: () => router.push('/auth/sign-in'),
         },
       });
     });

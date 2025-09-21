@@ -262,14 +262,14 @@ export function CookieConsent() {
               transition={{ duration: 0.2, ease: 'easeOut' }}
               aria-labelledby="cookie-settings-title"
               aria-describedby="cookie-settings-desc"
-              className="fixed translate-x-[-50%] top-[50%] z-[200] max-h-[90vh] overflow-auto max-w-lg  rounded-2xl border bg-background p-0 shadow-lg"
+              className="fixed  translate-x-[-50%] top-[50%] z-[200] max-h-[90vh] overflow-auto max-w-lg bg-background rounded-2xl border  p-0 shadow-lg mx-2"
             >
               <div className="relative">
                 <button
                   type="button"
                   ref={initialFocusRef}
                   onClick={() => setShowSettings(false)}
-                  className="flex absolute top-6 right-6 justify-center items-center w-8 h-8 rounded-full border border-gray-300 transition-all duration-200 hover:border-gray-400 hover:bg-gray-100"
+                  className="flex absolute top-6 right-6 justify-center items-center w-8 h-8 rounded-full border border-border transition-all duration-200 hover:border-border/80 hover:bg-muted"
                   aria-label="Close cookie settings"
                 >
                   <X className="w-4 h-4" />
@@ -289,7 +289,7 @@ export function CookieConsent() {
                   </div>
                 </div>
 
-                <div className="px-6 pb-6 bg-gray-50">
+                <div className="px-6 pb-6 ">
                   <div className="space-y-6">
                     {consentOptions.map((option) => (
                       <div key={option.id} className="space-y-2">
@@ -297,8 +297,8 @@ export function CookieConsent() {
                           <span
                             className={`rounded-md px-3 py-1 font-medium text-sm ${
                               option.required
-                                ? 'text-gray-700 bg-gray-100 border border-gray-200'
-                                : 'text-[#0077FF] bg-blue-50 border border-[#0077FF]/30'
+                                ? 'text-muted-foreground bg-muted border border-border'
+                                : 'text-primary bg-primary/10 border border-primary/30'
                             }`}
                           >
                             {option.label}
@@ -307,11 +307,11 @@ export function CookieConsent() {
                             checked={consents[option.id]}
                             onCheckedChange={() => handleToggle(option.id)}
                             disabled={option.required}
-                            className="rounded-md [&_span]:rounded data-[state=checked]:bg-[#0077FF] data-[state=checked]:[&_span]:ml-auto transition-all duration-300 ease-in-out [&_span]:size-[0.9rem] p-[0.1rem]"
+                            className="rounded-sm  [&_span]:rounded"
                             aria-label={`${option.label} cookies ${option.required ? '(required)' : ''}`}
                           />
                         </div>
-                        <p className="text-sm leading-relaxed text-gray-500">
+                        <p className="text-xs sm:text-sm leading-relaxed text-muted-foreground">
                           {option.description}
                         </p>
                       </div>
@@ -321,7 +321,7 @@ export function CookieConsent() {
                 <div className="flex justify-end px-6 py-4">
                   <Button
                     onClick={handleSaveSettings}
-                    className="rounded-lg bg-quantum-blue px-6 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-[#0066DD] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-quantum-blue-hover"
+                    className="relative h-12 w-full overflow-hidden rounded-xl bg-neutral-700/10 px-4 py-2 font-medium text-sm text-white transition-all hover:scale-[1.02] hover:bg-neutral-600/10 hover:border-2"
                   >
                     Save Preferences
                   </Button>
@@ -343,12 +343,12 @@ export function CookieConsent() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 30, scale: 0.98 }}
             transition={{ duration: 0.3, ease: 'easeOut' }}
-            className="fixed inset-x-0 bottom-4 left-4 z-[100] w-[400px] max-w-3xl"
+            className="fixed bottom-4 md:left-2 left-[0.45rem] -translate-x-1/2 z-[100] w-[400px]"
           >
             {/* Banner appearance as per your original code */}
-            <div className="p-4 text-gray-800 bg-gray-100 rounded-xl shadow-lg">
+            <div className="p-4 text-foreground bg-card rounded-xl shadow-lg border">
               <div className="space-y-4">
-                <p className="text-sm">
+                <p className="text-xs sm:text-sm">
                   This site uses tracking technologies. You may opt in or opt
                   out of the use of these technologies.
                 </p>
@@ -359,7 +359,7 @@ export function CookieConsent() {
                       variant="outline"
                       size="sm"
                       onClick={() => handleConsent(false)}
-                      className="rounded-full border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100 text-gray-800 transition-all duration-300 hover:border-quantum-blue hover:from-gray-100 hover:to-gray-200 hover:shadow-[0_0_10px_rgba(0,119,255,0.3)]"
+                      className="rounded-full border-border bg-gradient-to-r from-card to-muted text-foreground transition-all duration-300 hover:border-primary hover:from-muted hover:to-muted/80 hover:shadow-[0_0_10px_rgba(255,255,255,0.3)]"
                     >
                       Deny
                     </Button>
@@ -368,7 +368,7 @@ export function CookieConsent() {
                       variant="outline"
                       size="sm"
                       onClick={() => handleConsent(true)}
-                      className="rounded-full border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100 text-gray-800 transition-all duration-300 hover:border-quantum-blue hover:from-gray-100 hover:to-gray-200 hover:shadow-[0_0_10px_rgba(0,119,255,0.3)]"
+                      className="rounded-full border-border bg-gradient-to-r from-card to-muted text-foreground transition-all duration-300 hover:border-primary hover:from-muted hover:to-muted/80 hover:shadow-[0_0_10px_rgba(255,255,255,0.3)]"
                     >
                       Accept all
                     </Button>
@@ -384,7 +384,7 @@ export function CookieConsent() {
                         clearTimeout(consentTimeout.current);
                       }
                     }}
-                    className="rounded-full bg-quantum-blue text-white transition-colors duration-300 hover:bg-[#0066DD]"
+                    className="rounded-full bg-primary text-primary-foreground transition-colors duration-300 hover:bg-primary/90"
                   >
                     Consent Settings
                   </Button>
