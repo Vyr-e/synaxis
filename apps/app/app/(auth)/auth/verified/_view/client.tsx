@@ -6,17 +6,18 @@ import { clashDisplay } from '@repo/design-system/fonts';
 import { ArrowRight, CheckCircle2 } from 'lucide-react'; // Using CheckCircle2 for success
 import { motion } from 'motion/react';
 import { useRouter } from 'next/navigation';
+import type { Route } from 'next';
 
 export default function VerifiedPage() {
   const router = useRouter();
 
   const handleContinue = () => {
-    router.push('/onboard'); // Navigate to the start of onboarding
+    router.push('/onboard' as Route); // Navigate to the start of onboarding
   };
 
   return (
     <div className="flex min-h-screen flex-col">
-      <main className="relative flex flex-1 flex-col items-center justify-center bg-white p-4">
+      <main className="relative flex flex-1 flex-col items-center justify-center bg-background p-4">
         {/* Removed the back button as it's a success page */}
         <motion.div
           className="w-full max-w-md space-y-6"
@@ -45,7 +46,7 @@ export default function VerifiedPage() {
             {/* Title */}
             <h1
               className={cn(
-                'font-bold text-4xl text-zinc-950 tracking-tight dark:text-zinc-50',
+                'font-bold text-4xl text-foreground tracking-tight',
                 clashDisplay.className
               )}
             >
@@ -53,7 +54,7 @@ export default function VerifiedPage() {
             </h1>
 
             {/* Description */}
-            <p className="text-zinc-500">
+            <p className="text-muted-foreground">
               Your email address has been successfully verified. You can now
               proceed to set up your account.
             </p>
@@ -63,7 +64,7 @@ export default function VerifiedPage() {
           <div className="pt-4">
             <Button
               onClick={handleContinue}
-              className="relative h-12 w-full overflow-hidden rounded-xl bg-quantum-blue px-4 py-2 font-medium text-sm text-white transition-all hover:scale-[1.02] hover:bg-quantum-blue/90"
+              className="relative h-12 w-full overflow-hidden rounded-xl bg-neutral-700/10 px-4 py-2 font-medium text-sm text-white transition-all hover:scale-[1.02] hover:bg-neutral-600/10 hover:border-2 "
             >
               <div className="absolute inset-0 animate-shimmer bg-gradient-to-r from-white/0 via-white/5 to-white/0" />
               <div className="relative flex items-center justify-center gap-2">
