@@ -3,7 +3,7 @@
 import { captureException } from '@/sentry/utils';
 import type { FormData } from '@/store/use-onboarding-store';
 import { auth } from '@repo/auth/server';
-import { drizzle } from '@repo/database';
+import { drizzle, eq, or } from '@repo/database';
 import {
   USER_PROFILE_STEPS,
   USER_ROLES,
@@ -11,7 +11,6 @@ import {
   users,
   type users as usersTable,
 } from '@repo/database/schema';
-import { eq } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 import { headers } from 'next/headers';
 

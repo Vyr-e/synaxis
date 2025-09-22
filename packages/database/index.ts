@@ -14,3 +14,6 @@ const drizzle = drizzle_orm(sql, { schema: dbSchema });
 
 export const schema = dbSchema;
 export { drizzle };
+
+// Re-export all drizzle-orm functions to ensure type consistency
+export * from 'drizzle-orm';

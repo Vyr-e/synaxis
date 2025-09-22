@@ -1,6 +1,5 @@
-import { drizzle } from '@repo/database';
+import { drizzle, eq, or } from '@repo/database';
 import { users } from '@repo/database/models/users';
-import { eq, or } from 'drizzle-orm';
 import { type NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
