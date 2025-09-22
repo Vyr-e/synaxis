@@ -2,7 +2,7 @@ import { type ApiData, verifyAccess } from '@vercel/flags';
 import { type NextRequest, NextResponse } from 'next/server';
 import * as flags from './index';
 
-export const getFlags = async (request: NextRequest, context: { params: Promise<{}> }) => {
+export const getFlags = async (request: NextRequest) => {
   const access = await verifyAccess(request.headers.get('Authorization'));
 
   if (!access) {
