@@ -1,6 +1,6 @@
 import { analytics } from '@repo/analytics/posthog/server';
 import { useSession } from '@repo/auth/client';
-import { unstable_flag as flag } from '@vercel/flags/next';
+import { flag } from '@vercel/flags/next';
 
 export const createFlag = (key: string) =>
   flag({
