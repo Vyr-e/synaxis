@@ -11,7 +11,7 @@ vi.mock('@repo/auth/server', () => ({
 }));
 
 vi.mock('@repo/security/middleware', () => ({
-  noseconeMiddleware: vi.fn(() => vi.fn(() => Promise.resolve())),
+  noseconeMiddleware: vi.fn(() => vi.fn()),
   noseconeConfig: {},
 }));
 
@@ -167,7 +167,7 @@ describe('Middleware', () => {
       const mockError = new Error('Nosecone failed');
       // @ts-expect-error - We are mocking the implementation for test purposes
       noseconeMiddleware.mockImplementation(() => {
-        return vi.fn(() => Promise.reject(mockError));
+        return vi.fn().mockRejectedValue(mockError);
       });
 
       // @ts-expect-error - We are mocking the session for test purposes
