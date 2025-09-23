@@ -77,6 +77,7 @@ export const config = {
     '/((?!api|_next|ingest|.*\\..*).*)',
     '/((?!api/auth|api/uploadthing|_next/static|_next/image|favicon.ico).*)',
     '/onboard',
+    "/legal"
   ],
   runtime: 'nodejs',
 };
