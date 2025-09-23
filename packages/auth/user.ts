@@ -1,6 +1,6 @@
-import { drizzle, schema } from '@repo/database';
+import { drizzle, schema , eq } from '@repo/database';
 import type { User } from '@repo/database/types';
-import { eq } from 'drizzle-orm';
+
 
 /**
  * Fetches the full user profile from the database using Drizzle.
