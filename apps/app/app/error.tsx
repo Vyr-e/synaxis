@@ -1,11 +1,20 @@
 'use client';
 
-import { AnimatedIcon } from '@/components/animated-logo';
 import { cn } from '@repo/design-system';
-import { clashDisplay } from '@repo/design-system/fonts';
-import { motion } from 'motion/react';
 import { RefreshCw, ArrowLeft } from 'lucide-react';
 import { useEffect } from 'react';
+import dynamic from 'next/dynamic';
+
+// Dynamically import client components to avoid SSG issues
+const AnimatedIcon = dynamic(() => import('@/components/animated-logo').then(mod => ({ default: mod.AnimatedIcon })), {
+  ssr: false,
+  loading: () => <div className="w-6 h-6 bg-white/10 rounded-full" />
+});
+
+const MotionDiv = dynamic(() => import('motion/react').then(mod => ({ default: mod.motion.div })), {
+  ssr: false,
+  loading: () => <div />
+});
 
 interface ErrorProps {
   error: Error & { digest?: string };
@@ -42,7 +51,7 @@ export default function Error({ error, reset }: ErrorProps) {
           {/* Branding Content */}
           <div className="flex relative z-10 flex-col items-center p-8 h-full">
             {/* Logo Section */}
-            <motion.div
+            <MotionDiv
               className="flex gap-2 items-center"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -51,19 +60,14 @@ export default function Error({ error, reset }: ErrorProps) {
                 <div className="absolute inset-0 rounded-full blur-xl bg-white/5" />
                 <AnimatedIcon className="relative" />
               </div>
-              <span
-                className={cn(
-                  'font-semibold text-2xl text-white drop-shadow-2xl',
-                  clashDisplay.className
-                )}
-              >
+              <span className="font-semibold text-2xl text-white drop-shadow-2xl font-clash-display">
                 Synaxis
               </span>
-            </motion.div>
+            </MotionDiv>
 
             {/* Center Content - Error Display */}
             <div className="flex flex-1 justify-center items-center">
-              <motion.div
+              <MotionDiv
                 className="relative max-w-lg text-center"
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -84,12 +88,7 @@ export default function Error({ error, reset }: ErrorProps) {
                     </svg>
                   </div>
 
-                  <h2
-                    className={cn(
-                      'text-3xl md:text-4xl font-bold bg-gradient-to-r from-red-400 via-orange-400 to-red-400 bg-clip-text text-transparent backdrop-blur-sm',
-                      clashDisplay.className
-                    )}
-                  >
+                  <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-red-400 via-orange-400 to-red-400 bg-clip-text text-transparent backdrop-blur-sm font-clash-display">
                     Something Went Wrong
                   </h2>
 
@@ -106,11 +105,11 @@ export default function Error({ error, reset }: ErrorProps) {
                     </div>
                   )}
                 </div>
-              </motion.div>
+              </MotionDiv>
             </div>
 
             {/* Bottom Section */}
-            <motion.div
+            <MotionDiv
               className="hidden gap-2 items-center md:flex"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -121,7 +120,7 @@ export default function Error({ error, reset }: ErrorProps) {
                 We're working to fix this
               </span>
               <div className="h-[1px] w-12 bg-gradient-to-r from-transparent via-zinc-600 to-transparent" />
-            </motion.div>
+            </MotionDiv>
           </div>
         </div>
       </div>
@@ -134,7 +133,7 @@ export default function Error({ error, reset }: ErrorProps) {
         )}
       >
         <div className="flex flex-1 justify-center items-center px-4 py-8">
-          <motion.div
+          <MotionDiv
             className="relative mx-auto w-full max-w-md"
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -186,7 +185,7 @@ export default function Error({ error, reset }: ErrorProps) {
                 </div>
               </div>
             </div>
-          </motion.div>
+          </MotionDiv>
         </div>
 
         <footer className="p-4 w-full text-sm text-center border-t border-border text-muted-foreground">
