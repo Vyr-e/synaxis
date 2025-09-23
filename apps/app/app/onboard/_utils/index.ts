@@ -1,14 +1,6 @@
 import type { User } from 'better-auth/types';
 
-type ExtendedUser = User & {
-  username: string;
-  firstName: string;
-  lastName: string;
-  createdAt: Date | string;
-  updatedAt: Date | string;
-};
-
-export const isProfileComplete = (user: ExtendedUser) => {
+export const isProfileComplete = (user: User) => {
   if (!user.username) {
     return false;
   }
@@ -28,7 +20,7 @@ export const isProfileComplete = (user: ExtendedUser) => {
 };
 
 // Helper to get first and last name from Better Auth user
-export const getUserNames = (user: ExtendedUser) => {
+export const getUserNames = (user: User) => {
   if (!user.firstName || !user.lastName) {
     return { firstName: '', lastName: '' };
   }

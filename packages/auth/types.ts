@@ -9,5 +9,7 @@ declare module 'better-auth/types' {
     deletedAt: string;
     banReason: string;
     userProfileStep: string;
+    createdAt: Date;
+    updatedAt: Date;
   }
 }
