@@ -7,4 +7,5 @@ export const PUBLIC_ROUTES = [
   '/onboard',
   '/api/auth',
   '/api/check-username',
+  "/legal"
 ];
