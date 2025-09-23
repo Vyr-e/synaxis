@@ -111,10 +111,10 @@ export function SignUpForm() {
         {
           email: _values.email,
           password: _values.password,
-          username: username,
+          username,
           name: `${_values.firstName} ${_values.lastName}`,
           callbackURL: '/auth/verified',
-        },
+        } as {email:string, password: string, username:string, name: string, },
         {
           onSuccess: () => {
             onboardingSetField('firstName', _values.firstName);

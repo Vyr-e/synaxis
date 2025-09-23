@@ -37,14 +37,14 @@ export function LegalPageView({ title, lastUpdated, content }: LegalPageViewProp
       if (line.startsWith('## ')) {
         flushList();
         elements.push(
-          <h2 key={index} className="text-2xl font-semibold text-gray-900 mb-4 mt-10 first:mt-0">
+          <h2 key={index} className="text-2xl font-semibold text-white mb-4 mt-10 first:mt-0">
             {line.replace('## ', '')}
           </h2>
         );
       } else if (line.startsWith('### ')) {
         flushList();
         elements.push(
-          <h3 key={index} className="text-lg font-medium text-gray-900 mb-3 mt-8">
+          <h3 key={index} className="text-lg font-medium text-white/90 mb-3 mt-8">
             {line.replace('### ', '')}
           </h3>
         );
@@ -53,14 +53,14 @@ export function LegalPageView({ title, lastUpdated, content }: LegalPageViewProp
           isInList = true;
         }
         listItems.push(
-          <li key={index} className="text-gray-700 leading-relaxed">
+          <li key={index} className="text-white/80 leading-relaxed">
             {line.replace('- ', '')}
           </li>
         );
       } else if (line.trim()) {
         flushList();
         elements.push(
-          <p key={index} className="text-gray-700 mb-4 leading-relaxed">
+          <p key={index} className="text-white/80 mb-4 leading-relaxed">
             {line}
           </p>
         );
@@ -72,14 +72,17 @@ export function LegalPageView({ title, lastUpdated, content }: LegalPageViewProp
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-black">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
+      <header className="bg-black/70 border-b border-white/10 sticky top-0 z-10 backdrop-blur-sm">
         <div className="mx-auto max-w-4xl px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <AnimatedIcon className="w-8 h-8" />
-              <span className={cn('font-semibold text-xl text-gray-900', clashDisplay.className)}>
+              <div className="relative">
+                <div className="absolute inset-0 rounded-full blur-xl bg-white/5" />
+                <AnimatedIcon className="relative w-8 h-8" />
+              </div>
+              <span className={cn('font-semibold text-xl text-white drop-shadow-2xl', clashDisplay.className)}>
                 Synaxis
               </span>
             </div>
@@ -88,12 +91,16 @@ export function LegalPageView({ title, lastUpdated, content }: LegalPageViewProp
               type="button"
               aria-label="Go back"
               onClick={() => window.history.back()}
-              className="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+              className="flex items-center"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
             >
-              <ArrowLeft className="w-4 h-4" />
-              Back
+              <div className="relative flex items-center gap-2 rounded-full bg-white/5 px-3 py-1.5 transition-all duration-300 hover:bg-white/10">
+                <ArrowLeft className="w-4 h-4" />
+                <span className="font-medium text-white/60 text-sm">
+                  Back
+                </span>
+              </div>
             </motion.button>
           </div>
         </div>
@@ -102,17 +109,17 @@ export function LegalPageView({ title, lastUpdated, content }: LegalPageViewProp
       {/* Main Content */}
       <main className="mx-auto max-w-4xl px-6 py-8">
         <motion.article
-          className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden"
+          className="bg-black/70 rounded-lg border border-white/10 overflow-hidden backdrop-blur-sm"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
         >
           {/* Document Header */}
-          <header className="px-8 py-6 border-b border-gray-100">
-            <h1 className={cn('text-3xl font-bold text-gray-900 mb-2', clashDisplay.className)}>
+          <header className="px-8 py-6 border-b border-white/10">
+            <h1 className={cn('text-3xl font-bold text-white mb-2', clashDisplay.className)}>
               {title}
             </h1>
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-white/60">
               Last updated: {lastUpdated}
             </p>
           </header>
@@ -126,7 +133,7 @@ export function LegalPageView({ title, lastUpdated, content }: LegalPageViewProp
         </motion.article>
 
         {/* Footer */}
-        <footer className="mt-8 text-center text-sm text-gray-500">
+        <footer className="mt-8 text-center text-sm text-white/60">
           <p>© 2025 Synaxis. All rights reserved.</p>
         </footer>
       </main>
