@@ -1,21 +1,20 @@
 import type { Metadata } from 'next';
-import type { ReactNode } from 'react';
 
 export const metadata: Metadata = {
   title: {
     template: '%s | Synaxis',
     default: 'Legal | Synaxis',
   },
-  description: 'Legal documents and policies for Synaxis platform.',
+  description: 'Legal information and policies for Synaxis platform.',
 };
 
-export default function LegalLayout({
-  children,
-}: {
-  children: ReactNode;
-}) {
+interface LayoutProps {
+  children: React.ReactNode;
+}
+
+export default function Layout({ children }: LayoutProps) {
   return (
-    <div className="min-h-screen">
+    <div className="mx-auto max-w-4xl px-4 py-8">
       {children}
     </div>
   );
