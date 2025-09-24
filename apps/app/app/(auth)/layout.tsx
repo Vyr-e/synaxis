@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import type { ReactNode } from 'react';
 import { AuthLayoutWrapper } from './_components/layout-wrapper';
 
 export const metadata: Metadata = {
@@ -11,11 +10,11 @@ export const metadata: Metadata = {
     'Sign in, create an account, or manage your credentials to join vibrant communities on Synaxis.',
 };
 
-export default function Layout({
-  children,
-}: {
-  children: ReactNode;
-}) {
+interface LayoutProps {
+  children: React.ReactNode;
+}
+
+export default function Layout({ children }: LayoutProps) {
   return (
     <div className="flex min-h-dvh items-center justify-center overflow-y-hidden bg-black/50">
       <div className="w-full">
