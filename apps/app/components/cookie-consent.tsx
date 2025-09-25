@@ -343,7 +343,7 @@ export function CookieConsent() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 30, scale: 0.98 }}
             transition={{ duration: 0.3, ease: 'easeOut' }}
-            className="fixed bottom-4 md:left-2 left-[0.45rem] -translate-x-1/2 z-[100] w-[400px]"
+            className="fixed bottom-4 md:left-2 left-[0.45rem] -translate-x-1/2 z-[100] w-[350px] md:w-[400px]"
           >
             {/* Banner appearance as per your original code */}
             <div className="p-4 text-foreground bg-card rounded-xl shadow-lg border">

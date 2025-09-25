@@ -11,7 +11,7 @@ export default function SignInPage() {
   return (
     <div className="flex relative flex-col min-h-screen md:flex-row">
       {/* Background Section - Always full width/height on mobile */}
-      <div className="absolute inset-0 md:relative md:w-[55%]">
+      <div className="absolute inset-0 md:relative lg:w-[55%]">
         <AuthBackground
           className="w-full h-full"
           colors1={'#000000'}

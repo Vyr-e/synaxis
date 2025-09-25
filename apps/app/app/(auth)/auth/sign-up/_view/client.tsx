@@ -11,7 +11,7 @@ export default function SignUpPage() {
   return (
     <div className="flex relative flex-col min-h-screen md:flex-row">
       {/* Background Section - Behind on mobile, right side on desktop */}
-      <div className="absolute inset-0 z-10 md:relative md:z-20 md:w-[55%]">
+      <div className="absolute inset-0 z-10 md:relative md:z-20 lg:w-[55%]">
         <AuthBackground
           className="w-full h-full"
           colors1={'#000000'}
